@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title></title>
+        <link>undefined</link>
+        <description>undefined</description>
+        <lastBuildDate>Thu, 24 Nov 2022 03:25:38 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[Get kubectl pods sorted by Restart Count]]></title>
+            <guid>5d477e847bed410cbd1fd54d5bba4e42</guid>
+            <pubDate>Tue, 22 Nov 2022 02:26:28 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Get kubectl pods sorted by Restart Count</p>
+<p>get pods --sort-by='.status.containerStatuses[0].restartCount'</p>
+]]></content:encoded>
+        </item>
+    </channel>
+</rss>
