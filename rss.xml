@@ -1,45 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0">
     <channel>
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Fri, 25 Nov 2022 02:56:26 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 25 Nov 2022 11:29:02 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
-        <item>
-            <title><![CDATA[VCS Ubuntu Docker]]></title>
-            <guid>295d7d331b2848c088fee0be8ed5612d</guid>
-            <pubDate>Sat, 09 Jan 2021 11:08:15 GMT</pubDate>
-            <content:encoded><![CDATA[<p>VCS Ubuntu Docker</p>
-<div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> <span class="hljs-keyword">update</span>
-sudo apt-<span class="hljs-built_in">get</span> install -<span class="hljs-keyword">y</span> apt-transport-https <span class="hljs-keyword">ca</span>-certificates curl gnupg-agent software-properties-common
-curl -fsSL https://download.docker.<span class="hljs-keyword">com</span>/linux/ubuntu/gpg | sudo apt-key <span class="hljs-built_in">add</span> -
-sudo apt-key fingerprint <span class="hljs-number">0</span>EBFCD88
-sudo <span class="hljs-built_in">add</span>-apt-repository <span class="hljs-string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"</span>
-sudo apt-<span class="hljs-built_in">get</span> <span class="hljs-keyword">update</span>
-sudo apt-<span class="hljs-built_in">get</span> install -<span class="hljs-keyword">y</span> docker-<span class="hljs-keyword">ce</span> docker-<span class="hljs-keyword">ce</span>-cli containerd.io
-sudo adduser ubuntu docker</code></pre></div>
-<p>relogin  // or run <code>newgrp docker</code></p>
-<p>docker ps</p>
-<p>from <a title="https://docs.docker.com/engine/install/ubuntu/" href="https://docs.docker.com/engine/install/ubuntu/">https://docs.docker.com/engine/install/ubuntu/</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[LinuxDebian]]></title>
-            <guid>17ff2b8ae4814118803ed98850df683b</guid>
-            <pubDate>Sun, 23 Feb 2020 16:21:31 GMT</pubDate>
-            <content:encoded><![CDATA[<h2 id="同步設定">同步設定</h2>
-<p>webdav = <a title="https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin" href="https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin">https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin</a></p>
-<p><img src="/_resources/8747909bf7ea4630a871ea5f8b742f80.jpg" />
-<img src="/_resources/5200d5f39b3c477b84f53c29accf43d1.png" /></p>
-<h2 id="sandbox-permission-error">sandbox permission error</h2>
-<p><a title="https://github.com/laurent22/joplin/issues/2246" href="https://github.com/laurent22/joplin/issues/2246">https://github.com/laurent22/joplin/issues/2246</a></p>
-<div><pre class="hljs"><code>    ./Joplin.AppImage --appimage-extract
-    sudo chown root chrome-sandbox
-    sudo chmod <span class="hljs-number">4755</span> chrome-sandbox
-    ln -s <span class="hljs-regexp">/home/</span>thomas<span class="hljs-regexp">/.joplin/</span>squashfs-root<span class="hljs-regexp">/joplin ~/</span>bin/joplin</code></pre></div>
-]]></content:encoded>
-        </item>
     </channel>
 </rss>
