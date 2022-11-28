@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Sat, 26 Nov 2022 12:43:55 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 28 Nov 2022 01:38:57 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -76,17 +76,17 @@
 <h2 id="web-clipper">Web clipper</h2>
 <p><img src="/_resources/0817a8e79ee44ed389e8160fcec10bc3.png" /></p>
 <p>The Web Clipper is a browser extension that allows you to save web pages and screenshots from your browser. To start using it, open the Joplin desktop application, go to the Web Clipper Options and follow the instructions.</p>
-<p>More info on the official website: https://joplinapp.org/clipper/</p>
+<p>More info on the official website: <a title="https://joplinapp.org/clipper/" href="https://joplinapp.org/clipper/">https://joplinapp.org/clipper/</a></p>
 <h2 id="plugins">Plugins</h2>
 <p>Joplin supports many plugins that allows you to add new features to the app, such as tabs, a table of content for your notes, a way to manage favourite notes, and many other ones. To add a plugin, go to the "Plugins" section in the config screen. From there you can search and install plugins, as well as search or update plugins.</p>
 <h2 id="attachments">Attachments</h2>
 <p>Any kind of file can be attached to a note. In Markdown, links to these files are represented as an ID. In the note viewer, these files, if they are images, will be displayed or, if they are other files (PDF, text files, etc.) they will be displayed as links. Clicking on this link will open the file in the default application.</p>
 <p>Images can be attached either by clicking on "Attach file" or by pasting (with <code>Ctrl+V</code> or <code>Cmd+V</code>) an image directly in the editor, or by drag and dropping an image.</p>
-<p>More info about attachments: https://joplinapp.org/help/#attachments</p>
+<p>More info about attachments: <a title="https://joplinapp.org/help/#attachments" href="https://joplinapp.org/help/#attachments">https://joplinapp.org/help/#attachments</a></p>
 <h2 id="search">Search</h2>
-<p>Joplin supports advanced search queries, which are fully documented on the official website: https://joplinapp.org/help/#searching</p>
+<p>Joplin supports advanced search queries, which are fully documented on the official website: <a title="https://joplinapp.org/help/#searching" href="https://joplinapp.org/help/#searching">https://joplinapp.org/help/#searching</a></p>
 <h2 id="alarms">Alarms</h2>
-<p>An alarm can be associated with any to-do. It will be triggered at the given time by displaying a notification. To use this feature, see the documentation: https://joplinapp.org/help/#notifications</p>
+<p>An alarm can be associated with any to-do. It will be triggered at the given time by displaying a notification. To use this feature, see the documentation: <a title="https://joplinapp.org/help/#notifications" href="https://joplinapp.org/help/#notifications">https://joplinapp.org/help/#notifications</a></p>
 <h2 id="markdown-advanced-tips">Markdown advanced tips</h2>
 <p>Joplin uses and renders <a title="https://joplinapp.org/markdown/" href="https://joplinapp.org/markdown/">Github-flavoured Markdown</a> with a few variations and additions.</p>
 <p>For example, tables are supported:</p>
@@ -127,7 +127,7 @@
     \hat f(\xi)\,e^{2 \pi i \xi x}
     \,d\xi
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em"></span><span class="mord mathnormal" style="margin-right:0.10764em">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em"></span></span><span class="base"><span class="strut" style="height:2.384573em;vertical-align:-0.970281em"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.44445em;position:relative;top:-0.0011249999999999316em">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.414292em"><span style="top:-1.7880500000000001em;margin-left:-0.44445em;margin-right:0.05em"><span class="pstrut" style="height:2.7em"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">∞</span></span></span></span><span style="top:-3.8129000000000004em;margin-right:0.05em"><span class="pstrut" style="height:2.7em"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">∞</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.970281em"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9578799999999998em"><span style="top:-3em"><span class="pstrut" style="height:3em"></span><span class="mord mathnormal" style="margin-right:0.10764em">f</span></span><span style="top:-3.26344em"><span class="pstrut" style="height:3em"></span><span class="accent-body" style="left:-0.08332999999999999em"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em"><span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.04601em">ξ</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.16666666666666666em"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em"><span style="top:-3.1130000000000004em;margin-right:0.05em"><span class="pstrut" style="height:2.7em"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">πi</span><span class="mord mathnormal mtight" style="margin-right:0.04601em">ξ</span><span class="mord mathnormal mtight">x</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em"></span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.04601em">ξ</span></span></span></span></span></div>
-<p>Various other tricks are possible, such as using HTML, or customising the CSS. See the Markdown documentation for more info - https://joplinapp.org/markdown/</p>
+<p>Various other tricks are possible, such as using HTML, or customising the CSS. See the Markdown documentation for more info - <a title="https://joplinapp.org/markdown/" href="https://joplinapp.org/markdown/">https://joplinapp.org/markdown/</a></p>
 <h2 id="community-and-further-help">Community and further help</h2>
 <ul>
 <li>For general discussion about Joplin, user support, software development questions, and to discuss new features, go to the <a title="https://discourse.joplinapp.org/" href="https://discourse.joplinapp.org/">Joplin Forum</a>. It is possible to login with your GitHub account.</li>
@@ -140,15 +140,30 @@
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[ch1]]></title>
+            <guid>05ff18bce01c4618955fe468895def94</guid>
+            <pubDate>Fri, 27 May 2022 05:32:09 GMT</pubDate>
+            <content:encoded><![CDATA[<p>ch1</p>
+<p><a title="https://github.com/databricks/Spark-The-Definitive-Guide" href="https://github.com/databricks/Spark-The-Definitive-Guide">https://github.com/databricks/Spark-The-Definitive-Guide</a></p>
+<p><a title="https://archive.apache.org/dist/spark/spark-2.2.0/" href="https://archive.apache.org/dist/spark/spark-2.2.0/">https://archive.apache.org/dist/spark/spark-2.2.0/</a></p>
+<p>download <a title="https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz" href="https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz">https://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz</a></p>
+<p>extract</p>
+<p>cd....</p>
+<p>./bin/pyspark
+./bin/spark-shell
+./bin/spark-sql</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[LinuxDebian]]></title>
             <guid>17ff2b8ae4814118803ed98850df683b</guid>
             <pubDate>Sun, 23 Feb 2020 16:21:31 GMT</pubDate>
             <content:encoded><![CDATA[<h2 id="同步設定">同步設定</h2>
-<p>webdav = https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin</p>
-<p><img src="/_resources/8747909bf7ea4630a871ea5f8b742f80.jpg" /><br />
+<p>webdav = <a title="https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin" href="https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin">https://www.libthomas.org/nextcloud/remote.php/webdav/Joplin</a></p>
+<p><img src="/_resources/8747909bf7ea4630a871ea5f8b742f80.jpg" />
 <img src="/_resources/5200d5f39b3c477b84f53c29accf43d1.png" /></p>
 <h2 id="sandbox-permission-error">sandbox permission error</h2>
-<p>https://github.com/laurent22/joplin/issues/2246</p>
+<p><a title="https://github.com/laurent22/joplin/issues/2246" href="https://github.com/laurent22/joplin/issues/2246">https://github.com/laurent22/joplin/issues/2246</a></p>
 <div><pre class="hljs"><code>    ./Joplin.AppImage --appimage-extract
     sudo chown root chrome-sandbox
     sudo chmod <span class="hljs-number">4755</span> chrome-sandbox
