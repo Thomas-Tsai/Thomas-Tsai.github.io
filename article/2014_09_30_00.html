@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>2014_09_30_00 - Thomas Notes</title>
+  </head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">Thomas Notes</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">2014_09_30_00</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1412006400000"
+                  >2014-09-30 00:00</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1669627721976"
+                  >2022-11-28 17:28</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>Title: Vim color for tag and trail
+Tags:Linux,vim
+Date: 2014/09/30 00:21
+Category: calendar
+Slug: calendar/2014/09/30/00
+Author: ThomasTsai
+Summary: 研究一下怎麼設定 tab 和 trail 並加上 syntax color</p>
+<p>我的設計主要是前景有特殊字元顯示 變搭配顏色表示
+tab 用 ▸</p>
+<p>end-of-line 用 ¬</p>
+<p>trail 用  空白</p>
+<p>搭配 lighlight and match 可以設定顏色</p>
+<p>有時候太花還可以用 \ + l 來切換</p>
+<p>所以最後變什這樣了</p>
+<pre><code>" highlight tab and trail and switch list with Shortcut \+l¬
+nmap &lt;leader&gt;l :set list!&lt;CR&gt;¬
+set listchars=tab:▸\ ,eol:¬,trail:.¬
+set list¬
+highlight ExtraTabSpaceSyn ctermfg=darkgreen guifg=darkred¬
+autocmd BufWinEnter * match ExtraTabSpaceSyn /\t\|\s\+$\|\n/¬
+autocmd InsertEnter * match ExtraTabSpaceSyn /\t\|\s\+$\|\n/¬
+autocmd InsertLeave * match ExtraTabSpaceSyn /\t\|\s\+$\|\n/¬
+autocmd BufWinLeave * call clearmatches()¬
+match ExtraTabSpaceSyn /\t\|\s\+$\|\n/¬
+</code></pre>
+<p>範例：
+<img src="%7Cstatic%7C/images/vim-tab-trail-syntax.jpg" alt="Example" /></p>
+<p><img src="/_resources/bebfdd89ab744d26830e951a94c7fed9.jpg" /></p>
+<p>一些很有趣的文章 :</p>
+<ul>
+<li><a title="http://vimcasts.org/episodes/show-invisibles/" href="http://vimcasts.org/episodes/show-invisibles/">http://vimcasts.org/episodes/show-invisibles/</a></li>
+<li><a title="http://vim.wikia.com/wiki/Highlight_unwanted_spaces" href="http://vim.wikia.com/wiki/Highlight_unwanted_spaces">http://vim.wikia.com/wiki/Highlight_unwanted_spaces</a></li>
+<li><a title="http://aknow-work.blogspot.tw/2013/05/vim-color.html" href="http://aknow-work.blogspot.tw/2013/05/vim-color.html">http://aknow-work.blogspot.tw/2013/05/vim-color.html</a></li>
+</ul>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
