@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>有趣的專案 exodus - Thomas Notes</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">Thomas Notes</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">有趣的專案 exodus</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1638758100000"
+                  >2021-12-06 11:35</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1669729141369"
+                  >2022-11-29 22:39</time
+                ></span
+              >
+            </div>
+            
+            <div>
+              Keywords: 
+              <span class="keyword">linux</span>
+              
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>Title: 有趣的專案 exodus
+Tags: Linux
+Date: 2021/12/06 10:35
+Category: calendar
+Slug: calendar/2021/12/06/10/35
+Author: ThomasTsai
+Summary: 特別適合以ELF為主的Binary應用程式移植</p>
+<p>使用場景主要是當你沒有 root 權限，但是需要一些 Linux Binary 應用程式，如果是 static 直接 copy 過去，架構符合就可以執行！但是如果是 Dynamic Binary 那就麻煩了！</p>
+<p>這時候你可以用 exodus 來快速的把應用程式移植到遠端你沒有root的電腦上跑！</p>
+<p>例如 htop 就符合可以移植的特性！</p>
+<div><pre class="hljs"><code>     whereis htop
+    htop: <span class="hljs-regexp">/usr/</span>bin<span class="hljs-regexp">/htop /u</span>sr<span class="hljs-regexp">/share/m</span>an<span class="hljs-regexp">/man1/</span>htop.<span class="hljs-number">1</span>.gz
+     ldd <span class="hljs-regexp">/usr/</span>bin/htop
+    linux-vdso.so.<span class="hljs-number">1</span> (<span class="hljs-number">0</span>x00007ffd805ff000)
+    libncursesw.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libncursesw.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37ffb000)
+    libtinfo.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libtinfo.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37fcb000)
+    libm.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libm.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37e7c000)
+    libc.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libc.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37c8a000)
+    libdl.so.<span class="hljs-number">2</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libdl.so.<span class="hljs-number">2</span> (<span class="hljs-number">0</span>x00007fce37c84000)
+    <span class="hljs-regexp">/lib64/</span>ld-linux-x86-<span class="hljs-number">64</span>.so.<span class="hljs-number">2</span> (<span class="hljs-number">0</span>x00007fce38092000)
+     <span class="hljs-keyword">file</span> <span class="hljs-regexp">/usr/</span>bin/htop
+    <span class="hljs-regexp">/usr/</span>bin<span class="hljs-regexp">/htop: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /</span>lib64<span class="hljs-regexp">/ld-linux-x86-64.so.2, BuildID[sha1]=732986edd7d25415061c74c17cb3db139bee2775, for GNU/</span>Linux <span class="hljs-number">3.2</span>.<span class="hljs-number">0</span>, stripped</code></pre></div>
+<p>開始安裝</p>
+<div><pre class="hljs"><code>     pip install --user exodus-bundler
+     <span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-string">"~/.local/bin/:<span class="hljs-variable">${PATH}</span>"</span></code></pre></div>
+<p>執行</p>
+<div><pre class="hljs"><code>     exodus htop | ssh www.libthomas.org
+    Pseudo-terminal will not be allocated because stdin is not a terminal.
+    WARNING: Installing either the musl or diet C libraries will result <span class="hljs-keyword">in</span> more efficient launchers (currently using bash fallbacks instead).
+    Linux www <span class="hljs-number">5.10</span>.<span class="hljs-number">0</span>-<span class="hljs-number">5</span>-amd64 <span class="hljs-comment">#1 SMP Debian 5.10.26-1 (2021-03-27) x86_64</span>
+    
+    <span class="hljs-number">1</span> updates could not be installed automatically. For more details,
+    see <span class="hljs-regexp">/var/</span>log<span class="hljs-regexp">/unattended-upgrades/u</span>nattended-upgrades.log
+    
+    The programs included with the Debian GNU/Linux system are free software;
+    the exact distribution terms <span class="hljs-keyword">for</span> each program are described <span class="hljs-keyword">in</span> the
+    individual files <span class="hljs-keyword">in</span> <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/doc/</span>*/copyright.
+    
+    Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+    permitted by applicable law.
+    You have no mail.
+    Installing executable bundle <span class="hljs-keyword">in</span> <span class="hljs-string">"/home/thomas/.exodus"</span>...
+    Successfully installed, be sure to add <span class="hljs-regexp">/home/</span>thomas<span class="hljs-regexp">/.exodus/</span>bin to your <span class="hljs-variable">$PATH</span>.
+</code></pre></div>
+<p>執行</p>
+<div><pre class="hljs"><code>    .<span class="hljs-regexp">/.exodus/</span>bin/htop</code></pre></div>
+<p>看看細節：</p>
+<div><pre class="hljs"><code>    :~$ ls -l .<span class="hljs-regexp">/.exodus/</span>bin/htop 
+    lrwxrwxrwx <span class="hljs-number">1</span> thomas thomas <span class="hljs-number">88</span> <span class="hljs-number">12</span>月  <span class="hljs-number">6</span> <span class="hljs-number">10</span>:<span class="hljs-number">59</span> .<span class="hljs-regexp">/.exodus/</span>bin<span class="hljs-regexp">/htop -&gt; ../</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop
+
+    :~$ <span class="hljs-keyword">file</span> .<span class="hljs-regexp">/.exodus/</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop 
+    .<span class="hljs-regexp">/.exodus/</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop: Bourne-Again shell script, ASCII text executable
+    :~$ cat  .<span class="hljs-regexp">/.exodus/</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop 
+
+    #! <span class="hljs-regexp">/bin/</span>bash
+    
+    current_directory=<span class="hljs-string">"$(dirname "</span>$(readlink -f <span class="hljs-string">"$0"</span>)<span class="hljs-string">")"</span>
+    executable=<span class="hljs-string">"${current_directory}/./htop-x"</span>
+    library_path=<span class="hljs-string">"../../lib64:../lib64:../../lib:../lib:../../lib32:../lib32:../../lib/x86_64-linux-gnu"</span>
+    library_path=<span class="hljs-string">"${current_directory}/${library_path//:/:${current_directory}/}"</span>
+    linker=<span class="hljs-string">"${current_directory}/./linker-1050e7bea7968d23eafee3fa70a34533523e3bb1159e5a424802b5e8b42688f1"</span>
+    <span class="hljs-keyword">if</span> [ <span class="hljs-string">"true"</span> == <span class="hljs-string">"true"</span> ]; then
+        exec <span class="hljs-string">"${linker}"</span> --library-path <span class="hljs-string">"${library_path}"</span> --inhibit-rpath <span class="hljs-string">""</span> <span class="hljs-string">"${executable}"</span> <span class="hljs-string">"$@"</span>
+    <span class="hljs-keyword">else</span>
+        exec <span class="hljs-string">"${linker}"</span> --library-path <span class="hljs-string">"${library_path}"</span> <span class="hljs-string">"${executable}"</span> <span class="hljs-string">"$@"</span>
+    fi
+</code></pre></div>
+<p>就是把linker+library+binary 放在一起跑！可以手動自己維護，但是有工具幫忙 why not?!</p>
+<p>reference: <a title="https://github.com/intoli/exodus" href="https://github.com/intoli/exodus">https://github.com/intoli/exodus</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
