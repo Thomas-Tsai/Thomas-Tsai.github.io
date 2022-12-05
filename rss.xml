@@ -1,32 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0">
     <channel>
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 29 Nov 2022 02:58:35 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 05 Dec 2022 14:58:34 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
-        <item>
-            <title><![CDATA[2022_04_06_110200]]></title>
-            <guid>5eb8251fc5cf4502bb17dff1d1e89c0f</guid>
-            <pubDate>Wed, 06 Apr 2022 03:24:09 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: Zotero 同步設定
-Tags: Linux
-Date: 2022/04/06 11:02
-Category: calendar
-Slug: calendar/2022/04/06/11/02
-Author: ThomasTsai
-Summary: 設定 Zotero 的同步功能</p>
-<p>什麼事Zotero <a title="https://zh.wikipedia.org/wiki/Zotero" href="https://zh.wikipedia.org/wiki/Zotero">這邊</a>已經有說明了。就直接用吧！</p>
-<p>我的OS是Ubuntu mint 20，安裝 Zotero 直接用 <a title="https://github.com/retorquere/zotero-deb" href="https://github.com/retorquere/zotero-deb">zotero-deb</a> 比較好管理。</p>
-<div><pre class="hljs"><code>wget -qO- https:<span class="hljs-regexp">//</span>raw.githubusercontent.com<span class="hljs-regexp">/retorquere/</span>zotero-deb<span class="hljs-regexp">/master/i</span>nstall.sh | sudo bash
-sudo apt update
-sudo apt install zotero</code></pre></div>
-<p>安裝好之後，建立帳號(略)，設定同步</p>
-<p><img src="/_resources/5c6e9fd20ebb412eaf4045517b9f210c.png" /></p>
-<p>完工！</p>
-]]></content:encoded>
-        </item>
     </channel>
 </rss>
