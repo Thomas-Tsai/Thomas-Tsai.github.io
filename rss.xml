@@ -4,9 +4,68 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Mon, 05 Dec 2022 15:00:42 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 08 Dec 2022 07:21:14 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[aboutme]]></title>
+            <guid>68817990acc944cf81c6d5f77cb2d6fe</guid>
+            <pubDate>Thu, 08 Dec 2022 04:05:53 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="biography">Biography</h1>
+<pre><code>Thomas Tsai is a developer and associate researcher in Free Software Lab at National Center for High-Performance Computing, Taiwan. The Free Software Lab is focused on developing free software that can be used in the field of High Performance Computing (HPC). He wrote partclone which is tool to make partition as image with GPL license. With Steven Hsiau, Ceasar Sun, and Jazz Wang, we developed other free software "DRBL" and "Clonezilla". He is main developer of "Tuxboot" and "PyDRBL", the sub project of DRBL. Member of koha taiwan community, help libraries use the open source library system. Thomas will keep develop free software and promote everyone enjoy GNU/Linux.
+
+In November 2007, he won the public sector software award at the International Free Software Contest, Soissons, France. In 2008, he was recognized for his outstanding contribution in science and technology by the Executive Yuan, Taiwan.
+
+He focuses on middleware and free software research for high performance computing (HPC) and is a core developer of Partclone, a tool for saving file systems on a partition as an image or cloning the file system to another disk. His recent research has examined streaming data and AI framework integration systems, and he is also in charge of DAS, a data analysis platform in NCHC.
+
+All Thomas joined projects:
+</code></pre>
+<ul>
+<li><a title="DRBL" href="http://drbl.org">DRBL</a> – Diskless Remote Boot in Linux</li>
+<li><a title="Clonezilla" href="http://clonezilla.org">Clonezilla</a> – A free software disaster recovery, disk cloning and deployment solution.</li>
+<li><a title="Partclone" href="http://partclone.org">Partclone</a> – Tool to make partition as image with GPL license.</li>
+<li><a title="PyDRBL" href="http://pydrbl.nchc.org.tw">PyDRBL</a> – DRBL GUI</li>
+<li><a title="Tuxboot" href="http://tuxboot.org">Tuxboot</a> – The advanced clonezilla_live usb creator modify from Unetbootin</li>
+<li><a title="KOHA" href="http://koha-tw.org">KOHA</a> – An open source library system.</li>
+<li><a title="Cloudboot" href="http://cloudboot.org">Cloudboot</a> - Cloudboot is a service that allows a PC to boot from cloud resources.</li>
+</ul>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[cdown/tzupdate: Set the system timezone based on IP geolocation]]></title>
+            <guid>2a5afbd754aa4738b3b6639b83a8a88f</guid>
+            <pubDate>Thu, 08 Dec 2022 03:07:23 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Title: tzupdate 用 IP geolocation 幫忙設定時間
+Tags: Linux
+Date: 2022/12/08 11:09
+Category: calendar
+Author: ThomasTsai
+Summary: 安裝與設定 tzupdate</p>
+<p>非常簡單：</p>
+<div><pre class="hljs"><code><span class="hljs-variable">$ </span>pip install -U tzupdate
+<span class="hljs-variable">$ </span>tzupdate -p
+Asia/Taipei</code></pre></div>
+<p>就完成了...</p>
+<p>reference: <a title="https://github.com/cdown/tzupdate" href="https://github.com/cdown/tzupdate">https://github.com/cdown/tzupdate</a></p>
+<p>tzupdate is a fully automated utility to set the system time using geolocation.</p>
+<p><a id="user-content-usage" class="jop-noMdConv"></a></p>
+<h2 id="usage">Usage</h2>
+<p>$ sudo tzupdate
+Set system timezone to Europe/London.</p>
+<p>Internally, this geolocates you, gets the timezone for that geolocation, and then updates the system's local time zone.</p>
+<p>You can also see what tzupdate would do without actually doing it by passing <code>-p</code>, and specify an alternative IP address by using <code>-a</code>. This is not an exhaustive list of options, see <code>tzupdate --help</code> for that.</p>
+<p><a id="user-content-installation" class="jop-noMdConv"></a></p>
+<h2 id="installation">Installation</h2>
+<p>To install the latest stable version from PyPi (recommended):</p>
+<p>$ pip install -U tzupdate</p>
+<p>To install the latest development code from GitHub:</p>
+<p>$ pip install -U git+https://github.com/cdown/tzupdate.git@develop</p>
+<p><a id="user-content-testing" class="jop-noMdConv"></a></p>
+<h2 id="testing">Testing</h2>
+<p>$ tox
+Ran 18 tests in 1.109s</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Zotero 同步設定]]></title>
             <guid>5eb8251fc5cf4502bb17dff1d1e89c0f</guid>

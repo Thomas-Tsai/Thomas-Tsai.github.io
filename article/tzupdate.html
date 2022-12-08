@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>cdown/tzupdate: Set the system timezone based on IP geolocation - Thomas Notes</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">Thomas Notes</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">cdown/tzupdate: Set the system timezone based on IP geolocation</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1670468843789"
+                  >2022-12-08 11:07</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1670469067567"
+                  >2022-12-08 11:11</time
+                ></span
+              >
+            </div>
+            
+            <div>
+              Keywords: 
+              <span class="keyword">linux</span>
+              
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>Title: tzupdate 用 IP geolocation 幫忙設定時間
+Tags: Linux
+Date: 2022/12/08 11:09
+Category: calendar
+Author: ThomasTsai
+Summary: 安裝與設定 tzupdate</p>
+<p>非常簡單：</p>
+<div><pre class="hljs"><code><span class="hljs-variable">$ </span>pip install -U tzupdate
+<span class="hljs-variable">$ </span>tzupdate -p
+Asia/Taipei</code></pre></div>
+<p>就完成了...</p>
+<p>reference: <a title="https://github.com/cdown/tzupdate" href="https://github.com/cdown/tzupdate">https://github.com/cdown/tzupdate</a></p>
+<p>tzupdate is a fully automated utility to set the system time using geolocation.</p>
+<p><a id="user-content-usage" class="jop-noMdConv"></a></p>
+<h2 id="usage">Usage</h2>
+<p>$ sudo tzupdate
+Set system timezone to Europe/London.</p>
+<p>Internally, this geolocates you, gets the timezone for that geolocation, and then updates the system's local time zone.</p>
+<p>You can also see what tzupdate would do without actually doing it by passing <code>-p</code>, and specify an alternative IP address by using <code>-a</code>. This is not an exhaustive list of options, see <code>tzupdate --help</code> for that.</p>
+<p><a id="user-content-installation" class="jop-noMdConv"></a></p>
+<h2 id="installation">Installation</h2>
+<p>To install the latest stable version from PyPi (recommended):</p>
+<p>$ pip install -U tzupdate</p>
+<p>To install the latest development code from GitHub:</p>
+<p>$ pip install -U git+https://github.com/cdown/tzupdate.git@develop</p>
+<p><a id="user-content-testing" class="jop-noMdConv"></a></p>
+<h2 id="testing">Testing</h2>
+<p>$ tox
+Ran 18 tests in 1.109s</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
