@@ -363,7 +363,7 @@ template {
 .homepage-main {
   margin: 0 auto;
   position: relative;
-  top: 5%;
+  top: 30%;
   font-weight: normal;
   margin: 0 0 10px;
 }
@@ -388,18 +388,10 @@ template {
 }
 
 .homepage-subtitle {
-  font-size: 18px;
+  font-size: 12px;
   font-family: 'Lucida Console', 'Liberation Mono', Menlo, Monaco, Roboto, apple-system,
     'Helvetica Neue', Arial, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'WenQuanYi Micro Hei', sans-serif;
-}
-
-.homepage-body {
-  font-size: 12px; 
-  font-family: 'Lucida Console', 'Liberation Mono', Menlo, Monaco, Roboto, apple-system,
-    'Helvetica Neue', Arial, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'WenQuanYi Micro Hei', sans-serif;
-  margin: 0 0 10px;
 }
 
 .homepage-navigation ul {
