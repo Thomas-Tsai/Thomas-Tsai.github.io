@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>寬銀幕之下應用WMCTRL控制視窗 - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">寬銀幕之下應用WMCTRL控制視窗</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1670550460979"
+                  >2022-12-09 09:47</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1670551465025"
+                  >2022-12-09 10:04</time
+                ></span
+              >
+            </div>
+            
+            <div>
+              Keywords: 
+              <span class="keyword">linux</span>
+              
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h2 id="寬銀幕之下應用wmctrl控制視窗">寬銀幕之下應用WMCTRL控制視窗</h2>
+<p>最近入手了21:9高解析寬銀幕整體不錯但是，有個痛點，就是太寬。</p>
+<p>視窗放大之後無寬，大部份狀況不習慣阿，自己調整之後，視窗layout最好是：</p>
+<ul>
+<li>常用的左邊，比例約70%</li>
+<li>不常用但需要注意的右邊，比例約30%</li>
+</ul>
+<p>Linux Mint 指令 有快捷鍵，ALT+up/down/left/right ，但是比例一般都是50%。</p>
+<p>搜尋一下之後，看到 WMCTRL 不錯用，可以參考這兩篇用法(<a title="https://www.twblogs.net/a/5e5365e2bd9eee2117c3e824" href="https://www.twblogs.net/a/5e5365e2bd9eee2117c3e824">控制窗口應用範例</a>、<a title="https://ephrain.net/linux-%E4%BD%BF%E7%94%A8-wmctrl-%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%88%97%E5%87%BA%E7%8F%BE%E6%9C%89%E7%9A%84%E8%A6%96%E7%AA%97%E4%B8%A6%E9%97%9C%E9%96%89/" href="https://ephrain.net/linux-%E4%BD%BF%E7%94%A8-wmctrl-%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%88%97%E5%87%BA%E7%8F%BE%E6%9C%89%E7%9A%84%E8%A6%96%E7%AA%97%E4%B8%A6%E9%97%9C%E9%96%89/">[Linux] 使用 wmctrl 指令，列出現有的視窗並關閉</a>)，或是 <a title="https://linux.die.net/man/1/wmctrl" href="https://linux.die.net/man/1/wmctrl">WMCTRL MAN PAGE</a>。</p>
+<p>share 一下我的腳本：</p>
+<p>two-thirds-app.sh:</p>
+<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+current_active_window=$(xprop -id $(xprop -root 32x <span class="hljs-string">'\t$0'</span> _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME|sed s/.*=\ //g|sed s/\"//g)
+wmctrl -r <span class="hljs-variable">$current_active_window</span>  -e <span class="hljs-string">"0,0,0,2200,1440"</span></code></pre></div>
+<p>one-thirds-app.sh</p>
+<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+current_active_window=$(xprop -id $(xprop -root 32x <span class="hljs-string">'\t$0'</span> _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME|sed s/.*=\ //g|sed s/\"//g)
+wmctrl -r <span class="hljs-variable">$current_active_window</span>  -e <span class="hljs-string">"0,2200,0,1240,1440"</span>
+</code></pre></div>
+<p>上述可以將 active 視窗，依指令上的數字調整大小。這邊寫死，懶得寫成自動。</p>
+<p>再用 mint 介面增加 custom shortcuts
+<img src="/_resources/4edd857d59a74659836eddffb9093f6d.png" /></p>
+<p>然後，就可以愉快的讓視窗layout符合習慣使用！</p>
+<p>最後，又寫了一個自動調整所以常用視窗的layout如下：</p>
+<div><pre class="hljs"><code>#!/bin/bash
+### <span class="hljs-keyword">help</span> to get current <span class="hljs-keyword">app</span>, location and size
+## wmctrl -<span class="hljs-keyword">Gl</span> |awk '{<span class="hljs-keyword">print</span> <span class="hljs-variable">$8</span>,<span class="hljs-variable">$2</span>,<span class="hljs-variable">$3</span>,<span class="hljs-variable">$4</span>,<span class="hljs-variable">$5</span>,<span class="hljs-variable">$6}</span>'|sed -<span class="hljs-keyword">e</span> <span class="hljs-string">"s/ /,/g"</span>
+## wmctrl -<span class="hljs-keyword">Gl</span> |awk '{printf <span class="hljs-string">"wmctrl -r \"</span>%s\<span class="hljs-string">" -e \"</span>%s,%s,%s,%s,%s\<span class="hljs-string">"\n"</span>,<span class="hljs-variable">$8</span>,<span class="hljs-variable">$2</span>,<span class="hljs-variable">$3</span>,<span class="hljs-variable">$4</span>,<span class="hljs-variable">$5</span>,<span class="hljs-variable">$6</span>;}'
+
+## setting current <span class="hljs-keyword">app</span>, location and size
+wmctrl -r <span class="hljs-string">"LINE"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2465,0,984,1300"</span>
+wmctrl -r <span class="hljs-string">"Skype"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2394,100,1055,1334"</span>
+wmctrl -r <span class="hljs-string">"Messenger"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2297,110,1152,1250"</span>
+wmctrl -r <span class="hljs-string">"Caprine"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2297,110,1152,1250"</span>
+wmctrl -r <span class="hljs-string">"Telegram"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2212,200,1237,1235"</span>
+wmctrl -r <span class="hljs-string">"Mattermost"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2127,250,1322,1181"</span>
+wmctrl -r <span class="hljs-string">"Slack"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2021,300,1428,1125"</span>
+
+wmctrl -a <span class="hljs-string">"Mattermost"</span>
+wmctrl -a <span class="hljs-string">"Telegram"</span>
+wmctrl -a <span class="hljs-string">"Slack"</span>
+wmctrl -a <span class="hljs-string">"Messenger"</span>
+wmctrl -a <span class="hljs-string">"Caprine"</span>
+wmctrl -a <span class="hljs-string">"Skype"</span>
+wmctrl -a <span class="hljs-string">"LINE"</span></code></pre></div>
+<p>這樣可以把指定的應用程式排列整齊。</p>
+<p>歐 之前其實有用過 xtile 之類的工具，但是，總是找錯視窗，大小搞亂之類的，有點可惜。</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
