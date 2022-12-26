@@ -4,9 +4,88 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Fri, 09 Dec 2022 02:06:54 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 26 Dec 2022 04:57:45 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[Miniflux]]></title>
+            <guid>732d631202134541a2ed5a574ed77a2e</guid>
+            <pubDate>Mon, 26 Dec 2022 04:29:03 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Title: Miniflux
+Date: 2022/12/26
+Tags: linux
+Category: calendar
+Author: ThomasTsai
+Summary: TT-RSS 替代版</p>
+<h1 id="mingflux">MINGFLUX</h1>
+<p><code>Miniflux is a minimalist and opinionated feed reader.</code></p>
+<p>TT-RSS 一直是我 rss 閱讀器首選，可以自己架設再自己的伺服器，十分方便，安全。幾年之後，慢慢出現問題，TT-RSS 之前對 PHP 支援動作太慢，我 DEBIAN 一更新就會出問題。隨後，我就懶得去弄了，直到最近連資料重新init也跑步出來。官方也直接轉換到docker，不再支援 host 安裝的說明與維護，實在是無能為力阿。</p>
+<p>只好把 TT-RSS 換掉，，準備用線上版的 rss reader，突然看到 MINIFLUX，也是可以架設再自己的伺服器，看了一下release log 也滿積極的，所幸把rss 匯出成 opml ，再從頭架設 MINIFLUX，rss opml 匯入、閱讀文章也沒有問和問題！</p>
+<p>以下安裝步驟</p>
+<h2 id="database-configuration">Database Configuration</h2>
+<div><pre class="hljs"><code>sudo apt-<span class="hljs-keyword">get</span> install postgresql<span class="hljs-number">-13</span>
+
+# Switch <span class="hljs-keyword">to</span> the postgres <span class="hljs-keyword">user</span>
+$ sudo su - postgres
+
+# <span class="hljs-keyword">Create</span> a <span class="hljs-keyword">database</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">for</span> Miniflux
+$ createuser -P miniflux
+Enter <span class="hljs-keyword">password</span> <span class="hljs-keyword">for</span> <span class="hljs-built_in">new</span> <span class="hljs-keyword">role</span>: ******
+Enter it again: ******
+
+# <span class="hljs-keyword">Create</span> a <span class="hljs-keyword">database</span> <span class="hljs-keyword">for</span> miniflux that belongs <span class="hljs-keyword">to</span> our <span class="hljs-keyword">user</span>
+$ <span class="hljs-keyword">createdb</span> -O miniflux miniflux
+
+# <span class="hljs-keyword">Create</span> the <span class="hljs-keyword">extension</span> hstore <span class="hljs-keyword">as</span> <span class="hljs-keyword">superuser</span>
+$ psql miniflux -c <span class="hljs-string">'create extension hstore'</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">EXTENSION</span></code></pre></div>
+<h2 id="installing-miniflux">Installing Miniflux</h2>
+<div><pre class="hljs"><code>echo <span class="hljs-string">"deb [trusted=yes] https://repo.miniflux.app/apt/ /"</span> | sudo tee /etc/apt/sources.list.d/miniflux.list &gt; /dev/<span class="hljs-literal">null</span>
+sudo apt-<span class="hljs-built_in">get</span> update
+sudo apt-<span class="hljs-built_in">get</span> install miniflux
+<span class="hljs-built_in">EXPORT</span>  <span class="hljs-attribute">DATABASE_URL</span>=<span class="hljs-string">"postgres://miniflux:xxxxxxxx@localhost/miniflux?sslmode=disable"</span>
+miniflux -migrate</code></pre></div>
+<h2 id="update-configuration">update configuration</h2>
+<p>因為我主機8080被用掉了，所以凱8081</p>
+<p>BASE_URL 也是因為我需要用apache2 proxy 所以一定要設定</p>
+<p>vi /etc/miniflux.conf</p>
+<div><pre class="hljs"><code><span class="hljs-comment"># See https://miniflux.app/docs/configuration.html</span>
+
+<span class="hljs-attr">RUN_MIGRATIONS</span>=<span class="hljs-number">1</span>
+<span class="hljs-attr">LISTEN_ADDR</span>=<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">8081</span>
+<span class="hljs-attr">BASE_URL</span>=https://www.mydomain.org/rss/
+<span class="hljs-attr">DATABASE_URL</span>=<span class="hljs-string">"postgres://miniflux:xxxxxxxx@localhost/miniflux?sslmode=disable"</span></code></pre></div>
+<p>重新啟動看看</p>
+<div><pre class="hljs"><code>systemctl <span class="hljs-built_in">restart</span> miniflux.service
+systemctl <span class="hljs-built_in">status</span> miniflux.service</code></pre></div>
+<p>ps: 如果有錯，可以設定環境變數後 手動直接跑miniflux 錯誤會丟到stderr 然後開始除錯。</p>
+<h2 id="apache2-reverse-proxy-mode">Apache2 reverse proxy mode</h2>
+<p>先 enable proxy</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">a2enmod</span> proxy
+a2enmod proxy_http</code></pre></div>
+<p>設定 site (我是放 virtual_host內)</p>
+<div><pre class="hljs"><code>       <span class="hljs-attribute">ProxyRequests</span> <span class="hljs-literal">Off</span>
+       <span class="hljs-section">&lt;Proxy *&gt;</span>
+           <span class="hljs-attribute">Order</span> <span class="hljs-literal">allow</span>,<span class="hljs-literal">deny</span>
+           <span class="hljs-attribute">Allow</span> from <span class="hljs-literal">all</span>
+       <span class="hljs-section">&lt;/Proxy&gt;</span>
+       
+       <span class="hljs-section">&lt;Location <span class="hljs-string">"/rss/"</span>&gt;</span>
+           <span class="hljs-attribute">ProxyPreserveHost</span> <span class="hljs-literal">On</span>
+           <span class="hljs-attribute">ProxyPass</span> http://<span class="hljs-number">127.0.0.1:8081</span>/rss/
+           <span class="hljs-attribute">ProxyPassReverse</span> http://<span class="hljs-number">127.0.0.1:8081</span>/rss/
+       <span class="hljs-section">&lt;/Location&gt;</span> 
+    <span class="hljs-section">&lt;/VirtualHost&gt;</span>
+</code></pre></div>
+<p>存檔之後restart apache2 <code>systemctl restart apache2.service</code>，直接瀏覽看看：</p>
+<p>curl <a title="http://www.mydomain.org/rss/" href="http://www.mydomain.org/rss/">http://www.mydomain.org/rss/</a></p>
+<p>登入後匯入rss，正常用！好用，分享紀錄起來！</p>
+<p>reference:
+<a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a>
+<a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a>
+<a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[寬銀幕之下應用WMCTRL控制視窗]]></title>
             <guid>e6a6e7ff40c1462681857bf63a8d86d3</guid>
