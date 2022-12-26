@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Mon, 26 Dec 2022 05:01:22 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 26 Dec 2022 05:03:12 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -80,10 +80,12 @@ a2enmod proxy_http</code></pre></div>
 <p>存檔之後restart apache2 <code>systemctl restart apache2.service</code>，直接瀏覽看看：</p>
 <p>curl <a title="http://www.mydomain.org/rss/" href="http://www.mydomain.org/rss/">http://www.mydomain.org/rss/</a></p>
 <p>登入後匯入rss，正常用！好用，分享紀錄起來！</p>
-<p>reference:
-<a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a>
-<a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a>
-<a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></p>
+<p>reference:</p>
+<ul>
+<li><a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a></li>
+<li><a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a></li>
+<li><a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></li>
+</ul>
 ]]></content:encoded>
         </item>
         <item>
