@@ -38,22 +38,22 @@
             
           </div>
         </header>
-        <div class="article-content markdown-body"><p>Title: tzupdate 用 IP geolocation 幫忙設定時間
-Tags: Linux
-Date: 2022/12/08 11:09
-Category: calendar
-Author: ThomasTsai
+        <div class="article-content markdown-body"><p>Title: tzupdate 用 IP geolocation 幫忙設定時間<br />
+Tags: Linux<br />
+Date: 2022/12/08 11:09<br />
+Category: calendar<br />
+Author: ThomasTsai<br />
 Summary: 安裝與設定 tzupdate</p>
 <p>非常簡單：</p>
 <div><pre class="hljs"><code><span class="hljs-variable">$ </span>pip install -U tzupdate
 <span class="hljs-variable">$ </span>tzupdate -p
 Asia/Taipei</code></pre></div>
 <p>就完成了...</p>
-<p>reference: <a title="https://github.com/cdown/tzupdate" href="https://github.com/cdown/tzupdate">https://github.com/cdown/tzupdate</a></p>
+<p>reference: https://github.com/cdown/tzupdate</p>
 <p>tzupdate is a fully automated utility to set the system time using geolocation.</p>
 <p><a id="user-content-usage" class="jop-noMdConv"></a></p>
 <h2 id="usage">Usage</h2>
-<p>$ sudo tzupdate
+<p>$ sudo tzupdate<br />
 Set system timezone to Europe/London.</p>
 <p>Internally, this geolocates you, gets the timezone for that geolocation, and then updates the system's local time zone.</p>
 <p>You can also see what tzupdate would do without actually doing it by passing <code>-p</code>, and specify an alternative IP address by using <code>-a</code>. This is not an exhaustive list of options, see <code>tzupdate --help</code> for that.</p>
@@ -65,7 +65,7 @@ Set system timezone to Europe/London.</p>
 <p>$ pip install -U git+https://github.com/cdown/tzupdate.git@develop</p>
 <p><a id="user-content-testing" class="jop-noMdConv"></a></p>
 <h2 id="testing">Testing</h2>
-<p>$ tox
+<p>$ tox<br />
 Ran 18 tests in 1.109s</p>
 </div>
       </article>

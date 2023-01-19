@@ -4,18 +4,90 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Mon, 26 Dec 2022 05:03:12 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 19 Jan 2023 03:15:46 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[Google Photo Syunc]]></title>
+            <guid>eb2dc2accca641d0a2fd3be3a2de1356</guid>
+            <pubDate>Thu, 19 Jan 2023 02:45:38 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Title: Google Photo Sync<br />
+Date: 2022/12/26<br />
+Tags: linux<br />
+Category: calendar<br />
+Author: ThomasTsai<br />
+Summary: sync photo from google photo service</p>
+<h1 id="google-photo-syuc">Google Photo Syuc</h1>
+<p>我手機上的照片都統以sync到google photo去了，被綁架！總之，就先這樣，但是我local還想要keep一份，避免被綁架走不了。所以就找到一個 <a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">gphotos-sync</a> 的工具，可以協助我 Linux 上進行自動備份照片。以下步驟來自<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">部落格</a>(我用debian+bash)：</p>
+<div><pre class="hljs"><code>sudo apt install <span class="hljs-keyword">python3</span>-pip
+<span class="hljs-keyword">echo</span> <span class="hljs-string">"export PATH=\"\$PATH:\$HOME/.local/bin\""</span> &gt;&gt; ~/.bashrc
+<span class="hljs-keyword">python3</span> -<span class="hljs-keyword">m</span> pip install pipenv
+<span class="hljs-built_in">mkdir</span> ~/gphotos-<span class="hljs-keyword">sync</span>
+<span class="hljs-keyword">cd</span> ~/gphotos-<span class="hljs-keyword">sync</span>
+pipenv install gphotos-<span class="hljs-keyword">sync</span>
+pipenv run gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
+<p>and then, 最麻煩就是要到 google 那邊拿 api token</p>
+<ol>
+<li>
+<p>到 <a title="https://console.cloud.google.com/cloud-resource-manager" href="https://console.cloud.google.com/cloud-resource-manager">google cloud</a> 建立專案<br />
+<img src="/_resources/039ff7b7ceb041cfadd5e5b97ef6b114.png" /></p>
+</li>
+<li>
+<p>到 api 清單啟用 photo api ，先到網址： https://console.cloud.google.com/apis/library?project=_ ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
+<img src="/_resources/a80696a40d674a22b2930ae68c92d2d5.png" /><br />
+reference:<br />
+https://github.com/gilesknap/gphotos-sync<br />
+https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</p>
+</li>
+<li>
+<p>再到  <a title="https://console.cloud.google.com/" href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 產生token。左上角下拉式選單選好project，然後左側的導覽選單找"api和服務" 內的 "憑證"<br />
+<img src="/_resources/617336c7f71141ccbd83ac04cc5c874b.png" /></p>
+</li>
+<li>
+<p>新增憑證，要新增 oauth 2.0<br />
+新增憑證的時候選電腦版應用程式<br />
+<img src="/_resources/322b35a0cce045c6a4c29fd9a087d131.png" /></p>
+</li>
+</ol>
+<p><img src="/_resources/a052fd43c744479dbfe2c760912cf47c.png" /></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on https://support.google.com/cloud/answer/6158849</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>然後下載憑證到</p>
+<div><pre class="hljs"><code>~<span class="hljs-regexp">/.config/g</span>photos-sync/</code></pre></div>
+<p>執行同步看看</p>
+<div><pre class="hljs"><code><span class="hljs-keyword">cd</span> gphotos-<span class="hljs-keyword">sync</span>
+pipenv run gphotos-<span class="hljs-keyword">sync</span> ~/gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
+<p>這樣就可以同步了！</p>
+<p>crontab 自動同步<br />
+寫一支腳本  <code>~/bin/gphotos-sync.sh</code></p>
+<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-string">"/home/thomas/.local/bin:<span class="hljs-variable">$PATH</span>"</span>
+<span class="hljs-built_in">pushd</span> /home/thomas/gphotos-sync
+pipenv run gphotos-sync ~/gphotos-sync
+<span class="hljs-built_in">popd</span></code></pre></div>
+<p>編輯並加入 <code>$ crontab -e</code></p>
+<div><pre class="hljs"><code><span class="hljs-symbol">17 </span><span class="hljs-number">16</span> * * * /home/thomas/bin/gphotos-sync.sh</code></pre></div>
+<p>看起來都有好好的同步！</p>
+<p><img src="/_resources/4ca38828e9544adcb87524b2dcc2a1fe.png" /></p>
+<p>refererence:<br />
+https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html<br />
+https://github.com/gilesknap/gphotos-sync</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Miniflux]]></title>
             <guid>732d631202134541a2ed5a574ed77a2e</guid>
             <pubDate>Mon, 26 Dec 2022 04:29:03 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: Miniflux
-Date: 2022/12/26
-Tags: linux
-Category: calendar
-Author: ThomasTsai
+            <content:encoded><![CDATA[<p>Title: Miniflux<br />
+Date: 2022/12/26<br />
+Tags: linux<br />
+Category: calendar<br />
+Author: ThomasTsai<br />
 Summary: TT-RSS 替代版</p>
 <h1 id="mingflux">MINGFLUX</h1>
 <p><code>Miniflux is a minimalist and opinionated feed reader.</code></p>
@@ -78,13 +150,13 @@ a2enmod proxy_http</code></pre></div>
     <span class="hljs-section">&lt;/VirtualHost&gt;</span>
 </code></pre></div>
 <p>存檔之後restart apache2 <code>systemctl restart apache2.service</code>，直接瀏覽看看：</p>
-<p>curl <a title="http://www.mydomain.org/rss/" href="http://www.mydomain.org/rss/">http://www.mydomain.org/rss/</a></p>
+<p>curl http://www.mydomain.org/rss/</p>
 <p>登入後匯入rss，正常用！好用，分享紀錄起來！</p>
 <p>reference:</p>
 <ul>
-<li><a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a></li>
-<li><a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a></li>
-<li><a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></li>
+<li>https://miniflux.app/</li>
+<li>https://miniflux.app/docs/installation.html#debian</li>
+<li>https://miniflux.app/docs/howto.html#reverse-proxy</li>
 </ul>
 ]]></content:encoded>
         </item>
@@ -112,7 +184,7 @@ current_active_window=$(xprop -id $(xprop -root 32x <span class="hljs-string">'\
 wmctrl -r <span class="hljs-variable">$current_active_window</span>  -e <span class="hljs-string">"0,2200,0,1240,1440"</span>
 </code></pre></div>
 <p>上述可以將 active 視窗，依指令上的數字調整大小。這邊寫死，懶得寫成自動。</p>
-<p>再用 mint 介面增加 custom shortcuts
+<p>再用 mint 介面增加 custom shortcuts<br />
 <img src="/_resources/4edd857d59a74659836eddffb9093f6d.png" /></p>
 <p>然後，就可以愉快的讓視窗layout符合習慣使用！</p>
 <p>最後，又寫了一個自動調整所以常用視窗的layout如下：</p>
@@ -145,22 +217,22 @@ wmctrl -a <span class="hljs-string">"LINE"</span></code></pre></div>
             <title><![CDATA[cdown/tzupdate: Set the system timezone based on IP geolocation]]></title>
             <guid>2a5afbd754aa4738b3b6639b83a8a88f</guid>
             <pubDate>Thu, 08 Dec 2022 03:07:23 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: tzupdate 用 IP geolocation 幫忙設定時間
-Tags: Linux
-Date: 2022/12/08 11:09
-Category: calendar
-Author: ThomasTsai
+            <content:encoded><![CDATA[<p>Title: tzupdate 用 IP geolocation 幫忙設定時間<br />
+Tags: Linux<br />
+Date: 2022/12/08 11:09<br />
+Category: calendar<br />
+Author: ThomasTsai<br />
 Summary: 安裝與設定 tzupdate</p>
 <p>非常簡單：</p>
 <div><pre class="hljs"><code><span class="hljs-variable">$ </span>pip install -U tzupdate
 <span class="hljs-variable">$ </span>tzupdate -p
 Asia/Taipei</code></pre></div>
 <p>就完成了...</p>
-<p>reference: <a title="https://github.com/cdown/tzupdate" href="https://github.com/cdown/tzupdate">https://github.com/cdown/tzupdate</a></p>
+<p>reference: https://github.com/cdown/tzupdate</p>
 <p>tzupdate is a fully automated utility to set the system time using geolocation.</p>
 <p><a id="user-content-usage" class="jop-noMdConv"></a></p>
 <h2 id="usage">Usage</h2>
-<p>$ sudo tzupdate
+<p>$ sudo tzupdate<br />
 Set system timezone to Europe/London.</p>
 <p>Internally, this geolocates you, gets the timezone for that geolocation, and then updates the system's local time zone.</p>
 <p>You can also see what tzupdate would do without actually doing it by passing <code>-p</code>, and specify an alternative IP address by using <code>-a</code>. This is not an exhaustive list of options, see <code>tzupdate --help</code> for that.</p>
@@ -172,7 +244,7 @@ Set system timezone to Europe/London.</p>
 <p>$ pip install -U git+https://github.com/cdown/tzupdate.git@develop</p>
 <p><a id="user-content-testing" class="jop-noMdConv"></a></p>
 <h2 id="testing">Testing</h2>
-<p>$ tox
+<p>$ tox<br />
 Ran 18 tests in 1.109s</p>
 ]]></content:encoded>
         </item>
@@ -180,12 +252,12 @@ Ran 18 tests in 1.109s</p>
             <title><![CDATA[Zotero 同步設定]]></title>
             <guid>5eb8251fc5cf4502bb17dff1d1e89c0f</guid>
             <pubDate>Wed, 06 Apr 2022 03:24:09 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: Zotero 同步設定
-Tags: Linux
-Date: 2022/04/06 11:02
-Category: calendar
-Slug: calendar/2022/04/06/11/02
-Author: ThomasTsai
+            <content:encoded><![CDATA[<p>Title: Zotero 同步設定<br />
+Tags: Linux<br />
+Date: 2022/04/06 11:02<br />
+Category: calendar<br />
+Slug: calendar/2022/04/06/11/02<br />
+Author: ThomasTsai<br />
 Summary: 設定 Zotero 的同步功能</p>
 <p>什麼事Zotero <a title="https://zh.wikipedia.org/wiki/Zotero" href="https://zh.wikipedia.org/wiki/Zotero">這邊</a>已經有說明了。就直接用吧！</p>
 <p>我的OS是Ubuntu mint 20，安裝 Zotero 直接用 <a title="https://github.com/retorquere/zotero-deb" href="https://github.com/retorquere/zotero-deb">zotero-deb</a> 比較好管理。</p>
@@ -201,12 +273,12 @@ sudo apt install zotero</code></pre></div>
             <title><![CDATA[apt-get update --allow-releaseinfo-change]]></title>
             <guid>7c7671d7c69e43f193055406ec2be0eb</guid>
             <pubDate>Tue, 04 Jan 2022 02:38:05 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: apt-get update --allow-releaseinfo-change
-Tags: Linux
-Date: 2021/12/27 15:21
-Category: calendar
-Slug: calendar/2021/12/27/15/21
-Author: ThomasTsai
+            <content:encoded><![CDATA[<p>Title: apt-get update --allow-releaseinfo-change<br />
+Tags: Linux<br />
+Date: 2021/12/27 15:21<br />
+Category: calendar<br />
+Slug: calendar/2021/12/27/15/21<br />
+Author: ThomasTsai<br />
 Summary: 用 apt-get update --allow-releaseinfo-change 解決 InRelease' changed its 'Version' value from 'xxxx' to 'yyyy'</p>
 <p>遇到</p>
 <div><pre class="hljs"><code>apt-<span class="hljs-built_in">get</span> update
@@ -238,19 +310,19 @@ N: This must be accepted explicitly <span class="hljs-keyword">before</span> upd
 <p>apt-get update --allow-releaseinfo-change</p>
 <p>去進行更新，會有一次的 warning, 之後就正常！</p>
 <p>reference:</p>
-<p><a title="https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release" href="https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release">https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release</a></p>
+<p>https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release</p>
 ]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[有趣的專案 exodus]]></title>
             <guid>eb54aae80abc41449aa4cba101a6eb7a</guid>
             <pubDate>Mon, 06 Dec 2021 02:35:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: 有趣的專案 exodus
-Tags: Linux
-Date: 2021/12/06 10:35
-Category: calendar
-Slug: calendar/2021/12/06/10/35
-Author: ThomasTsai
+            <content:encoded><![CDATA[<p>Title: 有趣的專案 exodus<br />
+Tags: Linux<br />
+Date: 2021/12/06 10:35<br />
+Category: calendar<br />
+Slug: calendar/2021/12/06/10/35<br />
+Author: ThomasTsai<br />
 Summary: 特別適合以ELF為主的Binary應用程式移植</p>
 <p>使用場景主要是當你沒有 root 權限，但是需要一些 Linux Binary 應用程式，如果是 static 直接 copy 過去，架構符合就可以執行！但是如果是 Dynamic Binary 那就麻煩了！</p>
 <p>這時候你可以用 exodus 來快速的把應用程式移植到遠端你沒有root的電腦上跑！</p>
@@ -313,7 +385,7 @@ Summary: 特別適合以ELF為主的Binary應用程式移植</p>
     fi
 </code></pre></div>
 <p>就是把linker+library+binary 放在一起跑！可以手動自己維護，但是有工具幫忙 why not?!</p>
-<p>reference: <a title="https://github.com/intoli/exodus" href="https://github.com/intoli/exodus">https://github.com/intoli/exodus</a></p>
+<p>reference: https://github.com/intoli/exodus</p>
 ]]></content:encoded>
         </item>
     </channel>
