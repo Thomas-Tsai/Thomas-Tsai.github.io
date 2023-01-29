@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>天氣 - wttr.in - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">天氣 - wttr.in</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1674992803403"
+                  >2023-01-29 19:46</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1674993084980"
+                  >2023-01-29 19:51</time
+                ></span
+              >
+            </div>
+            
+            <div>
+              Keywords: 
+              <span class="keyword">curl</span>
+              
+              <span class="keyword">linux</span>
+              
+              <span class="keyword">bash</span>
+              
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>天氣</p>
+<p>自動判斷所在城市 <code>curl wttr.in/</code></p>
+<p>or 加上城市 <code>curl wttr.in/taipei</code></p>
+<p>跑出這樣</p>
+<div><pre class="hljs"><code>Weather report: hsinchu
+
+     \  /       Partly cloudy
+   _ /<span class="hljs-string">""</span>.-.     +<span class="hljs-number">15</span>(<span class="hljs-number">13</span>) °C     
+     \_(   ).   ↙ <span class="hljs-number">31</span> km/h      
+     /(___(__)  <span class="hljs-number">10</span> km          
+                <span class="hljs-number">0.0</span> mm         
+                                                       ┌─────────────┐                                                       
+┌──────────────────────────────┬───────────────────────┤  Sun <span class="hljs-number">29</span> Jan ├───────────────────────┬──────────────────────────────┐
+│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
+├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
+│      .-.      +<span class="hljs-number">13</span>(<span class="hljs-number">11</span>) °C     │      .-.      <span class="hljs-number">18</span> °C          │      .-.      <span class="hljs-number">16</span> °C          │      .-.      +<span class="hljs-number">13</span>(<span class="hljs-number">11</span>) °C     │
+│   ― (   ) ―   ↙ <span class="hljs-number">26</span>-<span class="hljs-number">30</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↓ 27-31 km/</span>h   │   ― (   ) ―   ↙ <span class="hljs-number">27</span>-<span class="hljs-number">31</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↙ 25-33 km/</span>h   │
+│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
+│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
+└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+                                                       ┌─────────────┐                                                       
+┌──────────────────────────────┬───────────────────────┤  Mon <span class="hljs-number">30</span> Jan ├───────────────────────┬──────────────────────────────┐
+│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
+├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
+│      .-.      <span class="hljs-number">16</span> °C          │      .-.      +<span class="hljs-number">22</span>(<span class="hljs-number">24</span>) °C     │      .-.      <span class="hljs-number">19</span> °C          │      .-.      +<span class="hljs-number">15</span>(<span class="hljs-number">14</span>) °C     │
+│   ― (   ) ―   ↙ <span class="hljs-number">24</span>-<span class="hljs-number">28</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↓ 27-31 km/</span>h   │   ― (   ) ―   ↙ <span class="hljs-number">27</span>-<span class="hljs-number">31</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↙ 21-29 km/</span>h   │
+│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
+│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
+└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+                                                       ┌─────────────┐                                                       
+┌──────────────────────────────┬───────────────────────┤  Tue <span class="hljs-number">31</span> Jan ├───────────────────────┬──────────────────────────────┐
+│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
+├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
+│      .-.      <span class="hljs-number">17</span> °C          │      .-.      <span class="hljs-number">21</span> °C          │      .-.      <span class="hljs-number">18</span> °C          │      .-.      <span class="hljs-number">16</span> °C          │
+│   ― (   ) ―   ↗ <span class="hljs-number">4</span>-<span class="hljs-number">5</span> km<span class="hljs-regexp">/h     │   ― (   ) ―   → 11-13 km/</span>h   │   ― (   ) ―   ↗ <span class="hljs-number">5</span>-<span class="hljs-number">6</span> km<span class="hljs-regexp">/h     │   ― (   ) ―   ↗ 3-4 km/</span>h     │
+│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
+│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
+└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+Location: 新竹市, 臺灣 [<span class="hljs-number">24.8066333</span>,<span class="hljs-number">120.9686833</span>]
+
+Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs-keyword">in</span> updates
+</code></pre></div>
+<p><img src="/_resources/a7bac0fb1bcb484690c949ab386f0045.png" /></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

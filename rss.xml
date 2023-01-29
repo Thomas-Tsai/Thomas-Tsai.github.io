@@ -4,9 +4,61 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Sat, 28 Jan 2023 09:20:41 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 29 Jan 2023 11:51:36 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[天氣 - wttr.in]]></title>
+            <guid>2dea8623554c4cd4a8078a21f2bc0fb9</guid>
+            <pubDate>Sun, 29 Jan 2023 11:46:43 GMT</pubDate>
+            <content:encoded><![CDATA[<p>天氣</p>
+<p>自動判斷所在城市 <code>curl wttr.in/</code></p>
+<p>or 加上城市 <code>curl wttr.in/taipei</code></p>
+<p>跑出這樣</p>
+<div><pre class="hljs"><code>Weather report: hsinchu
+
+     \  /       Partly cloudy
+   _ /<span class="hljs-string">""</span>.-.     +<span class="hljs-number">15</span>(<span class="hljs-number">13</span>) °C     
+     \_(   ).   ↙ <span class="hljs-number">31</span> km/h      
+     /(___(__)  <span class="hljs-number">10</span> km          
+                <span class="hljs-number">0.0</span> mm         
+                                                       ┌─────────────┐                                                       
+┌──────────────────────────────┬───────────────────────┤  Sun <span class="hljs-number">29</span> Jan ├───────────────────────┬──────────────────────────────┐
+│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
+├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
+│      .-.      +<span class="hljs-number">13</span>(<span class="hljs-number">11</span>) °C     │      .-.      <span class="hljs-number">18</span> °C          │      .-.      <span class="hljs-number">16</span> °C          │      .-.      +<span class="hljs-number">13</span>(<span class="hljs-number">11</span>) °C     │
+│   ― (   ) ―   ↙ <span class="hljs-number">26</span>-<span class="hljs-number">30</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↓ 27-31 km/</span>h   │   ― (   ) ―   ↙ <span class="hljs-number">27</span>-<span class="hljs-number">31</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↙ 25-33 km/</span>h   │
+│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
+│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
+└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+                                                       ┌─────────────┐                                                       
+┌──────────────────────────────┬───────────────────────┤  Mon <span class="hljs-number">30</span> Jan ├───────────────────────┬──────────────────────────────┐
+│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
+├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
+│      .-.      <span class="hljs-number">16</span> °C          │      .-.      +<span class="hljs-number">22</span>(<span class="hljs-number">24</span>) °C     │      .-.      <span class="hljs-number">19</span> °C          │      .-.      +<span class="hljs-number">15</span>(<span class="hljs-number">14</span>) °C     │
+│   ― (   ) ―   ↙ <span class="hljs-number">24</span>-<span class="hljs-number">28</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↓ 27-31 km/</span>h   │   ― (   ) ―   ↙ <span class="hljs-number">27</span>-<span class="hljs-number">31</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↙ 21-29 km/</span>h   │
+│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
+│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
+└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+                                                       ┌─────────────┐                                                       
+┌──────────────────────────────┬───────────────────────┤  Tue <span class="hljs-number">31</span> Jan ├───────────────────────┬──────────────────────────────┐
+│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
+├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
+│      .-.      <span class="hljs-number">17</span> °C          │      .-.      <span class="hljs-number">21</span> °C          │      .-.      <span class="hljs-number">18</span> °C          │      .-.      <span class="hljs-number">16</span> °C          │
+│   ― (   ) ―   ↗ <span class="hljs-number">4</span>-<span class="hljs-number">5</span> km<span class="hljs-regexp">/h     │   ― (   ) ―   → 11-13 km/</span>h   │   ― (   ) ―   ↗ <span class="hljs-number">5</span>-<span class="hljs-number">6</span> km<span class="hljs-regexp">/h     │   ― (   ) ―   ↗ 3-4 km/</span>h     │
+│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
+│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
+└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+Location: 新竹市, 臺灣 [<span class="hljs-number">24.8066333</span>,<span class="hljs-number">120.9686833</span>]
+
+Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs-keyword">in</span> updates
+</code></pre></div>
+<p><img src="/_resources/a7bac0fb1bcb484690c949ab386f0045.png" /></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Google Photo Sync]]></title>
             <guid>eb2dc2accca641d0a2fd3be3a2de1356</guid>
