@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Sun, 29 Jan 2023 11:51:36 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 30 Jan 2023 13:46:46 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -57,6 +57,8 @@ Location: 新竹市, 臺灣 [<span class="hljs-number">24.8066333</span>,<span c
 Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs-keyword">in</span> updates
 </code></pre></div>
 <p><img src="/_resources/a7bac0fb1bcb484690c949ab386f0045.png" /></p>
+<p>最後加個 watch 可以loop update</p>
+<div><pre class="hljs"><code>watch -ct -n <span class="hljs-number">3600</span> curl -s http:<span class="hljs-regexp">//</span>wttr.<span class="hljs-keyword">in</span></code></pre></div>
 ]]></content:encoded>
         </item>
         <item>
