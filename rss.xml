@@ -4,9 +4,87 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 02 May 2023 14:37:07 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 02 May 2023 15:15:50 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[SSH key with TPM]]></title>
+            <guid>f401552ba59742b7964300cbe1431ac8</guid>
+            <pubDate>Tue, 02 May 2023 14:42:30 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="ssh-key-with-tpm">SSH key with TPM</h1>
+<h2 id="tpm-20">TPM 2.0</h2>
+<p>新電腦很多都支援 TPM2.0了，可以用TPM當作SSH key 來加強安全性。</p>
+<p>安裝：</p>
+<div><pre class="hljs"><code>sudo apt install libtpm2-pkcs11-tools libtpm2-pkcs11<span class="hljs-number">-1</span>
+sudo usermod -a -G tss <span class="hljs-string">"$(id -nu)"</span>
+<span class="hljs-keyword">new</span><span class="hljs-type">group</span> tss</code></pre></div>
+<p>測試：</p>
+<div><pre class="hljs"><code>ls <span class="hljs-regexp">/dev/</span>tpm0
+tpm2_getcap properties-fixed</code></pre></div>
+<p>建key：</p>
+<div><pre class="hljs"><code>tpm2_ptool init
+tpm2_ptool addtoken <span class="hljs-attribute">--pid</span>=1 <span class="hljs-attribute">--label</span>=ssh <span class="hljs-attribute">--userpin</span>=MySecretPassword <span class="hljs-attribute">--sopin</span>=MyRecoveryPassword
+tpm2_ptool addkey <span class="hljs-attribute">--label</span>=ssh <span class="hljs-attribute">--userpin</span>=MySecretPassword <span class="hljs-attribute">--algorithm</span>=rsa2048</code></pre></div>
+<p>取得公鑰：</p>
+<div><pre class="hljs"><code>ssh-keygen -D <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libtpm2_pkcs11.so.<span class="hljs-number">1</span></code></pre></div>
+<p>連線：</p>
+<div><pre class="hljs"><code>ssh -I <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libtpm2_pkcs11.so.<span class="hljs-number">1</span> server</code></pre></div>
+<h2 id="tpm-12">TPM 1.2</h2>
+<p>先確認 kernel 支援</p>
+<div><pre class="hljs"><code>dmesg | grep -i tpm
+[    <span class="hljs-number">5.167670</span>] tpm_tis <span class="hljs-number">00</span>:<span class="hljs-number">08</span>: <span class="hljs-number">1.2</span> TPM (device-<span class="hljs-built_in">id</span> <span class="hljs-number">0x1B</span>, rev-<span class="hljs-built_in">id</span> <span class="hljs-number">16</span>)</code></pre></div>
+<div><pre class="hljs"><code><span class="hljs-attribute">thomas</span>@T460s:~$ lsmod|grep tpm
+<span class="hljs-attribute">tpm_tis</span>                <span class="hljs-number">16384</span>  <span class="hljs-number">0</span>
+<span class="hljs-attribute">tpm_tis_core</span>           <span class="hljs-number">28672</span>  <span class="hljs-number">1</span> tpm_tis
+<span class="hljs-attribute">tpm</span>                    <span class="hljs-number">73728</span>  <span class="hljs-number">4</span> tpm_tis,tpm_tis_core
+<span class="hljs-attribute">rng_core</span>               <span class="hljs-number">16384</span>  <span class="hljs-number">1</span> tpm</code></pre></div>
+<p>看看有沒有裝置檔</p>
+<div><pre class="hljs"><code>ls <span class="hljs-regexp">/dev/</span>tpm*</code></pre></div>
+<p>要確認 tcsd 服務有安裝啟動</p>
+<div><pre class="hljs"><code>sudo apt-get install trousers
+systemctl status tcsd
+● trousers.service - LSB: starts tcsd
+<span class="hljs-symbol">     Loaded:</span> loaded (<span class="hljs-keyword">/etc/</span>init.d/<span class="hljs-attr">trousers</span><span class="hljs-punctuation">;</span> generated)
+<span class="hljs-symbol">     Active:</span> active (running) since Fri <span class="hljs-number">2023</span><span class="hljs-number">-04</span><span class="hljs-number">-28</span> <span class="hljs-number">21</span>:<span class="hljs-number">23</span>:<span class="hljs-number">37</span> CST<span class="hljs-punctuation">;</span> <span class="hljs-number">4</span> days ago
+<span class="hljs-symbol">       Docs:</span> man:systemd-sysv-generator(<span class="hljs-number">8</span>)
+<span class="hljs-symbol">    Process:</span> <span class="hljs-number">7571</span> ExecS<span class="hljs-attr">tart</span><span class="hljs-operator">=</span><span class="hljs-keyword">/etc/</span>init.d/trousers start (<span class="hljs-attr">code</span><span class="hljs-operator">=</span>exited, <span class="hljs-attr">status</span><span class="hljs-operator">=</span><span class="hljs-number">0</span>/SUCCESS)
+<span class="hljs-symbol">      Tasks:</span> <span class="hljs-number">1</span> (limit: <span class="hljs-number">28635</span>)
+<span class="hljs-symbol">     Memory:</span> <span class="hljs-number">776.0</span>K
+<span class="hljs-symbol">        CPU:</span> <span class="hljs-number">2.817</span>s
+<span class="hljs-symbol">     CGroup:</span> /system.slice/trousers.service
+             └─<span class="hljs-number">7577</span> <span class="hljs-keyword">/usr/</span>sbin/tcsd
+</code></pre></div>
+<p>測試版本</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">$ tpm_version
+  TPM 1.2 Version Info</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-attribute">Chip Version</span><span class="hljs-punctuation">:</span> <span class="hljs-string">       1.2.6.40</span>
+  <span class="hljs-attribute">Spec Level</span><span class="hljs-punctuation">:</span> <span class="hljs-string">         2</span>
+  <span class="hljs-attribute">Errata Revision</span><span class="hljs-punctuation">:</span> <span class="hljs-string">    3</span>
+  <span class="hljs-attribute">TPM Vendor ID</span><span class="hljs-punctuation">:</span> <span class="hljs-string">      IFX</span>
+  <span class="hljs-attribute">Vendor Specific data</span><span class="hljs-punctuation">:</span> <span class="hljs-string">062800be 0074706d 733038ff ff</span>
+  <span class="hljs-attribute">TPM Version</span><span class="hljs-punctuation">:</span> <span class="hljs-string">        01010000</span>
+  <span class="hljs-attribute">Manufacturer Info</span><span class="hljs-punctuation">:</span> <span class="hljs-string">  49465800</span>
+
+<span class="hljs-attribute">$ tpm_selftest -l info
+  TPM Test Results</span><span class="hljs-punctuation">:</span> <span class="hljs-string">800001ff</span>
+tpm_selftest succeeded
+</code></pre></div>
+<p>設定</p>
+<div><pre class="hljs"><code>mkdir ~/.simple-tpm-pk11
+stpm-keygen -o ~<span class="hljs-regexp">/.simple-tpm-pk11/my</span>.key
+echo key my.key &gt; ~<span class="hljs-regexp">/.simple-tpm-pk11/</span>config</code></pre></div>
+<p>取得公鑰：</p>
+<div><pre class="hljs"><code>$ ssh-keygen -D <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libsimple-tpm-pk11.so
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTGgGIIZDZ+X+s823nBoAayFxfnv8uVJxcB9MEeOXalKsckqQV9tKgjcB0JOc7F3Dc0LMvTMhuICtf3xBEo6z0wyTt+sj1Q6tf6EVTTGQotYGvesLWUWGoNAmihRXRWSywL4yKgp5aVxE......e5EEE40fiDozFGDImrdFiSdt17iNOAQWjj5mmsaJMRzwvJLViO3oHbViP2sP3Hql1eo+ml x</code></pre></div>
+<p>將公鑰丟到主機上 authorized_keys 然後登入時</p>
+<div><pre class="hljs"><code>ssh SSH-SERVER -I <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libsimple-tpm-pk11.so</code></pre></div>
+<h2 id="reference">reference</h2>
+<p>https://blog.ledger.com/ssh-with-tpm/<br />
+https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md<br />
+https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html<br />
+https://wiki.archlinux.org/title/Trusted_Platform_Module</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[SSH JUMP]]></title>
             <guid>467ef73264e543968067852c5cb3a65a</guid>
