@@ -4,9 +4,66 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 02 May 2023 14:00:35 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 02 May 2023 14:13:14 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[SSH and FIDO]]></title>
+            <guid>1877beeb556d40958b07ba976a38ba90</guid>
+            <pubDate>Tue, 02 May 2023 14:01:24 GMT</pubDate>
+            <content:encoded><![CDATA[<p>SSH and FIDO</p>
+<p>用 fido key 搭配 ssh-keygen 產生用來配合認証的實體金鑰</p>
+<p>先上網買 fido2 的 usb 接上電腦</p>
+<div><pre class="hljs"><code>[<span class="hljs-meta">44270.657019</span>] usb <span class="hljs-number">1</span><span class="hljs-number">-4</span>: <span class="hljs-keyword">new</span> full-speed USB device number <span class="hljs-number">7</span> <span class="hljs-keyword">using</span> xhci_hcd
+[<span class="hljs-meta">44270.806521</span>] usb <span class="hljs-number">1</span><span class="hljs-number">-4</span>: New USB device found, idVendor=<span class="hljs-number">32</span>a3, idProduct=<span class="hljs-number">3201</span>, bcdDevice= <span class="hljs-number">1.10</span>
+[<span class="hljs-meta">44270.806526</span>] usb <span class="hljs-number">1</span><span class="hljs-number">-4</span>: New USB device strings: Mfr=<span class="hljs-number">1</span>, Product=<span class="hljs-number">2</span>, SerialNumber=<span class="hljs-number">5</span>
+[<span class="hljs-meta">44270.806528</span>] usb <span class="hljs-number">1</span><span class="hljs-number">-4</span>: Product: Idem Key
+[<span class="hljs-meta">44270.806530</span>] usb <span class="hljs-number">1</span><span class="hljs-number">-4</span>: Manufacturer: GoTrust
+[<span class="hljs-meta">44270.806531</span>] usb <span class="hljs-number">1</span><span class="hljs-number">-4</span>: SerialNumber: <span class="hljs-number">200801000734</span>
+[<span class="hljs-meta">44270.810666</span>] hid-generic <span class="hljs-number">0003</span>:<span class="hljs-number">32</span>A3:<span class="hljs-number">3201.000</span>E: hiddev0,hidraw1: USB HID v1<span class="hljs-number">.00</span> Device [GoTrust Idem Key] <span class="hljs-keyword">on</span> usb<span class="hljs-number">-0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">14.0</span><span class="hljs-number">-4</span>/input1
+[<span class="hljs-meta">44270.811503</span>] input: GoTrust Idem Key <span class="hljs-keyword">as</span> /devices/pci0000:<span class="hljs-number">00</span>/<span class="hljs-number">0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">14.0</span>/usb1/<span class="hljs-number">1</span><span class="hljs-number">-4</span>/<span class="hljs-number">1</span><span class="hljs-number">-4</span>:<span class="hljs-number">1.2</span>/<span class="hljs-number">0003</span>:<span class="hljs-number">32</span>A3:<span class="hljs-number">3201.000F</span>/input/input69
+[<span class="hljs-meta">44270.873337</span>] hid-generic <span class="hljs-number">0003</span>:<span class="hljs-number">32</span>A3:<span class="hljs-number">3201.000F</span>: input,hidraw2: USB HID v1<span class="hljs-number">.01</span> Keyboard [GoTrust Idem Key] <span class="hljs-keyword">on</span> usb<span class="hljs-number">-0000</span>:<span class="hljs-number">00</span>:<span class="hljs-number">14.0</span><span class="hljs-number">-4</span>/input2</code></pre></div>
+<p>產生 ssh key</p>
+<div><pre class="hljs"><code>ssh-keygen -t ecdsa-sk
+
+Generating <span class="hljs-keyword">public</span>/<span class="hljs-keyword">private</span> ecdsa-sk key pair.
+You may need to touch your authenticator 
+to authorize key generation.
+
+Enter <span class="hljs-keyword">file</span> in which to save the key 
+(<span class="hljs-regexp">/home/u</span>buntu<span class="hljs-regexp">/.ssh/i</span>d_ecdsa_sk):
+
+Enter passphrase (empty <span class="hljs-keyword">for</span> no passphrase):
+
+Enter same passphrase again:
+
+Your identification has been saved in 
+<span class="hljs-regexp">/home/u</span>buntu<span class="hljs-regexp">/.ssh/i</span>d_ecdsa_sk
+
+Your <span class="hljs-keyword">public</span> key has been saved in 
+<span class="hljs-regexp">/home/u</span>buntu<span class="hljs-regexp">/.ssh/i</span>d_ecdsa_sk.pub</code></pre></div>
+<p>看看 .ssh 應該就有 id_ecdsa_sk...</p>
+<p>複製公鑰到遠端</p>
+<div><pre class="hljs"><code>ssh-<span class="hljs-keyword">copy</span>-id -i ~<span class="hljs-regexp">/.ssh/i</span>d_ecdsa_sk.pub user@host</code></pre></div>
+<p>之後連線就可以使用</p>
+<div><pre class="hljs"><code>ssh -<span class="hljs-selector-tag">i</span> id_ecdsa_sk user<span class="hljs-keyword">@host</span></code></pre></div>
+<p>更新到 .ssh/config 例如：</p>
+<div><pre class="hljs"><code>Host example
+  <span class="hljs-keyword">User</span> <span class="hljs-title">user</span>
+  HostName example.demo.com
+  IdentityFile ~/.ssh/id_ecdsa_sk</code></pre></div>
+<p>之後登入的時候 ssh example 即可！</p>
+<p>建議也加上 MasterControl 在時間內可以用既有的session;  要不然一直要手點usb 稍微有點煩，可以這樣設定:</p>
+<div><pre class="hljs"><code>Host *
+    ControlMaster auto
+    ControlPath /tmp/ssh-<span class="hljs-built_in">%r</span>@<span class="hljs-built_in">%h</span>:<span class="hljs-built_in">%p</span>
+    ControlPersist <span class="hljs-number">600</span></code></pre></div>
+<p>重點要注意 ssh 版本需要在 8.2以上，可以用<code>ssh -v</code> 看看！</p>
+<p>https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts<br />
+https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html<br />
+https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[encfs 測試]]></title>
             <guid>46e070de2e0341ed8cfaa2832bf34f60</guid>
