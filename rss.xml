@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 02 May 2023 14:36:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 02 May 2023 14:37:07 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -12,19 +12,19 @@
             <guid>467ef73264e543968067852c5cb3a65a</guid>
             <pubDate>Tue, 02 May 2023 14:19:01 GMT</pubDate>
             <content:encoded><![CDATA[<p>SSH JUMP</p>
-<p>再前輩的介紹之下做了一下ssh jump 的測試，其實這工具真的非常好用且方便。</p>
+<p>前輩的介紹之下做了一下ssh jump 的測試，其實這工具真的非常好用且方便。</p>
 <p>測試環境：<br />
 proxyNode // DMZ 外，限定來源IP<br />
 targetNode // DMZ 內，受保護服務</p>
-<p>之前我要從client ssh 到 targetNode 需要<br />
+<p>之前我要從 client ssh 到 targetNode 需要<br />
 ssh 到 proxyNode ; 再從 proxyNode ssh 到 targetNode<br />
 且可能會把 ssh private key 放到 proxyNode! // 危險!</p>
-<p>用了proxy jump 之後，基本用法就是</p>
+<p>用了 proxy jump 之後，基本用法就是</p>
 <div><pre class="hljs"><code><span class="hljs-attribute">ssh -J proxyNode targetNode</span></code></pre></div>
 <p>且不需要把 private key 放到 proxyNode // 安全!</p>
 <p>jump 也可以一直跳下去</p>
 <div><pre class="hljs"><code><span class="hljs-attribute">ssh</span> -J jumpuser1<span class="hljs-variable">@jump1</span>,jumpuser2<span class="hljs-variable">@jump2</span>,...,jumpuserN<span class="hljs-variable">@jumpN</span> user<span class="hljs-variable">@host</span></code></pre></div>
-<p>透過ssh jump 可以直接連到DMZ 但是有時候需要檔案I/O，例如 scp, rsync, sshfs</p>
+<p>透過ssh jump 可以直接連到 DMZ 但是有時候需要檔案I/O，例如 scp, rsync, sshfs</p>
 <div><pre class="hljs"><code><span class="hljs-comment"># sshfs</span>
 sshfs -o ssh_command=<span class="hljs-string">"ssh -J B_host"</span> C_host:/&lt;path&gt; &lt;mountpoint&gt; 
 
@@ -45,7 +45,7 @@ Host proxyNode
     IdentityFile ~/.ssh/id_rsa
     Port <span class="hljs-number">22</span>
     <span class="hljs-keyword">User</span> <span class="hljs-title">user2</span></code></pre></div>
-<p>因為都用 key 登入，所以直接下 ssj targetNode 會自動jump 。</p>
+<p>因為都用 key 登入，所以直接下 ssh targetNode 會自動 jump 。</p>
 <p>另外 sshfs, scp, rsync 在有設定 config 的情況下使用，可以少很多參數。</p>
 <p>例如</p>
 <div><pre class="hljs"><code>sshfs targetNode:<span class="hljs-regexp">/etc /</span>etc</code></pre></div>
