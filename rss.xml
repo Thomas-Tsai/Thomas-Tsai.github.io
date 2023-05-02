@@ -4,9 +4,33 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Mon, 30 Jan 2023 13:46:46 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 02 May 2023 14:00:35 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[encfs 測試]]></title>
+            <guid>46e070de2e0341ed8cfaa2832bf34f60</guid>
+            <pubDate>Tue, 02 May 2023 13:48:46 GMT</pubDate>
+            <content:encoded><![CDATA[<p>encfs 測試</p>
+<p>之前嘗試用 luks 應把一個 raw file 當作 device 去加密保護資料；用的時候不麻煩，但是如果要同步就很麻煩。且 key 的保存也是問題。</p>
+<p>嘗試了一些工具，例如:<br />
+cryfs - https://www.cryfs.org/howitworks<br />
+VeraCrypt - https://www.veracrypt.fr/code/VeraCrypt/<br />
+encfs - https://github.com/vgough/encfs</p>
+<p>最後再一定風險下，嘗試用 encfs 覺得還可以，先試試看吧。</p>
+<p>debian or ubuntu 上基本上就是</p>
+<p>安裝與加密掛載</p>
+<div><pre class="hljs"><code><span class="hljs-title">apt</span>-get install encfs
+<span class="hljs-title">mkdir</span> .<span class="hljs-class"><span class="hljs-keyword">data</span></span>
+<span class="hljs-title">mkdir</span> <span class="hljs-class"><span class="hljs-keyword">data</span></span>
+<span class="hljs-title">encfs</span> `pwd`/.<span class="hljs-class"><span class="hljs-keyword">data</span> `pwd`/<span class="hljs-keyword">data</span></span></code></pre></div>
+<p>解密就</p>
+<div><pre class="hljs"><code>fusermount -u `pwd`/data</code></pre></div>
+<p>.data 就是實際的檔案 會加密檔名和內容。</p>
+<p>目前寫了一個陽春script 只有需要的時候才解開，10分鐘之後就umount，基本就是mount-&gt;sleep-&gt;umount 這麼簡單！</p>
+<p>後續觀察看看是否會有問題。</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[天氣 - wttr.in]]></title>
             <guid>2dea8623554c4cd4a8078a21f2bc0fb9</guid>
@@ -59,6 +83,11 @@ Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs
 <p><img src="/_resources/a7bac0fb1bcb484690c949ab386f0045.png" /></p>
 <p>最後加個 watch 可以loop update</p>
 <div><pre class="hljs"><code>watch -ct -n <span class="hljs-number">3600</span> curl -s http:<span class="hljs-regexp">//</span>wttr.<span class="hljs-keyword">in</span></code></pre></div>
+<p>reference:<br />
+https://blog.m157q.tw/posts/2017/10/20/wttr-in/<br />
+https://github.com/chubin/wttr.in<br />
+https://wttr.in/:help<br />
+https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/</p>
 ]]></content:encoded>
         </item>
         <item>

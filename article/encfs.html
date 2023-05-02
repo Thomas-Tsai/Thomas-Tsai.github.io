@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>encfs 測試 - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">encfs 測試</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1683035326953"
+                  >2023-05-02 21:48</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1683035917665"
+                  >2023-05-02 21:58</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>encfs 測試</p>
+<p>之前嘗試用 luks 應把一個 raw file 當作 device 去加密保護資料；用的時候不麻煩，但是如果要同步就很麻煩。且 key 的保存也是問題。</p>
+<p>嘗試了一些工具，例如:<br />
+cryfs - https://www.cryfs.org/howitworks<br />
+VeraCrypt - https://www.veracrypt.fr/code/VeraCrypt/<br />
+encfs - https://github.com/vgough/encfs</p>
+<p>最後再一定風險下，嘗試用 encfs 覺得還可以，先試試看吧。</p>
+<p>debian or ubuntu 上基本上就是</p>
+<p>安裝與加密掛載</p>
+<div><pre class="hljs"><code><span class="hljs-title">apt</span>-get install encfs
+<span class="hljs-title">mkdir</span> .<span class="hljs-class"><span class="hljs-keyword">data</span></span>
+<span class="hljs-title">mkdir</span> <span class="hljs-class"><span class="hljs-keyword">data</span></span>
+<span class="hljs-title">encfs</span> `pwd`/.<span class="hljs-class"><span class="hljs-keyword">data</span> `pwd`/<span class="hljs-keyword">data</span></span></code></pre></div>
+<p>解密就</p>
+<div><pre class="hljs"><code>fusermount -u `pwd`/data</code></pre></div>
+<p>.data 就是實際的檔案 會加密檔名和內容。</p>
+<p>目前寫了一個陽春script 只有需要的時候才解開，10分鐘之後就umount，基本就是mount-&gt;sleep-&gt;umount 這麼簡單！</p>
+<p>後續觀察看看是否會有問題。</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
