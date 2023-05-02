@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>SSH JUMP - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">SSH JUMP</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1683037141963"
+                  >2023-05-02 22:19</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1683038081146"
+                  >2023-05-02 22:34</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>SSH JUMP</p>
+<p>再前輩的介紹之下做了一下ssh jump 的測試，其實這工具真的非常好用且方便。</p>
+<p>測試環境：<br />
+proxyNode // DMZ 外，限定來源IP<br />
+targetNode // DMZ 內，受保護服務</p>
+<p>之前我要從client ssh 到 targetNode 需要<br />
+ssh 到 proxyNode ; 再從 proxyNode ssh 到 targetNode<br />
+且可能會把 ssh private key 放到 proxyNode! // 危險!</p>
+<p>用了proxy jump 之後，基本用法就是</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">ssh -J proxyNode targetNode</span></code></pre></div>
+<p>且不需要把 private key 放到 proxyNode // 安全!</p>
+<p>jump 也可以一直跳下去</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">ssh</span> -J jumpuser1<span class="hljs-variable">@jump1</span>,jumpuser2<span class="hljs-variable">@jump2</span>,...,jumpuserN<span class="hljs-variable">@jumpN</span> user<span class="hljs-variable">@host</span></code></pre></div>
+<p>透過ssh jump 可以直接連到DMZ 但是有時候需要檔案I/O，例如 scp, rsync, sshfs</p>
+<div><pre class="hljs"><code><span class="hljs-comment"># sshfs</span>
+sshfs -o ssh_command=<span class="hljs-string">"ssh -J B_host"</span> C_host:/&lt;path&gt; &lt;mountpoint&gt; 
+
+<span class="hljs-comment"># or rsync</span>
+rsync -azv -e <span class="hljs-string">'ssh -A -J USER@PROXYHOST:PORT'</span> foo<span class="hljs-regexp">/ dest:./</span>foo/
+
+<span class="hljs-comment"># or scp</span>
+scp -J username@B username@C:<span class="hljs-regexp">/some/</span>path <span class="hljs-regexp">/some/</span>path</code></pre></div>
+<p>最後建議用 .ssh/config , 設定如下：</p>
+<div><pre class="hljs"><code>Host targetNode
+    HostName targetNode.example.org
+    IdentityFile ~/.ssh/targetNode.pem
+    <span class="hljs-keyword">User</span> <span class="hljs-title">user1</span>
+    ProxyJump proxyNode
+
+Host proxyNode
+    HostName proxyNode.example.org	
+    IdentityFile ~/.ssh/id_rsa
+    Port <span class="hljs-number">22</span>
+    <span class="hljs-keyword">User</span> <span class="hljs-title">user2</span></code></pre></div>
+<p>因為都用 key 登入，所以直接下 ssj targetNode 會自動jump 。</p>
+<p>另外 sshfs, scp, rsync 在有設定 config 的情況下使用，可以少很多參數。</p>
+<p>例如</p>
+<div><pre class="hljs"><code>sshfs targetNode:<span class="hljs-regexp">/etc /</span>etc</code></pre></div>
+<p>以上，我開始重新設定所有的 ssh 都儘量改用 jump！</p>
+<p>reference:<br />
+https://serverfault.com/questions/941934/sshfs-over-a-jumphost<br />
+https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/<br />
+https://www.tecmint.com/access-linux-server-using-a-jump-host/<br />
+https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/<br />
+https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
