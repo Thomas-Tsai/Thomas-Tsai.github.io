@@ -4,9 +4,63 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Wed, 03 May 2023 06:18:39 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 03 May 2023 07:40:39 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[ssh-agent]]></title>
+            <guid>d1f23bb1240c4c09b39dae3c29ba04ff</guid>
+            <pubDate>Wed, 03 May 2023 06:27:56 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="ssh-agent">ssh-agent</h1>
+<p>從 github 上看到</p>
+<blockquote>
+<blockquote>
+<p>SSH agent forwarding can be used to make deploying to a server simple. It allows you to use your local SSH keys instead of leaving keys (without passphrases!) sitting on your server.</p>
+</blockquote>
+</blockquote>
+<p>剛好很適合我最近再整理 ssh key 的需求。因為都換成實體金鑰(fido or tpm)整合模式，所以遠端的電腦要怎麼用 ssh key 來作認証，這時候 ssh-agent 就幫了大忙。</p>
+<h2 id="實作1-用-fido-security-key">實作1 用 fido security key：</h2>
+<h3 id="from-desktop">from desktop</h3>
+<p>id_ecdsa_sk.pub 已經先上傳到github</p>
+<div><pre class="hljs"><code><span class="hljs-built_in">eval</span> <span class="hljs-string">"$(ssh-agent -s)"</span>
+ssh-add ~<span class="hljs-regexp">/.ssh/i</span>d_ecdsa_sk
+ssh -A server</code></pre></div>
+<h3 id="from-server">from server</h3>
+<p>主機內確認沒有任何 private key，但是可以用 ssh-agent 當作認証登入github</p>
+<div><pre class="hljs"><code>ssh git@github.com  // 不會有提示，要再<span class="hljs-number">10</span>秒內按一下fido security key
+PTY allocation request failed <span class="hljs-keyword">on</span> channel <span class="hljs-number">0</span>
+Hi Thomas! You<span class="hljs-symbol">'ve</span> successfully authenticated, but GitHub does <span class="hljs-keyword">not</span> provide shell <span class="hljs-keyword">access</span>.
+Connection <span class="hljs-keyword">to</span> github.com closed. </code></pre></div>
+<h2 id="實作2-用-tpm-security-key">實作2 用 TPM security key：</h2>
+<p>和上面差異的只有 TPM security key</p>
+<h3 id="from-notebook">from notebook</h3>
+<p>public key 已經先上傳到 github</p>
+<div><pre class="hljs"><code>eval <span class="hljs-string">"$(ssh-agent -s)"</span>
+ssh-add -s <span class="hljs-regexp">/usr/</span>lib64<span class="hljs-regexp">/pkcs11/</span>opensc-pkcs11.so
+ssh -A server</code></pre></div>
+<h2 id="其他注意">其他注意</h2>
+<h3 id="sshconfigure">ssh/configure</h3>
+<p>可以考慮設定</p>
+<div><pre class="hljs"><code>  <span class="hljs-attribute">AddKeysToAgent</span> <span class="hljs-literal">yes</span>
+  ForwardAgent <span class="hljs-literal">yes</span></code></pre></div>
+<p>但我沒有，反而需要的時候再手動重新<code>ssh-add ; ssh -A</code>就好！</p>
+<h3 id="ssh-agent-2">ssh-agent</h3>
+<p>一般比較常用 <code>ssh-add -l</code> 來看agent有沒有啟動、有沒有已經載入的 key！</p>
+<p>不同 linux 不見得都會自動跑 ssh-agent ，所以如果要利用已經自動跑的ssh-agent可以這樣：</p>
+<p><code>ps ax | grep ssh-agent </code> 觀察 bind_address 位置與 PID</p>
+<div><pre class="hljs"><code>$ ps ax | <span class="hljs-keyword">grep</span> ssh-agent
+   <span class="hljs-number">1319</span> ?        Ss     <span class="hljs-number">0</span>:<span class="hljs-number">00</span> <span class="hljs-regexp">/usr/</span>bin<span class="hljs-regexp">/ssh-agent -D -a /</span>run<span class="hljs-regexp">/user/</span><span class="hljs-number">1000</span>/ssh-agent.socket
+export SSH_AUTH_SOCK=<span class="hljs-regexp">/run/u</span>ser<span class="hljs-regexp">/1000/</span>ssh-agent.socket
+export SSH_AGENT_PID=<span class="hljs-number">1319</span>
+ssh-key -l</code></pre></div>
+<p>如果找不到，可能就是沒有啟動agent 那就 <code>eval "$(ssh-agent -s)"</code>即可啟用動！</p>
+<p>reference：</p>
+<p><a title="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/" href="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/">https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/</a><br />
+<a title="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding</a><br />
+<a title="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation" href="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation">https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation</a><br />
+<a title="https://stackdiary.com/linux-docs/ssh-add/" href="https://stackdiary.com/linux-docs/ssh-add/">https://stackdiary.com/linux-docs/ssh-add/</a></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[authprogs]]></title>
             <guid>b8f7c256ccc847bda768778acb27be3d</guid>
