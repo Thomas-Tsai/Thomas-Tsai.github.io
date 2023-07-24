@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Mon, 22 May 2023 14:43:21 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 24 Jul 2023 02:20:11 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -13,7 +13,7 @@
             <pubDate>Thu, 11 May 2023 08:53:13 GMT</pubDate>
             <content:encoded><![CDATA[<h1 id="於-synology-啟用-lets-encrypt-整合-namecom2faauto-renew">於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew</h1>
 <p>我的 Synology 設定再防火牆內，不對外直接提供服務，即使如此也是需要上 TLS 來提升安全性。基本上 Synology 已經支援 lets encrypt ，but 預設用的方式是 HTTP-01，所以在防火牆的的限制下，無法順利自動完成，也不法自動 renew 。之前解決方式就是另外找一個點，拿到 ca, certs 之後，再手動放進去，然後就過期了...</p>
-<p>ACMESH 有提供解決方式 https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用 DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
+<p>ACMESH 有提供解決方式 <a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用</a> DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
 <p>相關說明可以細看上面連結，我看完之後認為至少有一些需要測試：</p>
 <ol>
 <li>Firewall 不可更改 。應可用acme.sh 利用dns-01方式來排除</li>
@@ -50,7 +50,7 @@ source ~/.bashrc</code></pre></div>
 <p>我的 Synology NAS 不支援只 listen 特定 FQDN 且有換 port 又有 OTP 搞得這邊有點麻煩。依照文件依序設定 SYNO_Username, SYNO_Password, SYNO_Hostname, SYNO_Scheme, SYNO_Port 都要有正確的設定。另外因為OTP，SYNO_DID 我測試不行，會表示無法登入，可能某個環節出錯；只好暫時用比較差勁的方式取代 SYNO_DID，那就是export SYNO_TOTP_SECRET=xxx 並安裝 oathtool</p>
 <div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> install oathtool
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=xxx</code></pre></div>
-<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</p>
+<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 <a title="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82" href="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82">https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</a></p>
 <p>整個script 就像</p>
 <div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
@@ -89,12 +89,12 @@ Task setting: User-defined-script:</p>
 <p>差不多之後就是觀察會不會自動renew了！</p>
 <p>後來也注意到 deploy 方法不少，也許之後換個更好的方式！</p>
 <h2 id="reference">reference</h2>
-<p>https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/<br />
-https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal<br />
-https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
-https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
-https://github.com/acmesh-official/acme.sh/wiki/dnsapi<br />
-https://github.com/acmesh-official/acme.sh/issues/2727</p>
+<p><a title="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/" href="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/">https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">https://github.com/acmesh-official/acme.sh/wiki/dnsapi</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/issues/2727" href="https://github.com/acmesh-official/acme.sh/issues/2727">https://github.com/acmesh-official/acme.sh/issues/2727</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -145,10 +145,10 @@ export SSH_AGENT_PID=<span class="hljs-number">1319</span>
 ssh-key -l</code></pre></div>
 <p>如果找不到，可能就是沒有啟動agent 那就 <code>eval "$(ssh-agent -s)"</code>即可啟用動！</p>
 <p>reference：</p>
-<p>https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/<br />
-https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding<br />
-https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation<br />
-https://stackdiary.com/linux-docs/ssh-add/</p>
+<p><a title="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/" href="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/">https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/</a><br />
+<a title="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding</a><br />
+<a title="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation" href="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation">https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation</a><br />
+<a title="https://stackdiary.com/linux-docs/ssh-add/" href="https://stackdiary.com/linux-docs/ssh-add/">https://stackdiary.com/linux-docs/ssh-add/</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -180,8 +180,8 @@ Shared <span class="hljs-keyword">connection</span> <span class="hljs-keyword">t
 <div><pre class="hljs"><code>ssh host -i ~<span class="hljs-regexp">/.ssh/i</span>d_rsa... <span class="hljs-regexp">/bin/i</span>p</code></pre></div>
 <p>allow_trailing_args 則使允許參數</p>
 <p>其他設定細節：<br />
-https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html<br />
-https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</p>
+<a title="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html" href="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html">https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html</a><br />
+<a title="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md" href="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md">https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -256,10 +256,10 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTGgGIIZDZ+X+s823nBoAayFxfnv8uVJxcB9MEeOXa
 <p>將公鑰丟到主機上 authorized_keys 然後登入時</p>
 <div><pre class="hljs"><code>ssh SSH-SERVER -I <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libsimple-tpm-pk11.so</code></pre></div>
 <h2 id="reference">reference</h2>
-<p>https://blog.ledger.com/ssh-with-tpm/<br />
-https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md<br />
-https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html<br />
-https://wiki.archlinux.org/title/Trusted_Platform_Module</p>
+<p><a title="https://blog.ledger.com/ssh-with-tpm/" href="https://blog.ledger.com/ssh-with-tpm/">https://blog.ledger.com/ssh-with-tpm/</a><br />
+<a title="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md" href="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md">https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md</a><br />
+<a title="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html" href="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html">https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html</a><br />
+<a title="https://wiki.archlinux.org/title/Trusted_Platform_Module" href="https://wiki.archlinux.org/title/Trusted_Platform_Module">https://wiki.archlinux.org/title/Trusted_Platform_Module</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -306,11 +306,11 @@ Host proxyNode
 <div><pre class="hljs"><code>sshfs targetNode:<span class="hljs-regexp">/etc /</span>etc</code></pre></div>
 <p>以上，我開始重新設定所有的 ssh 都儘量改用 jump！</p>
 <p>reference:<br />
-https://serverfault.com/questions/941934/sshfs-over-a-jumphost<br />
-https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/<br />
-https://www.tecmint.com/access-linux-server-using-a-jump-host/<br />
-https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/<br />
-https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</p>
+<a title="https://serverfault.com/questions/941934/sshfs-over-a-jumphost" href="https://serverfault.com/questions/941934/sshfs-over-a-jumphost">https://serverfault.com/questions/941934/sshfs-over-a-jumphost</a><br />
+<a title="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/" href="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/">https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/</a><br />
+<a title="https://www.tecmint.com/access-linux-server-using-a-jump-host/" href="https://www.tecmint.com/access-linux-server-using-a-jump-host/">https://www.tecmint.com/access-linux-server-using-a-jump-host/</a><br />
+<a title="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/" href="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/">https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/</a><br />
+<a title="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html" href="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html">https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -365,9 +365,9 @@ Your <span class="hljs-keyword">public</span> key has been saved in
     ControlPath /tmp/ssh-<span class="hljs-built_in">%r</span>@<span class="hljs-built_in">%h</span>:<span class="hljs-built_in">%p</span>
     ControlPersist <span class="hljs-number">600</span></code></pre></div>
 <p>重點要注意 ssh 版本需要在 8.2以上，可以用<code>ssh -v</code> 看看！</p>
-<p>https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts<br />
-https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html<br />
-https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</p>
+<p><a title="https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts" href="https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts">https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts</a><br />
+<a title="https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html" href="https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html">https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html</a><br />
+<a title="https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/" href="https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/">https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -377,9 +377,9 @@ https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</
             <content:encoded><![CDATA[<p>encfs 測試</p>
 <p>之前嘗試用 luks 應把一個 raw file 當作 device 去加密保護資料；用的時候不麻煩，但是如果要同步就很麻煩。且 key 的保存也是問題。</p>
 <p>嘗試了一些工具，例如:<br />
-cryfs - https://www.cryfs.org/howitworks<br />
-VeraCrypt - https://www.veracrypt.fr/code/VeraCrypt/<br />
-encfs - https://github.com/vgough/encfs</p>
+cryfs - <a title="https://www.cryfs.org/howitworks" href="https://www.cryfs.org/howitworks">https://www.cryfs.org/howitworks</a><br />
+VeraCrypt - <a title="https://www.veracrypt.fr/code/VeraCrypt/" href="https://www.veracrypt.fr/code/VeraCrypt/">https://www.veracrypt.fr/code/VeraCrypt/</a><br />
+encfs - <a title="https://github.com/vgough/encfs" href="https://github.com/vgough/encfs">https://github.com/vgough/encfs</a></p>
 <p>最後再一定風險下，嘗試用 encfs 覺得還可以，先試試看吧。</p>
 <p>debian or ubuntu 上基本上就是</p>
 <p>安裝與加密掛載</p>
@@ -447,10 +447,10 @@ Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs
 <p>最後加個 watch 可以loop update</p>
 <div><pre class="hljs"><code>watch -ct -n <span class="hljs-number">3600</span> curl -s http:<span class="hljs-regexp">//</span>wttr.<span class="hljs-keyword">in</span></code></pre></div>
 <p>reference:<br />
-https://blog.m157q.tw/posts/2017/10/20/wttr-in/<br />
-https://github.com/chubin/wttr.in<br />
-https://wttr.in/:help<br />
-https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/</p>
+<a title="https://blog.m157q.tw/posts/2017/10/20/wttr-in/" href="https://blog.m157q.tw/posts/2017/10/20/wttr-in/">https://blog.m157q.tw/posts/2017/10/20/wttr-in/</a><br />
+<a title="https://github.com/chubin/wttr.in" href="https://github.com/chubin/wttr.in">https://github.com/chubin/wttr.in</a><br />
+<a title="https://wttr.in/:help" href="https://wttr.in/:help">https://wttr.in/:help</a><br />
+<a title="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/" href="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/">https://ubunlog.com/zh-TW/天氣預報終端天氣/</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -479,11 +479,11 @@ pipenv run gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
 <img src="/_resources/039ff7b7ceb041cfadd5e5b97ef6b114.png" /></p>
 </li>
 <li>
-<p>到 api 清單啟用 photo api ，先到網址： https://console.cloud.google.com/apis/library?project=_ ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
+<p>到 api 清單啟用 photo api ，先到網址： <a title="https://console.cloud.google.com/apis/library?project=_" href="https://console.cloud.google.com/apis/library?project=_">https://console.cloud.google.com/apis/library?project=_</a> ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
 <img src="/_resources/a80696a40d674a22b2930ae68c92d2d5.png" /><br />
 reference:<br />
-https://github.com/gilesknap/gphotos-sync<br />
-https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</p>
+<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a><br />
+<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a></p>
 </li>
 <li>
 <p>再到  <a title="https://console.cloud.google.com/" href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 產生token。左上角下拉式選單選好project，然後左側的導覽選單找"api和服務" 內的 "憑證"<br />
@@ -499,7 +499,7 @@ https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</
 <blockquote>
 <blockquote>
 <blockquote>
-<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on https://support.google.com/cloud/answer/6158849</p>
+<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on <a title="https://support.google.com/cloud/answer/6158849" href="https://support.google.com/cloud/answer/6158849">https://support.google.com/cloud/answer/6158849</a></p>
 </blockquote>
 </blockquote>
 </blockquote>
@@ -521,8 +521,8 @@ pipenv run gphotos-sync ~/gphotos-sync
 <p>看起來都有好好的同步！</p>
 <p><img src="/_resources/4ca38828e9544adcb87524b2dcc2a1fe.png" /></p>
 <p>refererence:<br />
-https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html<br />
-https://github.com/gilesknap/gphotos-sync</p>
+<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a><br />
+<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -596,13 +596,13 @@ a2enmod proxy_http</code></pre></div>
     <span class="hljs-section">&lt;/VirtualHost&gt;</span>
 </code></pre></div>
 <p>存檔之後restart apache2 <code>systemctl restart apache2.service</code>，直接瀏覽看看：</p>
-<p>curl http://www.mydomain.org/rss/</p>
+<p>curl <a title="http://www.mydomain.org/rss/" href="http://www.mydomain.org/rss/">http://www.mydomain.org/rss/</a></p>
 <p>登入後匯入rss，正常用！好用，分享紀錄起來！</p>
 <p>reference:</p>
 <ul>
-<li>https://miniflux.app/</li>
-<li>https://miniflux.app/docs/installation.html#debian</li>
-<li>https://miniflux.app/docs/howto.html#reverse-proxy</li>
+<li><a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a></li>
+<li><a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a></li>
+<li><a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></li>
 </ul>
 ]]></content:encoded>
         </item>
@@ -674,7 +674,7 @@ Summary: 安裝與設定 tzupdate</p>
 <span class="hljs-variable">$ </span>tzupdate -p
 Asia/Taipei</code></pre></div>
 <p>就完成了...</p>
-<p>reference: https://github.com/cdown/tzupdate</p>
+<p>reference: <a title="https://github.com/cdown/tzupdate" href="https://github.com/cdown/tzupdate">https://github.com/cdown/tzupdate</a></p>
 <p>tzupdate is a fully automated utility to set the system time using geolocation.</p>
 <p><a id="user-content-usage" class="jop-noMdConv"></a></p>
 <h2 id="usage">Usage</h2>
@@ -756,7 +756,7 @@ N: This must be accepted explicitly <span class="hljs-keyword">before</span> upd
 <p>apt-get update --allow-releaseinfo-change</p>
 <p>去進行更新，會有一次的 warning, 之後就正常！</p>
 <p>reference:</p>
-<p>https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release</p>
+<p><a title="https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release" href="https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release">https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -831,7 +831,7 @@ Summary: 特別適合以ELF為主的Binary應用程式移植</p>
     fi
 </code></pre></div>
 <p>就是把linker+library+binary 放在一起跑！可以手動自己維護，但是有工具幫忙 why not?!</p>
-<p>reference: https://github.com/intoli/exodus</p>
+<p>reference: <a title="https://github.com/intoli/exodus" href="https://github.com/intoli/exodus">https://github.com/intoli/exodus</a></p>
 ]]></content:encoded>
         </item>
     </channel>
