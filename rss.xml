@@ -4,9 +4,64 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Mon, 24 Jul 2023 02:20:11 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 28 Jul 2023 02:00:25 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[ACME.SH 實作]]></title>
+            <guid>d6422f0316dc4c1e965099f18624dc08</guid>
+            <pubDate>Fri, 28 Jul 2023 01:40:47 GMT</pubDate>
+            <content:encoded><![CDATA[<h2 id="什麼時候會用到-acmesh">什麼時候會用到 acme.sh</h2>
+<p>我的服務基本上決定不開放，所以沒有辦法符合 certbot 的 requirements  ，沒有開防火牆、沒有 port 80 的狀況，所以這時候可以用 <a title="https://letsencrypt.org/docs/challenge-types/#dns-01-challenge" href="https://letsencrypt.org/docs/challenge-types/#dns-01-challenge">acme.sh 來達成 dns-01</a>  的方式取得憑證，並設定好相關服務、自動更新憑證等措施，以下紀錄作法：</p>
+<h2 id="install">install</h2>
+<p><a title="https://github.com/acmesh-official/acme.sh" href="https://github.com/acmesh-official/acme.sh">acme.sh github 在這邊</a>，可以參考相關的指令用法。</p>
+<p>最簡單的安裝方式：</p>
+<div><pre class="hljs"><code>curl https://<span class="hljs-built_in">get</span>.acme.<span class="hljs-keyword">sh</span> | <span class="hljs-keyword">sh</span> -s email=tlinuxXXXXXX@gmail.<span class="hljs-keyword">com</span></code></pre></div>
+<p>安裝好之後要讓路徑生效，可以重新登入，或是直接 reload bashrc</p>
+<div><pre class="hljs"><code><span class="hljs-built_in">source</span> ~/.bashrc</code></pre></div>
+<h2 id="透過-acmesh-以-dns-01-取得憑證">透過 acme.sh 以 dns-01 取得憑證</h2>
+<p>以下步驟建議用root可以適當避免一些麻煩，畢竟需要重新啟動服務，讀寫一些設定檔，建議直接用 root 而不是sudo。</p>
+<p>需要先準備 name.com 的 api token，可以再 <a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">這邊</a> 找到設定方式。</p>
+<p>acme 部份如下</p>
+<div><pre class="hljs"><code>sudo su
+
+export Namecom_Username=<span class="hljs-string">'USERNAME'</span>
+export Namecom_Token=<span class="hljs-string">'TOKEN'</span>
+
+acme<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--issue</span> -d www<span class="hljs-selector-class">.libthomas</span><span class="hljs-selector-class">.org</span> <span class="hljs-attr">--dns</span> dns_namecom <span class="hljs-attr">--reloadcmd</span> <span class="hljs-string">"/etc/init.d/apache2 reload"</span>
+
+acme<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--issue</span> -d imap<span class="hljs-selector-class">.libthomas</span><span class="hljs-selector-class">.org</span> <span class="hljs-attr">--dns</span> dns_namecom <span class="hljs-attr">--reloadcmd</span> <span class="hljs-string">"/etc/init.d/dovecot restart"</span></code></pre></div>
+<p>順利完成之後，再沒有特別指定 install 路徑時，cert 相關檔案會在 /root/acme.sh/xxx_ecc/ 裏面。</p>
+<h2 id="update-configuration">update configuration</h2>
+<p>我有 web/apache2 與 imap/dovecot 兩個服務，分別修改下設定檔，再重新啟動服務來套用到新的路徑。</p>
+<h3 id="webapache2">web/apache2</h3>
+<p>/etc/apache2/sites-enabled/default-ssl.conf</p>
+<div><pre class="hljs"><code>SSLCertificateFile <span class="hljs-regexp">/root/</span>.acme.sh<span class="hljs-regexp">/www.libthomas.org_ecc/</span>www.libthomas.org.cer
+SSLCertificateKeyFile <span class="hljs-regexp">/root/</span>.acme.sh<span class="hljs-regexp">/www.libthomas.org_ecc/</span>www.libthomas.org.key
+SSLCertificateChainFile <span class="hljs-regexp">/root/</span>.acme.sh<span class="hljs-regexp">/www.libthomas.org_ecc/</span>ca.cer</code></pre></div>
+<h3 id="imapdocecot">imap/docecot</h3>
+<p>/etc/dovecot/conf.d/10-ssl.conf</p>
+<div><pre class="hljs"><code>ssl_cert = &lt;/root/<span class="hljs-selector-class">.acme</span>.sh/imap<span class="hljs-selector-class">.libthomas</span>.org_ecc/imap<span class="hljs-selector-class">.libthomas</span><span class="hljs-selector-class">.org</span><span class="hljs-selector-class">.cer</span>
+ssl_key = &lt;/root/<span class="hljs-selector-class">.acme</span>.sh/imap<span class="hljs-selector-class">.libthomas</span>.org_ecc/imap<span class="hljs-selector-class">.libthomas</span><span class="hljs-selector-class">.org</span><span class="hljs-selector-class">.key</span>
+</code></pre></div>
+<h3 id="restart-or-reload-service">restart or reload service</h3>
+<div><pre class="hljs"><code><span class="hljs-regexp">/etc/i</span>nit.d/apache2 reload
+<span class="hljs-regexp">/etc/i</span>nit.d/dovecot restart</code></pre></div>
+<h2 id="renew-and-notify">renew and notify</h2>
+<p>acme.sh 會自動把 renew 放到 user crontab 裡</p>
+<div><pre class="hljs"><code>crontab -l
+<span class="hljs-number">46</span> <span class="hljs-number">0</span> * * * <span class="hljs-string">"/root/.acme.sh"</span><span class="hljs-regexp">/acme.sh --cron --home "/</span>root<span class="hljs-regexp">/.acme.sh" &gt; /</span>dev/<span class="hljs-keyword">null</span></code></pre></div>
+<p>另外也提供 notify 機制，我的主機可以寄信，就直接用mail</p>
+<div><pre class="hljs"><code><span class="hljs-built_in">export</span> <span class="hljs-attribute">MAIL_TO</span>=<span class="hljs-string">"tlinuxxxxxx@gmail.com"</span>
+acme.sh --set-notify  --notify-hook mail</code></pre></div>
+<h2 id="check">check</h2>
+<p>可以看目前憑證</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">acme</span>.sh list
+<span class="hljs-attribute">Main_Domain</span>         KeyLength  SAN_Domains  CA           Created               Renew
+<span class="hljs-attribute">imap</span>.libthomas.org  <span class="hljs-string">"ec-256"</span>   no           ZeroSSL.com  <span class="hljs-number">2023</span>-<span class="hljs-number">07</span>-<span class="hljs-number">27</span>T15:<span class="hljs-number">17</span>:<span class="hljs-number">57</span>Z  <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">24</span>T15:<span class="hljs-number">17</span>:<span class="hljs-number">57</span>Z
+<span class="hljs-attribute">www</span>.libthomas.org   <span class="hljs-string">"ec-256"</span>   no           ZeroSSL.com  <span class="hljs-number">2023</span>-<span class="hljs-number">07</span>-<span class="hljs-number">27</span>T15:<span class="hljs-number">08</span>:<span class="hljs-number">26</span>Z  <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">24</span>T15:<span class="hljs-number">08</span>:<span class="hljs-number">26</span>Z</code></pre></div>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew]]></title>
             <guid>5c65c58a0ee44b88adfbc5422465630a</guid>
