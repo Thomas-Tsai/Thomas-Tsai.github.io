@@ -4,9 +4,153 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Fri, 28 Jul 2023 02:00:25 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 27 Sep 2023 02:03:32 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[CardDAV Sync]]></title>
+            <guid>06195b16ad46459c8ab801bf496846c0</guid>
+            <pubDate>Wed, 27 Sep 2023 01:33:45 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="carddav-sync">CardDAV Sync</h1>
+<p>第一次使用 CardDAV 用來同步聯絡人，以 Xandikos 作為伺服器，用 vdirsyncer 進行主要同步，再配合 Thunder bird Tbsync 套件，堪稱完美。</p>
+<h2 id="xandikos">Xandikos</h2>
+<p>Xandikos 是一個輕量級但完整的 CalDAV 和 CardDAV 伺服器。</p>
+<p>安裝；</p>
+<div><pre class="hljs"><code>apt <span class="hljs-keyword">install</span> xandikos</code></pre></div>
+<p>第一次啟動</p>
+<div><pre class="hljs"><code>xandikos <span class="hljs-attr">--defaults</span> <span class="hljs-attr">--autocreate</span>  -d <span class="hljs-variable">$HOME</span>/dav -<span class="hljs-selector-tag">p</span> <span class="hljs-number">8888</span></code></pre></div>
+<p>即可馬上進行測試與驗證，如果覺得不錯，想要持續使用，可以放到systemd user mode ; 因為 目前 xandikos Multi user 沒有很好用。</p>
+<p>設定 systemd user mode 自動啟動：</p>
+<div><pre class="hljs"><code>mkdir .config/systemd/user/xandikos.service </code></pre></div>
+<p>xandikos.service</p>
+<div><pre class="hljs"><code>[Unit]
+Description=Xandikos CalDAV/CardDAV <span class="hljs-keyword">server</span>
+<span class="hljs-keyword">After</span>=network.target
+
+[Service]
+ExecStart=/usr/bin/xandikos \
+  <span class="hljs-comment">--directory $YOUR/DAV/PATH//dav \</span>
+  <span class="hljs-comment">--listen-address 127.0.0.1 \</span>
+  <span class="hljs-comment">--route-prefix=/dav \</span>
+  <span class="hljs-comment">--port 8888 \</span>
+  <span class="hljs-comment">--defaults</span>
+<span class="hljs-keyword">Restart</span>=<span class="hljs-keyword">on</span>-failure
+KillSignal=SIGQUIT
+<span class="hljs-keyword">Type</span>=simple
+NotifyAccess=<span class="hljs-keyword">all</span>
+
+[Install]
+WantedBy=multi-<span class="hljs-keyword">user</span>.target
+</code></pre></div>
+<div><pre class="hljs"><code>systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">daemon-reload</span>
+systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">restart</span> xandikos.service</code></pre></div>
+<p>同時有一個建議設定，因為系統已經有 apache2, 所以順便設定 recerse proxy</p>
+<div><pre class="hljs"><code>       &lt;Location <span class="hljs-string">"/dav/"</span>&gt;
+           ProxyPreserveHost On
+           ProxyPass http:<span class="hljs-regexp">//</span><span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">8888</span><span class="hljs-regexp">/dav/</span>
+           ProxyPassReverse http:<span class="hljs-regexp">//</span><span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">8888</span><span class="hljs-regexp">/dav/</span>
+           AuthType Basic
+           AuthName DAV-Z
+           AuthUserFile <span class="hljs-regexp">/xxxx/</span>.htpasswd
+           Require valid-user
+       &lt;/Location&gt; </code></pre></div>
+<p>如此一來，我的DAV服務就是 <a title="https://xxx.thomas.org/dav/" href="https://xxx.thomas.org/dav/">https://xxx.thomas.org/dav/</a> 就會由 xandikos 進行。</p>
+<h2 id="csv2vcf">csv2vcf</h2>
+<p>我有固定去爬一些通訊錄檔成 csv 檔案，這時候要用 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">csv2vcf</a>，but vsf 3.0 thunderbird 不適應，所以魔改了一些</p>
+<div><pre class="hljs"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_to_vcard</span>(<span class="hljs-params">input_file, single_output, input_file_format</span>):
+                                          
+    FN = input_file_format[<span class="hljs-string">'name'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'name'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    NICKNAME = input_file_format[<span class="hljs-string">'nickname'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'nickname'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    ORG = input_file_format[<span class="hljs-string">'org'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'org'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    DEP = input_file_format[<span class="hljs-string">'dep'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'dep'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    TEL = input_file_format[<span class="hljs-string">'tel'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'tel'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    TITLE = input_file_format[<span class="hljs-string">'TITLE'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'TITLE'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>                                                                                       
+    EMAIL = input_file_format[<span class="hljs-string">'email'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'email'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    ADDR = input_file_format[<span class="hljs-string">'addr'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'addr'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+    NOTE = input_file_format[<span class="hljs-string">'note'</span>]-<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'note'</span> <span class="hljs-keyword">in</span> input_file_format <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>
+                                                                                    
+    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>( input_file, <span class="hljs-string">'r'</span> ) <span class="hljs-keyword">as</span> source_file:
+        reader = csv.reader( source_file )                                
+        i = <span class="hljs-number">0</span>         
+        <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> reader:
+                                       
+            FN_VAL = row[FN] <span class="hljs-keyword">if</span> FN <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>                           
+            NICKNAME_VAL = row[NICKNAME] <span class="hljs-keyword">if</span> NICKNAME <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+            ORG_VAL = row[ORG] <span class="hljs-keyword">if</span> ORG <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+            DEP_VAL = row[DEP] <span class="hljs-keyword">if</span> DEP <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+            TEL_VAL = row[TEL] <span class="hljs-keyword">if</span> TEL <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+            TITLE_VAL = row[TITLE] <span class="hljs-keyword">if</span> TITLE <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+            EMAIL_VAL = row[EMAIL] <span class="hljs-keyword">if</span> EMAIL <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>   
+            ADDR_VAL = row[ADDR] <span class="hljs-keyword">if</span> ADDR <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+            NOTE_VAL = row[NOTE] <span class="hljs-keyword">if</span> NOTE <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+                  
+            <span class="hljs-comment"># write each entry                                                                                                                                           </span>
+            <span class="hljs-comment">#each_vcf = open('contacts/' + FN_VAL + '_' + TEL_VAL + ".vcf", 'w')</span>
+            each_vcf = <span class="hljs-built_in">open</span>(<span class="hljs-string">'contacts/'</span> + NICKNAME_VAL.replace(<span class="hljs-string">" "</span>,<span class="hljs-string">""</span>) + <span class="hljs-string">".vcf"</span>, <span class="hljs-string">'w'</span>)
+            each_vcf.write( <span class="hljs-string">'BEGIN:VCARD'</span> + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'VERSION:4.0'</span> + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'FN:'</span> + FN_VAL + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'NICKNAME:'</span> + NICKNAME_VAL + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'TEL;TYPE=work;VALUE=TEXT:'</span> + TEL_VAL + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'EMAIL;PREF=1:'</span> + EMAIL_VAL + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'ORG:'</span> + ORG_VAL + <span class="hljs-string">";"</span> + DEP_VAL +<span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'TITLE:'</span> + TITLE_VAL + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'ADR;TYPE=work:;;'</span> + ADDR_VAL + <span class="hljs-string">";;;;\n"</span>)
+            each_vcf.write( <span class="hljs-string">'NOTE:'</span> + NOTE_VAL + <span class="hljs-string">"\n"</span>)
+            each_vcf.write( <span class="hljs-string">'END:VCARD'</span> + <span class="hljs-string">"\n"</span>)
+            each_vcf.write(<span class="hljs-string">"\n"</span>)
+            each_vcf.close()
+  
+            i += <span class="hljs-number">1</span>
+  
+        <span class="hljs-built_in">print</span>(<span class="hljs-built_in">str</span>(i) + <span class="hljs-string">" VCARDS written"</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">'----------------------'</span>)
+
+</code></pre></div>
+<p>這樣 csv 內的所有資料都換換成 vcf 目錄，每個檔案都是一個單一個人通訊錄，且是 VCF 4.0 format，這樣就完成通訊錄轉換。</p>
+<h2 id="vdirsync">vdirsync</h2>
+<p>Vdirsyncer 是一個命令列工具，用於在各種伺服器和本機檔案系統之間同步日曆和通訊錄。最受歡迎的用例是將伺服器與本機資料夾同步，並使用一組其他程式來更改本地事件和聯絡人。然後，Vdirsyncer 可以將這些變更同步回伺服器。</p>
+<p>所以目標就是把剛剛轉檔好的 vcf 同步到 xandikos ，設定：</p>
+<p>先建立目錄<code>mkdir .vdirsyncer/</code></p>
+<div><pre class="hljs"><code><span class="hljs-section">[general]</span>
+<span class="hljs-attr">status_path</span> = <span class="hljs-string">"~/.vdirsyncer/status/"</span>
+
+<span class="hljs-section">[pair narlabs_contacts]</span>
+<span class="hljs-attr">a</span> = <span class="hljs-string">"my_labs_local"</span>
+<span class="hljs-attr">b</span> = <span class="hljs-string">"my_labs_remote"</span>
+<span class="hljs-attr">collections</span> = [<span class="hljs-string">"from a"</span>, <span class="hljs-string">"from b"</span>]
+
+<span class="hljs-section">[storage my_labs_local]</span>
+<span class="hljs-attr">type</span> = <span class="hljs-string">"filesystem"</span>
+<span class="hljs-attr">path</span> = <span class="hljs-string">"~/.contacts/"</span>
+<span class="hljs-attr">fileext</span> = <span class="hljs-string">".vcf"</span>
+
+<span class="hljs-section">[storage my_labs_remote]</span>
+<span class="hljs-attr">type</span> = <span class="hljs-string">"carddav"</span>
+
+<span class="hljs-comment"># We can simplify this URL here as well. In theory it shouldn't matter.</span>
+<span class="hljs-attr">url</span> = <span class="hljs-string">"https://www.thomas.org/dav/user/"</span>
+<span class="hljs-attr">username</span> = <span class="hljs-string">""</span> 
+<span class="hljs-attr">password</span> = <span class="hljs-string">""</span> 
+</code></pre></div>
+<p>執行 <code>vdirsync sync</code>  第一次跑可能會需要discover; 依照指令執行</p>
+<div><pre class="hljs"><code>vdirsyncer discover labs_contacts
+vdirsyncer <span class="hljs-keyword">sync</span></code></pre></div>
+<h2 id="thunderbird">Thunderbird</h2>
+<p>Thunder bird 安裝套件 tbsync 之後，開 tbsync, 新增帳號，選 carddav , 選 manual Configuration</p>
+<p><img src="/_resources/28dfe5bd1bca48948beef2deb0dfc8fe.png" /></p>
+<p>依序輸入 name, server, user, pass<br />
+<img src="/_resources/689b00f0f40b43babfb59313ac092724.png" /></p>
+<p>理論上就完成了！</p>
+<p>之後我用 crontab 定期整理 lab 通訊錄，並且自動同步到主機，所有thunderbird 就可以快速更新通訊錄了！</p>
+<h2 id="reference">Reference:</h2>
+<p><a title="https://github.com/jelmer/xandikos" href="https://github.com/jelmer/xandikos">https://github.com/jelmer/xandikos</a><br />
+<a title="https://www.xandikos.org/" href="https://www.xandikos.org/">https://www.xandikos.org/</a><br />
+<a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">https://github.com/mridah/csv2vcf</a><br />
+<a title="https://vdirsyncer.pimutils.org/en/stable/index.html" href="https://vdirsyncer.pimutils.org/en/stable/index.html">https://vdirsyncer.pimutils.org/en/stable/index.html</a><br />
+<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[ACME.SH 實作]]></title>
             <guid>d6422f0316dc4c1e965099f18624dc08</guid>
