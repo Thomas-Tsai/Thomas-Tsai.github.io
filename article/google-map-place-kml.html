@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>轉移 google map place 到 kml - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">轉移 google map place 到 kml</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1698715913490"
+                  >2023-10-31 09:31</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1698721427764"
+                  >2023-10-31 11:03</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="轉移-google-map-place-到-kml">轉移 google map place 到 kml</h1>
+<p>任何資料都不應該被單一雲端應用綁住。不知不覺間常常使用 Google Map 去標記常用的地點，驚訝的發現 Google Map 居然沒有匯出或是轉移的功能。於是做了一下功課，以下紀錄結果。</p>
+<h2 id="匯出">匯出</h2>
+<p>我查過 Google Map Place API 沒有 export 的功能，再查也沒有手動匯出的方式，除了 Google Takeout，從滿多地方可以看到討論有關<a title="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en" href="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en">如何從 Takeout 匯出</a></p>
+<p>基本上就是先到 google yakeout 網頁<br />
+<a title="https://takeout.google.com" href="https://takeout.google.com">https://takeout.google.com</a><br />
+<img src="/_resources/faa8fc6deff64929b2533f460e367210.png" /></p>
+<p>建議先取消全選 再選取 地圖 (最愛地點)</p>
+<p><img src="/_resources/77801a1e8bc84fa38271e8d9fb9ed31d.png" /></p>
+<p>格式不用調整</p>
+<p><img src="/_resources/e26312ebfe0548a085bd902349612de3.png" /></p>
+<p>依序完成 takeout 設定之後，可以等 mail 收到下載連結。<br />
+<img src="/_resources/2d6df7f52b264f67ae0d443b7083b3fd.png" /></p>
+<p>或是存到其他空間。</p>
+<p>我是選 mail 所以會收到下載連結</p>
+<p><img src="/_resources/bdc59c346df7466881a33e80efe69c27.png" /></p>
+<p>就存檔吧。</p>
+<p>這邊比較可惜是不能設定持續，因為最多也就一年(6次)，所以，網頁也只能手動處理，非常不甘願...</p>
+<h2 id="轉檔">轉檔</h2>
+<p>雖然 GeoJSON 已經很多軟體有支援，but 我剛好要用的是 kml 。所以，上網找了 python kml ，不是很複雜，尤其是 <a title="https://simplekml.readthedocs.io" href="https://simplekml.readthedocs.io">simplekml</a>真的就是 SIMPLE...</p>
+<p>直接拿 example 改寫，還比上網找工具快</p>
+<div><pre class="hljs"><code>import json
+import simplekml
+
+f = open(<span class="hljs-string">'googlemap.json'</span>)
+mapdata = json<span class="hljs-selector-class">.load</span>(f)
+kml = simplekml<span class="hljs-selector-class">.Kml</span>()
+kml<span class="hljs-selector-class">.document</span><span class="hljs-selector-class">.name</span> = <span class="hljs-string">"google"</span>
+
+debug = True
+
+<span class="hljs-keyword">for</span> point <span class="hljs-keyword">in</span> mapdata<span class="hljs-selector-attr">[<span class="hljs-string">'features'</span>]</span>:
+    geometry = point<span class="hljs-selector-attr">[<span class="hljs-string">'geometry'</span>]</span>
+    properties = point<span class="hljs-selector-attr">[<span class="hljs-string">'properties'</span>]</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-string">'location'</span> <span class="hljs-keyword">in</span> properties:
+        location = properties<span class="hljs-selector-attr">[<span class="hljs-string">'location'</span>]</span>
+        name = location<span class="hljs-selector-attr">[<span class="hljs-string">'name'</span>]</span>
+        <span class="hljs-selector-tag">address</span> = location<span class="hljs-selector-attr">[<span class="hljs-string">'address'</span>]</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'address'</span> <span class="hljs-keyword">in</span> location <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+        country_code = location<span class="hljs-selector-attr">[<span class="hljs-string">'country_code'</span>]</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'country_code'</span> <span class="hljs-keyword">in</span> location <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-string">'coordinates'</span> <span class="hljs-keyword">in</span> geometry:
+            lon = geometry<span class="hljs-selector-attr">[<span class="hljs-string">'coordinates'</span>]</span><span class="hljs-selector-attr">[0]</span>
+            lat = geometry<span class="hljs-selector-attr">[<span class="hljs-string">'coordinates'</span>]</span><span class="hljs-selector-attr">[1]</span>
+        coordinates = <span class="hljs-selector-attr">[(lon, lat)]</span>
+        pdate = properties<span class="hljs-selector-attr">[<span class="hljs-string">'date'</span>]</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'date'</span> <span class="hljs-keyword">in</span> properties <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+        url = properties<span class="hljs-selector-attr">[<span class="hljs-string">'google_maps_url'</span>]</span> <span class="hljs-keyword">if</span> <span class="hljs-string">'google_maps_url'</span> <span class="hljs-keyword">in</span> properties <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+        description = <span class="hljs-string">"{}\n{}\n{}\n{}"</span><span class="hljs-selector-class">.format</span>(<span class="hljs-selector-tag">address</span>, country_code, pdate, url)
+
+        <span class="hljs-keyword">if</span> debug == True: print(name, coordinates, description)
+        pnt = kml<span class="hljs-selector-class">.newpoint</span>(name=name)
+        pnt<span class="hljs-selector-class">.coords</span> = coordinates
+        <span class="hljs-selector-id">#pnt</span><span class="hljs-selector-class">.address</span> = <span class="hljs-selector-tag">address</span>
+        <span class="hljs-selector-id">#pnt</span><span class="hljs-selector-class">.snippet</span><span class="hljs-selector-class">.content</span> = url
+        pnt.description=<span class="hljs-string">"address: {} ({})\n  datetime: {}\n url: {}"</span><span class="hljs-selector-class">.format</span>(<span class="hljs-selector-tag">address</span>, country_code, pdate, url)
+        
+kml<span class="hljs-selector-class">.save</span>(<span class="hljs-string">"googlemapPlace.kml"</span>)
+</code></pre></div>
+<h2 id="organic-maps">Organic Maps</h2>
+<p>Organic Maps 就是之前的 maps.me，直接丟到檔案傳給 map app 就可以匯入 bookmark。</p>
+<h2 id="reference">reference</h2>
+<p><a title="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en" href="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en">https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en</a><br />
+<a title="https://simplekml.readthedocs.io" href="https://simplekml.readthedocs.io">https://simplekml.readthedocs.io</a><br />
+<a title="https://organicmaps.app/news/" href="https://organicmaps.app/news/">https://organicmaps.app/news/</a><br />
+<a title="https://Maps.me" href="https://Maps.me">https://Maps.me</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
