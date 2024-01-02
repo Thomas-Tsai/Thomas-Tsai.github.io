@@ -4,9 +4,34 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 31 Oct 2023 05:46:45 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 02 Jan 2024 06:22:36 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[linux switch ipv6]]></title>
+            <guid>e4c0596599f84aa4ab5c1c8900f8ac3a</guid>
+            <pubDate>Fri, 29 Dec 2023 01:46:35 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="linux-switch-ipv6">linux switch ipv6</h1>
+<p>最近使用 name.com 遇到使用API需要加上白名單，但又不支援IPv6，只好停用。</p>
+<p>每每都要 Google 一下語法，或是去network-manager 調整。</p>
+<p>決定弄個script比較方便！</p>
+<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+iamroot=`whoami | grep root`
+<span class="hljs-keyword">if</span> [ <span class="hljs-string">"X<span class="hljs-variable">$iamroot</span>"</span> == <span class="hljs-string">"X"</span> ];<span class="hljs-keyword">then</span>
+    sudo <span class="hljs-variable">$0</span>
+<span class="hljs-keyword">else</span>
+
+    <span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-subst">$(sysctl -n net.ipv6.conf.all.disable_ipv6)</span>"</span> == <span class="hljs-string">'1'</span> ]; <span class="hljs-keyword">then</span>
+        sysctl -w net.ipv6.conf.all.disable_ipv6=0
+        sysctl -w net.ipv6.conf.default.disable_ipv6=0
+    <span class="hljs-keyword">else</span>
+        sysctl -w net.ipv6.conf.all.disable_ipv6=1
+        sysctl -w net.ipv6.conf.default.disable_ipv6=1
+    <span class="hljs-keyword">fi</span>
+<span class="hljs-keyword">fi</span>
+</code></pre></div>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[轉移 google map place 到 kml]]></title>
             <guid>94e8807cdf454410bfe2f2c43d32ca9f</guid>
