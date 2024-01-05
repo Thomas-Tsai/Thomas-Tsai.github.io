@@ -4,9 +4,47 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 02 Jan 2024 06:22:36 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 05 Jan 2024 02:39:15 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[用 iptables 擋特定國家區域連線]]></title>
+            <guid>4aecaf4dd5584ac7ab8747faa102d942</guid>
+            <pubDate>Fri, 05 Jan 2024 02:35:04 GMT</pubDate>
+            <content:encoded><![CDATA[<p>用 iptables 擋特定國家區域連線</p>
+<p>這邊都說明的非常仔細了！照做</p>
+<p><a title="https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/" href="https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/">https://blog.gslin.org/archives/2021/10/16/10377/用-iptables-擋特定國家的封包/</a></p>
+<p><a title="https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/" href="https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/">https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/</a></p>
+<p>安裝</p>
+<div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> update; sudo apt-<span class="hljs-built_in">get</span> -y<span class="hljs-built_in"> upgrade
+</span>sudo apt-<span class="hljs-built_in">get</span> install curl unzip perl
+sudo apt-<span class="hljs-built_in">get</span> install xtables-addons-common
+sudo apt-<span class="hljs-built_in">get</span> install libtext-csv-xs-perl libmoosex-types-netaddr-ip-perl</code></pre></div>
+<p>更新我有小改：</p>
+<div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
+
+MON=$(date +<span class="hljs-string">"%m"</span>)
+YR=$(date +<span class="hljs-string">"%Y"</span>)
+
+wget https:<span class="hljs-regexp">//</span>download.db-ip.com<span class="hljs-regexp">/free/</span>dbip-country-lite-<span class="hljs-variable">${YR}</span>-<span class="hljs-variable">${MON}</span>.csv.gz -O <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/xt_geoip/</span>dbip-country-lite.csv.gz
+gunzip <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/xt_geoip/</span>dbip-country-lite.csv.gz
+
+<span class="hljs-regexp">/usr/</span>libexec<span class="hljs-regexp">/xtables-addons/</span>xt_geoip_build -D <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/xt_geoip/</span> -i <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/xt_geoip/</span>dbip-country-lite.csv
+
+rm <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/xt_geoip/</span>dbip-country-lite.csv
+</code></pre></div>
+<p>最後就是放 crontab</p>
+<div><pre class="hljs"><code><span class="hljs-symbol">11 </span><span class="hljs-number">3</span> <span class="hljs-number">1</span> * * /<span class="hljs-keyword">usr</span>/local/bin/geo-update.sh</code></pre></div>
+<p>iptables 看要怎麼玩:</p>
+<div><pre class="hljs"><code># DROP ALL <span class="hljs-selector-tag">FROM</span> special country
+iptables -<span class="hljs-selector-tag">A</span> <span class="hljs-selector-tag">INPUT</span> -m geoip -<span class="hljs-selector-tag">p</span> tcp <span class="hljs-attr">--src-cc</span> RU,CN -j DROP
+
+# allow <span class="hljs-number">443</span> <span class="hljs-selector-tag">from</span> TW
+iptables -<span class="hljs-selector-tag">A</span> <span class="hljs-selector-tag">INPUT</span> -m geoip -<span class="hljs-selector-tag">p</span> tcp <span class="hljs-attr">--dport</span> <span class="hljs-number">443</span> <span class="hljs-attr">--src-cc</span> TW -j ACCEPT
+</code></pre></div>
+<p>完！</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[linux switch ipv6]]></title>
             <guid>e4c0596599f84aa4ab5c1c8900f8ac3a</guid>
