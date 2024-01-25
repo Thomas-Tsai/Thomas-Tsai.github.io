@@ -24,8 +24,8 @@
                 ></span
               >
               <span
-                >Updated At：<time datetime="1690509584430"
-                  >2023-07-28 09:59</time
+                >Updated At：<time datetime="1706149342981"
+                  >2024-01-25 10:22</time
                 ></span
               >
             </div>
@@ -81,6 +81,27 @@ acme.sh --set-notify  --notify-hook mail</code></pre></div>
 <span class="hljs-attribute">Main_Domain</span>         KeyLength  SAN_Domains  CA           Created               Renew
 <span class="hljs-attribute">imap</span>.libthomas.org  <span class="hljs-string">"ec-256"</span>   no           ZeroSSL.com  <span class="hljs-number">2023</span>-<span class="hljs-number">07</span>-<span class="hljs-number">27</span>T15:<span class="hljs-number">17</span>:<span class="hljs-number">57</span>Z  <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">24</span>T15:<span class="hljs-number">17</span>:<span class="hljs-number">57</span>Z
 <span class="hljs-attribute">www</span>.libthomas.org   <span class="hljs-string">"ec-256"</span>   no           ZeroSSL.com  <span class="hljs-number">2023</span>-<span class="hljs-number">07</span>-<span class="hljs-number">27</span>T15:<span class="hljs-number">08</span>:<span class="hljs-number">26</span>Z  <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">24</span>T15:<span class="hljs-number">08</span>:<span class="hljs-number">26</span>Z</code></pre></div>
+<h2 id="namecom-2-api-兩階段認証錯誤">name.com 2 api 兩階段認証錯誤</h2>
+<p>如果更新遇到錯誤：</p>
+<div><pre class="hljs"><code>{<span class="hljs-comment">"message"</span>:<span class="hljs-comment">"Permission Denied"</span>,<span class="hljs-comment">"details"</span>:<span class="hljs-comment">"Authentication Error - Account Has Two Step Verification Enabled"</span>}</code></pre></div>
+<p>有兩個地方要設定：</p>
+<ol>
+<li>name.com網頁 -&gt; account-&gt; settings -&gt; Security Settings -&gt; enable Name.com API Access<br />
+<img src="/_resources/783c5fde5cd74677a597b4fec6ece4cc.png" /></li>
+<li>name.com網頁 -&gt; account-&gt; settings -&gt; API tokens -&gt; Whitelisted IPs<br />
+<img src="/_resources/d0bf2821e5c5427fa03fb66b5bf4cb60.png" /></li>
+</ol>
+<p>name.com 網頁設定好之後，應該就不會有認証問題！</p>
+<h2 id="acmezerosslcom-出狀況">acme.zerossl.com 出狀況</h2>
+<p>根據這邊 <a title="https://github.com/acmesh-official/acme.sh/issues/4927" href="https://github.com/acmesh-official/acme.sh/issues/4927">https://github.com/acmesh-official/acme.sh/issues/4927</a> 看到有類似的狀況。</p>
+<p>處理方式是把憑證主機換掉</p>
+<div><pre class="hljs"><code>acme.<span class="hljs-keyword">sh</span> --<span class="hljs-keyword">set</span>-default-<span class="hljs-keyword">ca</span> --server letsencrypt</code></pre></div>
+<p>但是如果要 renew 就需要修改設定檔  /root/.acme.sh/some-domain.com/some-domain.com.conf</p>
+<div><pre class="hljs"><code><span class="hljs-attr">Le_API</span>=<span class="hljs-string">'https://acme-v02.api.letsencrypt.org/directory'</span></code></pre></div>
+<p>另外刪除設定檔內<br />
+Le_OrderFinalize, Le_LinkOrder, and Le_LinkCert 這些設定，整行刪掉！</p>
+<p>存檔之後 renwe<br />
+"/root/.acme.sh"/acme.sh --cron --home "/root/.acme.sh"</p>
 </div>
       </article>
     </div>
