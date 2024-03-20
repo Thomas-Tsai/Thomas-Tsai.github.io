@@ -4,9 +4,72 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Thu, 25 Jan 2024 02:22:55 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 20 Mar 2024 03:53:24 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[測試用的 Windows]]></title>
+            <guid>b0cbabcfc51b4436acd10450ff7a65c8</guid>
+            <pubDate>Wed, 20 Mar 2024 03:31:00 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="測試用的-windows">測試用的 Windows</h1>
+<p>最近有點人氣的 專案<br />
+<a title="https://github.com/dockur/windows" href="https://github.com/dockur/windows">https://github.com/dockur/windows</a></p>
+<h2 id="先用-docker-指令嘗試一下">先用 docker 指令嘗試一下</h2>
+<div><pre class="hljs"><code>docker <span class="hljs-built_in">run</span> -it --rm --name windows -p 8006:8006 <span class="hljs-attribute">--device</span>=/dev/kvm --cap-<span class="hljs-built_in">add</span> NET_ADMIN --stop-timeout 120 dockurr/windows</code></pre></div>
+<p>會看到訊息</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">BdsDxe</span>: failed to load Boot0002 <span class="hljs-string">"UEFI QEMU QEMU HARDDISK "</span> from PciRoot(<span class="hljs-number">0</span>x0)/Pci(<span class="hljs-number">0</span>xA,<span class="hljs-number">0</span>x0)/Scsi(<span class="hljs-number">0</span>x0,<span class="hljs-number">0</span>x0): Not Found
+<span class="hljs-attribute">windows</span> | BdsDxe: loading Boot0001 <span class="hljs-string">"UEFI QEMU QEMU CD-ROM "</span> from PciRoot(<span class="hljs-number">0</span>x0)/Pci(<span class="hljs-number">0</span>x5,<span class="hljs-number">0</span>x0)/Scsi(<span class="hljs-number">0</span>x0,<span class="hljs-number">0</span>x0)
+<span class="hljs-attribute">windows</span> | BdsDxe: starting Boot0001 <span class="hljs-string">"UEFI QEMU QEMU CD-ROM "</span> from PciRoot(<span class="hljs-number">0</span>x0)/Pci(<span class="hljs-number">0</span>x5,<span class="hljs-number">0</span>x0)/Scsi(<span class="hljs-number">0</span>x0,<span class="hljs-number">0</span>x0)</code></pre></div>
+<p><a title="https://github.com/dockur/windows/issues/226#issuecomment-1997248926" href="https://github.com/dockur/windows/issues/226#issuecomment-1997248926">回應</a>是 <code>this normal</code>，所以不用管他。</p>
+<p>然後開瀏覽器連到 127.0.0.1:8006</p>
+<p>一開始會看到自動安裝、重開機，最後可以登入使用</p>
+<p><img src="/_resources/b0553328f6464c469f2d5a6313520485.png" /></p>
+<h2 id="嘗試用-docker-compose">嘗試用 docker-compose</h2>
+<p>docker-compose 就是比較方便！</p>
+<p>寫 docker-compose.yml</p>
+<div><pre class="hljs"><code><span class="hljs-symbol">version:</span> <span class="hljs-string">"3"</span>
+<span class="hljs-symbol">services:</span>
+<span class="hljs-symbol">  windows:</span>
+<span class="hljs-symbol">    image:</span> dockurr/windows
+<span class="hljs-symbol">    container_name:</span> windows
+<span class="hljs-symbol">    devices:</span>
+      - <span class="hljs-keyword">/dev/</span>kvm
+<span class="hljs-symbol">    cap_add:</span>
+      - NET_ADMIN
+<span class="hljs-symbol">    ports:</span>
+      - <span class="hljs-number">8006</span>:<span class="hljs-number">8006</span>
+      - <span class="hljs-number">3389</span>:<span class="hljs-number">3389</span>/tcp
+      - <span class="hljs-number">3389</span>:<span class="hljs-number">3389</span>/udp
+<span class="hljs-symbol">    stop_grace_period:</span> <span class="hljs-number">2</span>m
+<span class="hljs-symbol">    restart:</span> on-failure
+<span class="hljs-symbol">    environment:</span>
+<span class="hljs-symbol">      RAM_SIZE:</span> <span class="hljs-string">"16G"</span>
+<span class="hljs-symbol">      CPU_CORES:</span> <span class="hljs-string">"8"</span>
+<span class="hljs-symbol">      DISK_SIZE:</span> <span class="hljs-string">"256G"</span>
+<span class="hljs-symbol">    volumes:</span>
+      - <span class="hljs-keyword">/home/</span>ubuntu<span class="hljs-keyword">/tmp/</span>win:/storage</code></pre></div>
+<p>再用<code>docker-compose up -d</code> 去啟動安裝；之後再啟動就用<code>docker-compose start</code> 就可以開機。</p>
+<p>很多需要的資訊<a title="https://github.com/dockur/windows?tab=readme-ov-file#faq" href="https://github.com/dockur/windows?tab=readme-ov-file#faq">FAQ</a>都有</p>
+<p>例如</p>
+<ol>
+<li>手動安裝</li>
+</ol>
+<div><pre class="hljs"><code><span class="hljs-symbol">environment:</span>
+<span class="hljs-symbol">  MANUAL:</span> <span class="hljs-string">"Y"</span></code></pre></div>
+<ol start="2">
+<li>接上家裡的路由器</li>
+</ol>
+<div><pre class="hljs"><code><span class="hljs-attribute">environment</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-attribute">DHCP</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Y"</span>
+<span class="hljs-attribute">devices</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">/dev/vhost-net</span>
+<span class="hljs-attribute">device_cgroup_rules</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">'c *:* rwm'</span></code></pre></div>
+<p>等等。</p>
+<h2 id="心得">心得</h2>
+<p>就是方便快速弄的臨時的windows  還可以選版本，但是我覺得效能好像有打折...，還是 windows 不該要求效能...。但這樣的時綽方式也滿有趣的，看 Dockerfile 可以知道是用 scratch / debian base image，然後安裝一些套件，還有 qemux/qemu-docker:4.18 當作基礎在用。之後就是用 qemu 來啟動 windows  安裝與使用。這樣的方式一般確實會犧牲效能，但是操作好像滿方便的。先留著目前測試環境，會用一陣子看看。</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[用 iptables 擋特定國家區域連線]]></title>
             <guid>4aecaf4dd5584ac7ab8747faa102d942</guid>
@@ -1108,81 +1171,6 @@ N: This must be accepted explicitly <span class="hljs-keyword">before</span> upd
 <p>去進行更新，會有一次的 warning, 之後就正常！</p>
 <p>reference:</p>
 <p><a title="https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release" href="https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release">https://superuser.com/questions/1456989/how-to-configure-apt-in-debian-buster-after-release</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[有趣的專案 exodus]]></title>
-            <guid>eb54aae80abc41449aa4cba101a6eb7a</guid>
-            <pubDate>Mon, 06 Dec 2021 02:35:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: 有趣的專案 exodus<br />
-Tags: Linux<br />
-Date: 2021/12/06 10:35<br />
-Category: calendar<br />
-Slug: calendar/2021/12/06/10/35<br />
-Author: ThomasTsai<br />
-Summary: 特別適合以ELF為主的Binary應用程式移植</p>
-<p>使用場景主要是當你沒有 root 權限，但是需要一些 Linux Binary 應用程式，如果是 static 直接 copy 過去，架構符合就可以執行！但是如果是 Dynamic Binary 那就麻煩了！</p>
-<p>這時候你可以用 exodus 來快速的把應用程式移植到遠端你沒有root的電腦上跑！</p>
-<p>例如 htop 就符合可以移植的特性！</p>
-<div><pre class="hljs"><code>     whereis htop
-    htop: <span class="hljs-regexp">/usr/</span>bin<span class="hljs-regexp">/htop /u</span>sr<span class="hljs-regexp">/share/m</span>an<span class="hljs-regexp">/man1/</span>htop.<span class="hljs-number">1</span>.gz
-     ldd <span class="hljs-regexp">/usr/</span>bin/htop
-    linux-vdso.so.<span class="hljs-number">1</span> (<span class="hljs-number">0</span>x00007ffd805ff000)
-    libncursesw.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libncursesw.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37ffb000)
-    libtinfo.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libtinfo.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37fcb000)
-    libm.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libm.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37e7c000)
-    libc.so.<span class="hljs-number">6</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libc.so.<span class="hljs-number">6</span> (<span class="hljs-number">0</span>x00007fce37c8a000)
-    libdl.so.<span class="hljs-number">2</span> =&gt; <span class="hljs-regexp">/lib/</span>x86_64-linux-gnu/libdl.so.<span class="hljs-number">2</span> (<span class="hljs-number">0</span>x00007fce37c84000)
-    <span class="hljs-regexp">/lib64/</span>ld-linux-x86-<span class="hljs-number">64</span>.so.<span class="hljs-number">2</span> (<span class="hljs-number">0</span>x00007fce38092000)
-     <span class="hljs-keyword">file</span> <span class="hljs-regexp">/usr/</span>bin/htop
-    <span class="hljs-regexp">/usr/</span>bin<span class="hljs-regexp">/htop: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /</span>lib64<span class="hljs-regexp">/ld-linux-x86-64.so.2, BuildID[sha1]=732986edd7d25415061c74c17cb3db139bee2775, for GNU/</span>Linux <span class="hljs-number">3.2</span>.<span class="hljs-number">0</span>, stripped</code></pre></div>
-<p>開始安裝</p>
-<div><pre class="hljs"><code>     pip install --user exodus-bundler
-     <span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-string">"~/.local/bin/:<span class="hljs-variable">${PATH}</span>"</span></code></pre></div>
-<p>執行</p>
-<div><pre class="hljs"><code>     exodus htop | ssh www.libthomas.org
-    Pseudo-terminal will not be allocated because stdin is not a terminal.
-    WARNING: Installing either the musl or diet C libraries will result <span class="hljs-keyword">in</span> more efficient launchers (currently using bash fallbacks instead).
-    Linux www <span class="hljs-number">5.10</span>.<span class="hljs-number">0</span>-<span class="hljs-number">5</span>-amd64 <span class="hljs-comment">#1 SMP Debian 5.10.26-1 (2021-03-27) x86_64</span>
-    
-    <span class="hljs-number">1</span> updates could not be installed automatically. For more details,
-    see <span class="hljs-regexp">/var/</span>log<span class="hljs-regexp">/unattended-upgrades/u</span>nattended-upgrades.log
-    
-    The programs included with the Debian GNU/Linux system are free software;
-    the exact distribution terms <span class="hljs-keyword">for</span> each program are described <span class="hljs-keyword">in</span> the
-    individual files <span class="hljs-keyword">in</span> <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/doc/</span>*/copyright.
-    
-    Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
-    permitted by applicable law.
-    You have no mail.
-    Installing executable bundle <span class="hljs-keyword">in</span> <span class="hljs-string">"/home/thomas/.exodus"</span>...
-    Successfully installed, be sure to add <span class="hljs-regexp">/home/</span>thomas<span class="hljs-regexp">/.exodus/</span>bin to your <span class="hljs-variable">$PATH</span>.
-</code></pre></div>
-<p>執行</p>
-<div><pre class="hljs"><code>    .<span class="hljs-regexp">/.exodus/</span>bin/htop</code></pre></div>
-<p>看看細節：</p>
-<div><pre class="hljs"><code>    :~$ ls -l .<span class="hljs-regexp">/.exodus/</span>bin/htop 
-    lrwxrwxrwx <span class="hljs-number">1</span> thomas thomas <span class="hljs-number">88</span> <span class="hljs-number">12</span>月  <span class="hljs-number">6</span> <span class="hljs-number">10</span>:<span class="hljs-number">59</span> .<span class="hljs-regexp">/.exodus/</span>bin<span class="hljs-regexp">/htop -&gt; ../</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop
-
-    :~$ <span class="hljs-keyword">file</span> .<span class="hljs-regexp">/.exodus/</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop 
-    .<span class="hljs-regexp">/.exodus/</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop: Bourne-Again shell script, ASCII text executable
-    :~$ cat  .<span class="hljs-regexp">/.exodus/</span>bundles<span class="hljs-regexp">/d1a7ebca3b636f00f5a7b551a12b3a503f33121b7e922f8b367337d40c91d923/u</span>sr<span class="hljs-regexp">/bin/</span>htop 
-
-    #! <span class="hljs-regexp">/bin/</span>bash
-    
-    current_directory=<span class="hljs-string">"$(dirname "</span>$(readlink -f <span class="hljs-string">"$0"</span>)<span class="hljs-string">")"</span>
-    executable=<span class="hljs-string">"${current_directory}/./htop-x"</span>
-    library_path=<span class="hljs-string">"../../lib64:../lib64:../../lib:../lib:../../lib32:../lib32:../../lib/x86_64-linux-gnu"</span>
-    library_path=<span class="hljs-string">"${current_directory}/${library_path//:/:${current_directory}/}"</span>
-    linker=<span class="hljs-string">"${current_directory}/./linker-1050e7bea7968d23eafee3fa70a34533523e3bb1159e5a424802b5e8b42688f1"</span>
-    <span class="hljs-keyword">if</span> [ <span class="hljs-string">"true"</span> == <span class="hljs-string">"true"</span> ]; then
-        exec <span class="hljs-string">"${linker}"</span> --library-path <span class="hljs-string">"${library_path}"</span> --inhibit-rpath <span class="hljs-string">""</span> <span class="hljs-string">"${executable}"</span> <span class="hljs-string">"$@"</span>
-    <span class="hljs-keyword">else</span>
-        exec <span class="hljs-string">"${linker}"</span> --library-path <span class="hljs-string">"${library_path}"</span> <span class="hljs-string">"${executable}"</span> <span class="hljs-string">"$@"</span>
-    fi
-</code></pre></div>
-<p>就是把linker+library+binary 放在一起跑！可以手動自己維護，但是有工具幫忙 why not?!</p>
-<p>reference: <a title="https://github.com/intoli/exodus" href="https://github.com/intoli/exodus">https://github.com/intoli/exodus</a></p>
 ]]></content:encoded>
         </item>
     </channel>
