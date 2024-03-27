@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>測試用的 Windows - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">測試用的 Windows</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1710905460426"
+                  >2024-03-20 11:31</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1710906757049"
+                  >2024-03-20 11:52</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="測試用的-windows">測試用的 Windows</h1>
+<p>最近有點人氣的 專案<br />
+<a title="https://github.com/dockur/windows" href="https://github.com/dockur/windows">https://github.com/dockur/windows</a></p>
+<h2 id="先用-docker-指令嘗試一下">先用 docker 指令嘗試一下</h2>
+<div><pre class="hljs"><code>docker <span class="hljs-built_in">run</span> -it --rm --name windows -p 8006:8006 <span class="hljs-attribute">--device</span>=/dev/kvm --cap-<span class="hljs-built_in">add</span> NET_ADMIN --stop-timeout 120 dockurr/windows</code></pre></div>
+<p>會看到訊息</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">BdsDxe</span>: failed to load Boot0002 <span class="hljs-string">"UEFI QEMU QEMU HARDDISK "</span> from PciRoot(<span class="hljs-number">0</span>x0)/Pci(<span class="hljs-number">0</span>xA,<span class="hljs-number">0</span>x0)/Scsi(<span class="hljs-number">0</span>x0,<span class="hljs-number">0</span>x0): Not Found
+<span class="hljs-attribute">windows</span> | BdsDxe: loading Boot0001 <span class="hljs-string">"UEFI QEMU QEMU CD-ROM "</span> from PciRoot(<span class="hljs-number">0</span>x0)/Pci(<span class="hljs-number">0</span>x5,<span class="hljs-number">0</span>x0)/Scsi(<span class="hljs-number">0</span>x0,<span class="hljs-number">0</span>x0)
+<span class="hljs-attribute">windows</span> | BdsDxe: starting Boot0001 <span class="hljs-string">"UEFI QEMU QEMU CD-ROM "</span> from PciRoot(<span class="hljs-number">0</span>x0)/Pci(<span class="hljs-number">0</span>x5,<span class="hljs-number">0</span>x0)/Scsi(<span class="hljs-number">0</span>x0,<span class="hljs-number">0</span>x0)</code></pre></div>
+<p><a title="https://github.com/dockur/windows/issues/226#issuecomment-1997248926" href="https://github.com/dockur/windows/issues/226#issuecomment-1997248926">回應</a>是 <code>this normal</code>，所以不用管他。</p>
+<p>然後開瀏覽器連到 127.0.0.1:8006</p>
+<p>一開始會看到自動安裝、重開機，最後可以登入使用</p>
+<p><img src="/_resources/b0553328f6464c469f2d5a6313520485.png" /></p>
+<h2 id="嘗試用-docker-compose">嘗試用 docker-compose</h2>
+<p>docker-compose 就是比較方便！</p>
+<p>寫 docker-compose.yml</p>
+<div><pre class="hljs"><code><span class="hljs-symbol">version:</span> <span class="hljs-string">"3"</span>
+<span class="hljs-symbol">services:</span>
+<span class="hljs-symbol">  windows:</span>
+<span class="hljs-symbol">    image:</span> dockurr/windows
+<span class="hljs-symbol">    container_name:</span> windows
+<span class="hljs-symbol">    devices:</span>
+      - <span class="hljs-keyword">/dev/</span>kvm
+<span class="hljs-symbol">    cap_add:</span>
+      - NET_ADMIN
+<span class="hljs-symbol">    ports:</span>
+      - <span class="hljs-number">8006</span>:<span class="hljs-number">8006</span>
+      - <span class="hljs-number">3389</span>:<span class="hljs-number">3389</span>/tcp
+      - <span class="hljs-number">3389</span>:<span class="hljs-number">3389</span>/udp
+<span class="hljs-symbol">    stop_grace_period:</span> <span class="hljs-number">2</span>m
+<span class="hljs-symbol">    restart:</span> on-failure
+<span class="hljs-symbol">    environment:</span>
+<span class="hljs-symbol">      RAM_SIZE:</span> <span class="hljs-string">"16G"</span>
+<span class="hljs-symbol">      CPU_CORES:</span> <span class="hljs-string">"8"</span>
+<span class="hljs-symbol">      DISK_SIZE:</span> <span class="hljs-string">"256G"</span>
+<span class="hljs-symbol">    volumes:</span>
+      - <span class="hljs-keyword">/home/</span>ubuntu<span class="hljs-keyword">/tmp/</span>win:/storage</code></pre></div>
+<p>再用<code>docker-compose up -d</code> 去啟動安裝；之後再啟動就用<code>docker-compose start</code> 就可以開機。</p>
+<p>很多需要的資訊<a title="https://github.com/dockur/windows?tab=readme-ov-file#faq" href="https://github.com/dockur/windows?tab=readme-ov-file#faq">FAQ</a>都有</p>
+<p>例如</p>
+<ol>
+<li>手動安裝</li>
+</ol>
+<div><pre class="hljs"><code><span class="hljs-symbol">environment:</span>
+<span class="hljs-symbol">  MANUAL:</span> <span class="hljs-string">"Y"</span></code></pre></div>
+<ol start="2">
+<li>接上家裡的路由器</li>
+</ol>
+<div><pre class="hljs"><code><span class="hljs-attribute">environment</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-attribute">DHCP</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Y"</span>
+<span class="hljs-attribute">devices</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">/dev/vhost-net</span>
+<span class="hljs-attribute">device_cgroup_rules</span><span class="hljs-punctuation">:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">'c *:* rwm'</span></code></pre></div>
+<p>等等。</p>
+<h2 id="心得">心得</h2>
+<p>就是方便快速弄的臨時的windows  還可以選版本，但是我覺得效能好像有打折...，還是 windows 不該要求效能...。但這樣的時綽方式也滿有趣的，看 Dockerfile 可以知道是用 scratch / debian base image，然後安裝一些套件，還有 qemux/qemu-docker:4.18 當作基礎在用。之後就是用 qemu 來啟動 windows  安裝與使用。這樣的方式一般確實會犧牲效能，但是操作好像滿方便的。先留著目前測試環境，會用一陣子看看。</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

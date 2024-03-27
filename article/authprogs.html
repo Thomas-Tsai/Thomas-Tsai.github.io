@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>authprogs - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">authprogs</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1683093340632"
+                  >2023-05-03 13:55</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1683094687686"
+                  >2023-05-03 14:18</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>authprogs</p>
+<p>目前已經把所有ssh key 換成 tpm or fido 但是 就是有一些特定用途需要用到 檔案 private key，通常都是一些自動相關的任務。</p>
+<p>這時候可以透過 authproge 來限制 特定的 ssh key 只能執行 特定的 指令。</p>
+<p>安裝：</p>
+<div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> install authprogs</code></pre></div>
+<p>設定 authorized_keys 讓這個 ssh key 知道要透過 authprogs 執行過慮後的任務：</p>
+<div><pre class="hljs"><code>command=<span class="hljs-string">"/usr/bin/authprogs --run"</span> ssh-rsa AAAAB3NzaC1yc2EAAAABIwA####GrTQAISp6z6emA3yuXI5qOlIwDb1pzgJqXZU+..../phpkBpJKw== user@host
+</code></pre></div>
+<p>設定 authprogs.yml 來過慮可以執行的任務：</p>
+<div><pre class="hljs"><code><span class="hljs-comment"># Simple commands, no IP restrictions.</span>
+<span class="hljs-bullet">-</span>
+  <span class="hljs-attribute">allow</span><span class="hljs-punctuation">:</span>
+    <span class="hljs-bullet">-</span>
+      <span class="hljs-attribute">command</span><span class="hljs-punctuation">:</span> <span class="hljs-string">/bin/ip</span>
+      <span class="hljs-attribute">allow_trailing_args</span><span class="hljs-punctuation">:</span> <span class="hljs-string">true</span></code></pre></div>
+<p>先用一個簡單範例測試，上面範例允許遠端用sshkey登入後執行 <code>ip a</code> 這樣的指令。</p>
+<p>之後如果用 key 登入則會出現</p>
+<div><pre class="hljs"><code>authprogs: <span class="hljs-keyword">no</span> SSH command <span class="hljs-built_in">found</span>; interactive shell disallowed.
+Shared <span class="hljs-keyword">connection</span> <span class="hljs-keyword">to</span> www.libthomas.org closed.</code></pre></div>
+<p>這樣也會錯</p>
+<div><pre class="hljs"><code>ssh host -i ~<span class="hljs-regexp">/.ssh/i</span>d_rsa... ip</code></pre></div>
+<p>這樣才會正確</p>
+<div><pre class="hljs"><code>ssh host -i ~<span class="hljs-regexp">/.ssh/i</span>d_rsa... <span class="hljs-regexp">/bin/i</span>p</code></pre></div>
+<p>allow_trailing_args 則使允許參數</p>
+<p>其他設定細節：<br />
+<a title="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html" href="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html">https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html</a><br />
+<a title="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md" href="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md">https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

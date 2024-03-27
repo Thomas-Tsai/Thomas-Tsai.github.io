@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1683795193558"
+                  >2023-05-11 16:53</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1711513255843"
+                  >2024-03-27 12:20</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="於-synology-啟用-lets-encrypt-整合-namecom2faauto-renew">於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew</h1>
+<p>我的 Synology 設定再防火牆內，不對外直接提供服務，即使如此也是需要上 TLS 來提升安全性。基本上 Synology 已經支援 lets encrypt ，but 預設用的方式是 HTTP-01，所以在防火牆的的限制下，無法順利自動完成，也不法自動 renew 。之前解決方式就是另外找一個點，拿到 ca, certs 之後，再手動放進去，然後就過期了...</p>
+<p>ACMESH 有提供解決方式 <a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用</a> DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
+<p>相關說明可以細看上面連結，我看完之後認為至少有一些需要測試：</p>
+<ol>
+<li>Firewall 不可更改 。應可用acme.sh 利用dns-01方式來排除</li>
+<li>OTP/U2F 啟用，自動佈署問題。疑似可以用 Syno_DID</li>
+<li>使用 name.com api。剛好有支援name.com api</li>
+<li>確定可以 auto-renew</li>
+</ol>
+<p>第一次，我直接在 NAS 裏面做，但是權限和環境限制多，不方便做測試，決定先再linux server 上實作後再丟到NAS裏面跑。</p>
+<h2 id="ubuntu-上測試">Ubuntu 上測試</h2>
+<p>依上數網址陸續步驟執行：</p>
+<h3 id="取得-acmesh-並解壓縮到-usrlocalshareacme">取得 acme.sh 並解壓縮到 /usr/local/share/acme/</h3>
+<div><pre class="hljs"><code>sudo su
+cd <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/share/</span>
+wget https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/acmesh-official/</span>acme.sh<span class="hljs-regexp">/archive/m</span>aster.tar.gz
+tar xvf master.tar.gz
+mv acme.sh-master/ acme
+cd acme
+.<span class="hljs-regexp">/acme.sh --install --nocron --home /u</span>sr<span class="hljs-regexp">/local/</span>share<span class="hljs-regexp">/acme/</span>certs --accountemail <span class="hljs-string">"email@gmailcom"</span>
+source ~/.bashrc</code></pre></div>
+<p>注意<code>--home</code> 建議用絕對路徑，且後面不需要root了</p>
+<h3 id="設定-namecom-dns">設定 name.com dns</h3>
+<p>我的 domain 是 name.com 註冊管理的，所有支援的都可以再 <a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">這邊</a> 找到設定方式，以我的name.com而例，需要進行</p>
+<div><pre class="hljs"><code><span class="hljs-built_in">export</span> <span class="hljs-attribute">Namecom_Username</span>=<span class="hljs-string">"testuser"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">Namecom_Token</span>=<span class="hljs-string">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span></code></pre></div>
+<p>name.com 有提供 API ，用戶可以申請使用。</p>
+<h3 id="creating-the-certificate-步驟">Creating the certificate 步驟</h3>
+<div><pre class="hljs"><code><span class="hljs-built_in">export</span> <span class="hljs-attribute">Namecom_Username</span>=<span class="hljs-string">"testuser"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">Namecom_Token</span>=<span class="hljs-string">"ff........fff"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DNS</span>=<span class="hljs-string">"dns_namecom"</span>
+./acme.sh --issue --home /usr/local/share/acme/certs -d <span class="hljs-string">"<span class="hljs-variable">$CERT_DOMAIN</span>"</span> --dns <span class="hljs-string">"<span class="hljs-variable">$CERT_DNS</span>"</span></code></pre></div>
+<p>可以看到 dns record 的變化，他會自動申請一個txt 然後驗證後刪掉。成功後相關的檔案就放在 certs/ 裏面！過程不需要 http 開通防火牆，算是成功用 dns-01 完成驗證。</p>
+<h3 id="佈署到-nas">佈署到 NAS</h3>
+<p>我的 Synology NAS 不支援只 listen 特定 FQDN 且有換 port 又有 OTP 搞得這邊有點麻煩。依照文件依序設定 SYNO_Username, SYNO_Password, SYNO_Hostname, SYNO_Scheme, SYNO_Port 都要有正確的設定。另外因為OTP，SYNO_DID 我測試不行，會表示無法登入，可能某個環節出錯；只好暫時用比較差勁的方式取代 SYNO_DID，那就是export SYNO_TOTP_SECRET=xxx 並安裝 oathtool</p>
+<div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> install oathtool
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=xxx</code></pre></div>
+<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 <a title="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82" href="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82">https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</a></p>
+<p>整個script 就像</p>
+<div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Username</span>=<span class="hljs-string">'user'</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Password</span>=<span class="hljs-string">'xxxx'</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Hostname</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Scheme</span>=<span class="hljs-string">"https"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Port</span>=<span class="hljs-string">"8208"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=<span class="hljs-string">"ffffffff"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Certificate</span>=<span class="hljs-string">""</span>
+./acme.sh --deploy --insecure --home /usr/local/share/acme/certs -d <span class="hljs-string">"<span class="hljs-variable">$CERT_DOMAIN</span>"</span> --deploy-hook synology_dsm
+</code></pre></div>
+<p>順利就會看到完成，且佈署到 NAS 裏面。再從DSM去設定後續步驟就好。<br />
+以上，基本完成，如果 ubuntu 再加上 crontab 就可以一直renew &amp; deploiy</p>
+<p>但是我希望這個過程直接在 NAS 中進行，所以我把程式都搬到  NAS 裏面，再 ssh 進去處理。</p>
+<h2 id="synology-nas-設定-renew">Synology NAS 設定 renew</h2>
+<p>把剛剛寫的程式 acme/ 整個目錄搬到 NAS，基本上就是先從網頁上傳，然後用admin group user 用 ssh 登入，切換到 root 把程式放到 /usr/share/acme 就一樣了。</p>
+<p>把上變步驟重新執行一次，install, dns, cert, deploy 都確認沒問題，就來renew。</p>
+<p>NAS 上沒有 oathtool 可以另外找<a title="https://github.com/reedobrien/goathtool" href="https://github.com/reedobrien/goathtool">工具</a>代替。</p>
+<p>renew code 很簡單，可以手動跑看看！</p>
+<div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Username</span>=<span class="hljs-string">'user'</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Password</span>=<span class="hljs-string">'xxxx'</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Hostname</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Scheme</span>=<span class="hljs-string">"https"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Port</span>=<span class="hljs-string">"8208"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=<span class="hljs-string">"ffffffff"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Certificate</span>=<span class="hljs-string">""</span>
+./acme.sh --cron --home /usr/local/share/acme/certs -d <span class="hljs-string">"<span class="hljs-variable">$CERT_DOMAIN</span>"</span> --deploy-hook synology_dsm</code></pre></div>
+<p>然後到 Synology 設定排程</p>
+<blockquote>
+<p>In DSM control panel, open the 'Task Scheduler' and create a new scheduled task for a &gt;user-defined script.</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>General Setting: Task - Update default Cert. User - root<br />
+Schedule: Setup a weekly renewal. For example, 11:00 am every saturday.<br />
+Task setting: User-defined-script:</p>
+</blockquote>
+</blockquote>
+<p>script 長這樣</p>
+<div><pre class="hljs"><code><span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Username</span>=<span class="hljs-string">'user'</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Password</span>=<span class="hljs-string">'xxxx'</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Hostname</span>=<span class="hljs-string">"piracy.domain.org"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Scheme</span>=<span class="hljs-string">"https"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Port</span>=<span class="hljs-string">"8208"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=<span class="hljs-string">"ffffffff"</span>
+<span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_Certificate</span>=<span class="hljs-string">""</span>
+./acme.sh --cron --home /usr/local/share/acme/certs -d <span class="hljs-string">"<span class="hljs-variable">$CERT_DOMAIN</span>"</span> --deploy-hook synology_dsm</code></pre></div>
+<p>差不多之後就是觀察會不會自動renew了！</p>
+<p>後來也注意到 deploy 方法不少，也許之後換個更好的方式！</p>
+<h2 id="reference">reference</h2>
+<p><a title="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/" href="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/">https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">https://github.com/acmesh-official/acme.sh/wiki/dnsapi</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/issues/2727" href="https://github.com/acmesh-official/acme.sh/issues/2727">https://github.com/acmesh-official/acme.sh/issues/2727</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

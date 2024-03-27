@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>Google Photo Sync - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">Google Photo Sync</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1674096338299"
+                  >2023-01-19 10:45</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1674897580458"
+                  >2023-01-28 17:19</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>Title: Google Photo Sync<br />
+Date: 2022/12/26<br />
+Tags: linux<br />
+Category: calendar<br />
+Author: ThomasTsai<br />
+Summary: sync photo from google photo service</p>
+<h1 id="google-photo-sync">Google Photo Sync</h1>
+<p>我手機上的照片都統以sync到google photo去了，被綁架！總之，就先這樣，但是我local還想要keep一份，避免被綁架走不了。所以就找到一個 <a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">gphotos-sync</a> 的工具，可以協助我 Linux 上進行自動備份照片。以下步驟來自<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">部落格</a>(我用debian+bash)：</p>
+<div><pre class="hljs"><code>sudo apt install <span class="hljs-keyword">python3</span>-pip
+<span class="hljs-keyword">echo</span> <span class="hljs-string">"export PATH=\"\$PATH:\$HOME/.local/bin\""</span> &gt;&gt; ~/.bashrc
+<span class="hljs-keyword">python3</span> -<span class="hljs-keyword">m</span> pip install pipenv
+<span class="hljs-built_in">mkdir</span> ~/gphotos-<span class="hljs-keyword">sync</span>
+<span class="hljs-keyword">cd</span> ~/gphotos-<span class="hljs-keyword">sync</span>
+pipenv install gphotos-<span class="hljs-keyword">sync</span>
+pipenv run gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
+<p>and then, 最麻煩就是要到 google 那邊拿 api token</p>
+<ol>
+<li>
+<p>到 <a title="https://console.cloud.google.com/cloud-resource-manager" href="https://console.cloud.google.com/cloud-resource-manager">google cloud</a> 建立專案<br />
+<img src="/_resources/039ff7b7ceb041cfadd5e5b97ef6b114.png" /></p>
+</li>
+<li>
+<p>到 api 清單啟用 photo api ，先到網址： <a title="https://console.cloud.google.com/apis/library?project=_" href="https://console.cloud.google.com/apis/library?project=_">https://console.cloud.google.com/apis/library?project=_</a> ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
+<img src="/_resources/a80696a40d674a22b2930ae68c92d2d5.png" /><br />
+reference:<br />
+<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a><br />
+<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a></p>
+</li>
+<li>
+<p>再到  <a title="https://console.cloud.google.com/" href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 產生token。左上角下拉式選單選好project，然後左側的導覽選單找"api和服務" 內的 "憑證"<br />
+<img src="/_resources/617336c7f71141ccbd83ac04cc5c874b.png" /></p>
+</li>
+<li>
+<p>新增憑證，要新增 oauth 2.0<br />
+新增憑證的時候選電腦版應用程式<br />
+<img src="/_resources/322b35a0cce045c6a4c29fd9a087d131.png" /></p>
+</li>
+</ol>
+<p><img src="/_resources/a052fd43c744479dbfe2c760912cf47c.png" /></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on <a title="https://support.google.com/cloud/answer/6158849" href="https://support.google.com/cloud/answer/6158849">https://support.google.com/cloud/answer/6158849</a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>然後下載憑證到</p>
+<div><pre class="hljs"><code>~<span class="hljs-regexp">/.config/g</span>photos-sync/</code></pre></div>
+<p>執行同步看看</p>
+<div><pre class="hljs"><code><span class="hljs-keyword">cd</span> gphotos-<span class="hljs-keyword">sync</span>
+pipenv run gphotos-<span class="hljs-keyword">sync</span> ~/gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
+<p>這樣就可以同步了！</p>
+<p>crontab 自動同步<br />
+寫一支腳本  <code>~/bin/gphotos-sync.sh</code></p>
+<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-string">"/home/thomas/.local/bin:<span class="hljs-variable">$PATH</span>"</span>
+<span class="hljs-built_in">pushd</span> /home/thomas/gphotos-sync
+pipenv run gphotos-sync ~/gphotos-sync
+<span class="hljs-built_in">popd</span></code></pre></div>
+<p>編輯並加入 <code>$ crontab -e</code></p>
+<div><pre class="hljs"><code><span class="hljs-symbol">17 </span><span class="hljs-number">16</span> * * * /home/thomas/bin/gphotos-sync.sh</code></pre></div>
+<p>看起來都有好好的同步！</p>
+<p><img src="/_resources/4ca38828e9544adcb87524b2dcc2a1fe.png" /></p>
+<p>refererence:<br />
+<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a><br />
+<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
