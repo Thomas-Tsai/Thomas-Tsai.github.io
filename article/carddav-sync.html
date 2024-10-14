@@ -75,7 +75,7 @@ systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">rest
            AuthUserFile <span class="hljs-regexp">/xxxx/</span>.htpasswd
            Require valid-user
        &lt;/Location&gt; </code></pre></div>
-<p>如此一來，我的DAV服務就是 <a title="https://xxx.thomas.org/dav/" href="https://xxx.thomas.org/dav/">https://xxx.thomas.org/dav/</a> 就會由 xandikos 進行。</p>
+<p>如此一來，我的DAV服務就是 https://xxx.thomas.org/dav/ 就會由 xandikos 進行。</p>
 <h2 id="csv2vcf">csv2vcf</h2>
 <p>我有固定去爬一些通訊錄檔成 csv 檔案，這時候要用 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">csv2vcf</a>，but vsf 3.0 thunderbird 不適應，所以魔改了一些</p>
 <div><pre class="hljs"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_to_vcard</span>(<span class="hljs-params">input_file, single_output, input_file_format</span>):
@@ -165,11 +165,11 @@ vdirsyncer <span class="hljs-keyword">sync</span></code></pre></div>
 <p>理論上就完成了！</p>
 <p>之後我用 crontab 定期整理 lab 通訊錄，並且自動同步到主機，所有thunderbird 就可以快速更新通訊錄了！</p>
 <h2 id="reference">Reference:</h2>
-<p><a title="https://github.com/jelmer/xandikos" href="https://github.com/jelmer/xandikos">https://github.com/jelmer/xandikos</a><br />
-<a title="https://www.xandikos.org/" href="https://www.xandikos.org/">https://www.xandikos.org/</a><br />
-<a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">https://github.com/mridah/csv2vcf</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/index.html" href="https://vdirsyncer.pimutils.org/en/stable/index.html">https://vdirsyncer.pimutils.org/en/stable/index.html</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a></p>
+<p>https://github.com/jelmer/xandikos<br />
+https://www.xandikos.org/<br />
+https://github.com/mridah/csv2vcf<br />
+https://vdirsyncer.pimutils.org/en/stable/index.html<br />
+https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</p>
 </div>
       </article>
     </div>

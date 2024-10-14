@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>KASM Workspace 經驗與紀錄 - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">KASM Workspace 經驗與紀錄</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1728919160160"
+                  >2024-10-14 23:19</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1728920700336"
+                  >2024-10-14 23:45</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="kasm">KASM</h1>
+<p>KASM 是工作串流平台，</p>
+<p>從任何位置將您的工作空間直接傳輸到任何裝置上的網路瀏覽器。部份開放原始碼。運作於一些類似居家上班、安全運算環境之分析架構平台。透過網頁就可以開啟遠端桌面，因為使用容器，速度也比較快。該專案也有提供一些資料保護措施。</p>
+<h3 id="offline-kasm-installation">offline KASM installation</h3>
+<p>先安裝好 docker 然後開始安裝 KASM</p>
+<div><pre class="hljs"><code>curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_1.15.0.06fdc8.tar.gz</span>
+curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_service_images_amd64_1.15.0.06fdc8.tar.gz</span>
+curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_workspace_images_amd64_1.15.0.06fdc8.tar.gz</span>
+tar -xf kasm_release_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span>
+sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--offline-workspaces</span> /tmp/kasm_release_workspace_images_amd64_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span> <span class="hljs-attr">--offline-service</span> /tmp/kasm_release_service_images_amd64_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span>.gz</code></pre></div>
+<p>安裝完成會顯示：</p>
+<div><pre class="hljs"><code>Kasm UI Login Credentials
+
+<span class="hljs-code">------------------------------------
+  username: admin@kasm.local
+  password: ddddddd
+------------------------------------</span>
+<span class="hljs-code">  username: user@kasm.local</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Database Credentials
+------------------------------------</span>
+<span class="hljs-code">  username: kasmapp</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Redis Credentials
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Manager Token
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Guac Token
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Service Registration Token
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+</code></pre></div>
+<p>好好保留，之後一些設定可能會用到。</p>
+<h3 id="dlp-data-loss-prevention-措施">DLP (Data Loss Prevention) 措施</h3>
+<p>KASM 有提供 Data Loss Prevention 的防護，例如</p>
+<h3 id="watermark-浮水印">watermark 浮水印</h3>
+<p>https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html</p>
+<p>watermark 實作</p>
+<p>group-&gt;all user-&gt;file mapping</p>
+<div><pre class="hljs"><code><span class="hljs-symbol">network:</span> 
+<span class="hljs-symbol">  ssl:</span>
+<span class="hljs-symbol">   pem_certificate:</span> $<span class="hljs-punctuation">{</span>HOME<span class="hljs-punctuation">}</span>/.vnc/self.pem
+<span class="hljs-symbol">   pem_key:</span> $<span class="hljs-punctuation">{</span>HOME<span class="hljs-punctuation">}</span>/.vnc/self.pem
+<span class="hljs-symbol">  udp:</span>
+<span class="hljs-symbol">    public_ip:</span> <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>
+<span class="hljs-symbol">data_loss_prevention:</span>
+<span class="hljs-symbol">  watermark:</span>
+<span class="hljs-symbol">    repeat_spacing:</span> <span class="hljs-number">50</span>
+<span class="hljs-symbol">    tint:</span> <span class="hljs-number">200</span>,<span class="hljs-number">200</span>,<span class="hljs-number">235</span>,<span class="hljs-number">60</span>
+<span class="hljs-symbol">    text:</span>
+<span class="hljs-symbol">      template:</span> <span class="hljs-string">"TRE UserID ${KASM_USER} (${KASM_ID}) at %F %H:%M"</span>
+<span class="hljs-symbol">      font:</span> auto
+<span class="hljs-symbol">      font_size:</span> <span class="hljs-number">36</span>
+<span class="hljs-symbol">      timezone_name:</span> Asia/Taipei</code></pre></div>
+<p><img src="/_resources/b1c957971f734b48958082f35d16333f.png" /></p>
+<h3 id="file-download-upload-clipboard-資料傳輸限制">file download upload clipboard ... 資料傳輸限制</h3>
+<p>https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings</p>
+<h3 id="session-recording-桌面錄影">session recording 桌面錄影</h3>
+<p>https://kasmweb.com/docs/latest/guide/session_recording.html</p>
+<p>Session recording is configured but not licensed. Will not enable. // 需要付費！<br />
+<img src="/_resources/5d370e2ada62468b84bcb10600c1569b.png" /></p>
+<p>費用可以參考這邊<br />
+https://www.kasmweb.com/server-checkout</p>
+<h3 id="session-recording-實作">session recording 實作</h3>
+<p>settings -&gt; global -&gt; Session Recording</p>
+<p>access key &amp; secret key<br />
+path:<br />
+s3://kasm@tos.nchahahahc.org.tw/session-record/{user_id}/{image_friendly_name}-{start_date}.mp4</p>
+<p>enable active code// 需要錢！</p>
+<p><img src="/_resources/dfc2b9dfc4b049ea9e8b3c61385e8fca.png" /></p>
+<p>架構上，如果需要提供更安全的環境，一般會做</p>
+<h3 id="multi-server-多主機架構">multi server 多主機架構</h3>
+<p>https://kasmweb.com/docs/latest/install/multi_server_install.html<br />
+https://kasmweb.com/docs/latest/guide/compute/pools.html</p>
+<p>基本上需要的是 docker agent<br />
+找一台linux ubuntu2204 不需要publicl ip / private ip也可以<br />
+安裝agent</p>
+<div><pre class="hljs"><code>cd /tmp
+curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_1.15.0.06fdc8.tar.gz</span>
+tar -xf kasm_release_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span>
+sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--role</span> agent <span class="hljs-attr">--public-hostname</span> <span class="hljs-selector-attr">[AGENT_HOSTNAME]</span> <span class="hljs-attr">--manager-hostname</span> <span class="hljs-selector-attr">[MANAGER_HOSTNAME]</span> <span class="hljs-attr">--manager-token</span> <span class="hljs-selector-attr">[MANAGER_TOKEN]</span></code></pre></div>
+<p>MANAGER_HOSTNAME : kasm.hahaha.org<br />
+MANAGER_TOKEN : ddddddd<br />
+AGENT_HOSTNAME : 192.168.1.130</p>
+<p>裝好之後回到admin可以看到已經自動新增了agent<br />
+<img src="/_resources/09cc2c6550e646e59359bfda35bd9ad8.png" /></p>
+<p>這時候docker還沒有辦法派到這邊，需要增加到pool<br />
+<img src="/_resources/24a3e064069e41fa8f2b80d6bc2d5d04.png" /></p>
+<p><img src="/_resources/dfa78470b10247dda0a011cc7f3982f9.png" /></p>
+<p>之後workspace就會分散到pool</p>
+<h3 id="ime">IME</h3>
+<p>啟用輸入法切換，啟動之後輸入法切換才會正常<br />
+https://kasmweb.com/docs/latest/how_to/ime.html</p>
+<h3 id="keep-data">keep data</h3>
+<p>啟用家目錄儲存<br />
+https://kasmweb.com/docs/latest/guide/persistent_data.html</p>
+<p>persistent data 實作</p>
+<p>settings -&gt; global -&gt; Storage<br />
+<img src="/_resources/eeff9faa03234b64b83afae0a5b049bd.png" /></p>
+<p>group setting for <code>allow_persistent_profile </code> should be enabled</p>
+<p>Persistent Profile Path<br />
+s3://kasm@tos.hahaha.org.tw/user-profile/{username}/{image_id}/</p>
+<h3 id="persistent-data-for-every-workspace-and-size-limit">persistent data for every workspace and size limit</h3>
+<h3 id="docker-run-config-override-json">Docker Run Config Override (JSON)</h3>
+<div><pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"hostname"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"kasm"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"extra_hosts"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"proxy.ha.ha.org.tw"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"192.168.139.101"</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"environment"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"KASM_PROFILE_SIZE_LIMIT"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"20000"</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><img src="/_resources/d410aa67fb994612974aa008b091c267.png" /></p>
+<h3 id="custom-network">custom network</h3>
+<p>https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html</p>
+<p>關鍵是：</p>
+<div><pre class="hljs"><code>-<span class="hljs-keyword">A</span> POSTROUTING -s <span class="hljs-number">172.19.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">203.145.220.209</span>/<span class="hljs-number">32</span> ! -o z_custom_a -j SNAT --to-source <span class="hljs-number">192.168.0.89</span></code></pre></div>
+<p>Custom network for agent 實作</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">ip</span> a
+
+<span class="hljs-number">2</span>: ens3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="hljs-number">8942</span> qdisc fq_codel state UP group default qlen <span class="hljs-number">1000</span>                                                                                                                                          
+    link/ether fa:<span class="hljs-number">16</span>:3e:d8:b9:<span class="hljs-number">62</span> brd ff:ff:ff:ff:ff:ff                                                                
+    altname enp0s3                                
+    inet <span class="hljs-number">192.168.0.202</span>/<span class="hljs-number">24</span> metric <span class="hljs-number">100</span> brd <span class="hljs-number">192.168.0.255</span> scope global dynamic ens3
+       valid_lft 39485sec preferred_lft 39485sec
+    inet6 fe80::f816:3eff:fed8:b962/<span class="hljs-number">64</span> scope link 
+       valid_lft forever preferred_lft forever
+
+
+sudo docker network create \
+    --driver bridge \
+    --attachable \
+    --opt <span class="hljs-string">"com.docker.network.bridge.name"</span>=<span class="hljs-string">"z_custom_a"</span> \
+    --opt <span class="hljs-string">"com.docker.network.bridge.enable_ip_masquerade"</span>=<span class="hljs-string">"false"</span> \
+    z_custom_a
+    
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo docker inspect z_custom_a | grep Subnet
+                    <span class="hljs-string">"Subnet"</span>: <span class="hljs-string">"172.20.0.0/16"</span>,
+                
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo iptables -t nat -A POSTROUTING -s  <span class="hljs-number">172.20.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">192.110.139.101</span>  ! -o z_custom_a -j SNAT --to-source  <span class="hljs-number">192.168.0.202</span>
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ 
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo iptables -t nat -A POSTROUTING -s  <span class="hljs-number">172.20.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">10.231.0.0</span>/<span class="hljs-number">16</span>  ! -o z_custom_a -j SNAT --to-source  <span class="hljs-number">192.168.0.202</span>
+ 
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo iptables -t nat -A POSTROUTING -s  <span class="hljs-number">172.20.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">192.168.0.0</span>/<span class="hljs-number">16</span>  ! -o z_custom_a -j SNAT --to-source  <span class="hljs-number">192.168.0.202</span>
+</code></pre></div>
+<p>以及其他功能，我的一些 Production 都有用上，感覺不錯！</p>
+<h3 id="external_proxy-透過-proxy-進行防護">external_proxy 透過 Proxy 進行防護</h3>
+<p>https://kasmweb.com/docs/latest/how_to/external_proxy.html</p>
+<h3 id="saml-認証">saml 認証</h3>
+<p>https://kasmweb.com/docs/latest/guide/saml_authentication.html</p>
+<h3 id="workspace-registry">workspace registry</h3>
+<p>https://github.com/kasmtech/workspaces_registry_template<br />
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file<br />
+https://github.com/Thomas-Tsai/kasm_registry/actions<br />
+https://blog.libthomas.org/kasm_registry/1.0/</p>
+<h3 id="custom-image">custom image</h3>
+<p>build proxy desktop<br />
+https://kasmweb.com/docs/latest/how_to/external_proxy.html<br />
+add custom image to custom workspace<br />
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces</p>
+<p>雖然不是完全的開源軟體，但是也很有誠意的釋出不少開源專案，如果非營利組織，在client 數量限制下用是沒有問題。</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

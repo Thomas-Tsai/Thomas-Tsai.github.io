@@ -4,16 +4,199 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Wed, 27 Mar 2024 04:24:24 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 14 Oct 2024 15:46:52 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[KASM Workspace 經驗與紀錄]]></title>
+            <guid>718da3e8741942239278378778a127c9</guid>
+            <pubDate>Mon, 14 Oct 2024 15:19:20 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="kasm">KASM</h1>
+<p>KASM 是工作串流平台，</p>
+<p>從任何位置將您的工作空間直接傳輸到任何裝置上的網路瀏覽器。部份開放原始碼。運作於一些類似居家上班、安全運算環境之分析架構平台。透過網頁就可以開啟遠端桌面，因為使用容器，速度也比較快。該專案也有提供一些資料保護措施。</p>
+<h3 id="offline-kasm-installation">offline KASM installation</h3>
+<p>先安裝好 docker 然後開始安裝 KASM</p>
+<div><pre class="hljs"><code>curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_1.15.0.06fdc8.tar.gz</span>
+curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_service_images_amd64_1.15.0.06fdc8.tar.gz</span>
+curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_workspace_images_amd64_1.15.0.06fdc8.tar.gz</span>
+tar -xf kasm_release_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span>
+sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--offline-workspaces</span> /tmp/kasm_release_workspace_images_amd64_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span> <span class="hljs-attr">--offline-service</span> /tmp/kasm_release_service_images_amd64_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span>.gz</code></pre></div>
+<p>安裝完成會顯示：</p>
+<div><pre class="hljs"><code>Kasm UI Login Credentials
+
+<span class="hljs-code">------------------------------------
+  username: admin@kasm.local
+  password: ddddddd
+------------------------------------</span>
+<span class="hljs-code">  username: user@kasm.local</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Database Credentials
+------------------------------------</span>
+<span class="hljs-code">  username: kasmapp</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Redis Credentials
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Manager Token
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Kasm Guac Token
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+
+<span class="hljs-section">Service Registration Token
+------------------------------------</span>
+<span class="hljs-section">  password: ddddddd
+------------------------------------</span>
+</code></pre></div>
+<p>好好保留，之後一些設定可能會用到。</p>
+<h3 id="dlp-data-loss-prevention-措施">DLP (Data Loss Prevention) 措施</h3>
+<p>KASM 有提供 Data Loss Prevention 的防護，例如</p>
+<h3 id="watermark-浮水印">watermark 浮水印</h3>
+<p>https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html</p>
+<p>watermark 實作</p>
+<p>group-&gt;all user-&gt;file mapping</p>
+<div><pre class="hljs"><code><span class="hljs-symbol">network:</span> 
+<span class="hljs-symbol">  ssl:</span>
+<span class="hljs-symbol">   pem_certificate:</span> $<span class="hljs-punctuation">{</span>HOME<span class="hljs-punctuation">}</span>/.vnc/self.pem
+<span class="hljs-symbol">   pem_key:</span> $<span class="hljs-punctuation">{</span>HOME<span class="hljs-punctuation">}</span>/.vnc/self.pem
+<span class="hljs-symbol">  udp:</span>
+<span class="hljs-symbol">    public_ip:</span> <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>
+<span class="hljs-symbol">data_loss_prevention:</span>
+<span class="hljs-symbol">  watermark:</span>
+<span class="hljs-symbol">    repeat_spacing:</span> <span class="hljs-number">50</span>
+<span class="hljs-symbol">    tint:</span> <span class="hljs-number">200</span>,<span class="hljs-number">200</span>,<span class="hljs-number">235</span>,<span class="hljs-number">60</span>
+<span class="hljs-symbol">    text:</span>
+<span class="hljs-symbol">      template:</span> <span class="hljs-string">"TRE UserID ${KASM_USER} (${KASM_ID}) at %F %H:%M"</span>
+<span class="hljs-symbol">      font:</span> auto
+<span class="hljs-symbol">      font_size:</span> <span class="hljs-number">36</span>
+<span class="hljs-symbol">      timezone_name:</span> Asia/Taipei</code></pre></div>
+<p><img src="/_resources/b1c957971f734b48958082f35d16333f.png" /></p>
+<h3 id="file-download-upload-clipboard-資料傳輸限制">file download upload clipboard ... 資料傳輸限制</h3>
+<p>https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings</p>
+<h3 id="session-recording-桌面錄影">session recording 桌面錄影</h3>
+<p>https://kasmweb.com/docs/latest/guide/session_recording.html</p>
+<p>Session recording is configured but not licensed. Will not enable. // 需要付費！<br />
+<img src="/_resources/5d370e2ada62468b84bcb10600c1569b.png" /></p>
+<p>費用可以參考這邊<br />
+https://www.kasmweb.com/server-checkout</p>
+<h3 id="session-recording-實作">session recording 實作</h3>
+<p>settings -&gt; global -&gt; Session Recording</p>
+<p>access key &amp; secret key<br />
+path:<br />
+s3://kasm@tos.nchahahahc.org.tw/session-record/{user_id}/{image_friendly_name}-{start_date}.mp4</p>
+<p>enable active code// 需要錢！</p>
+<p><img src="/_resources/dfc2b9dfc4b049ea9e8b3c61385e8fca.png" /></p>
+<p>架構上，如果需要提供更安全的環境，一般會做</p>
+<h3 id="multi-server-多主機架構">multi server 多主機架構</h3>
+<p>https://kasmweb.com/docs/latest/install/multi_server_install.html<br />
+https://kasmweb.com/docs/latest/guide/compute/pools.html</p>
+<p>基本上需要的是 docker agent<br />
+找一台linux ubuntu2204 不需要publicl ip / private ip也可以<br />
+安裝agent</p>
+<div><pre class="hljs"><code>cd /tmp
+curl -O https:<span class="hljs-comment">//kasm-static-content.s3.amazonaws.com/kasm_release_1.15.0.06fdc8.tar.gz</span>
+tar -xf kasm_release_1.<span class="hljs-number">15.0</span>.<span class="hljs-number">06</span>fdc8<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span>
+sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span class="hljs-attr">--role</span> agent <span class="hljs-attr">--public-hostname</span> <span class="hljs-selector-attr">[AGENT_HOSTNAME]</span> <span class="hljs-attr">--manager-hostname</span> <span class="hljs-selector-attr">[MANAGER_HOSTNAME]</span> <span class="hljs-attr">--manager-token</span> <span class="hljs-selector-attr">[MANAGER_TOKEN]</span></code></pre></div>
+<p>MANAGER_HOSTNAME : kasm.hahaha.org<br />
+MANAGER_TOKEN : ddddddd<br />
+AGENT_HOSTNAME : 192.168.1.130</p>
+<p>裝好之後回到admin可以看到已經自動新增了agent<br />
+<img src="/_resources/09cc2c6550e646e59359bfda35bd9ad8.png" /></p>
+<p>這時候docker還沒有辦法派到這邊，需要增加到pool<br />
+<img src="/_resources/24a3e064069e41fa8f2b80d6bc2d5d04.png" /></p>
+<p><img src="/_resources/dfa78470b10247dda0a011cc7f3982f9.png" /></p>
+<p>之後workspace就會分散到pool</p>
+<h3 id="ime">IME</h3>
+<p>啟用輸入法切換，啟動之後輸入法切換才會正常<br />
+https://kasmweb.com/docs/latest/how_to/ime.html</p>
+<h3 id="keep-data">keep data</h3>
+<p>啟用家目錄儲存<br />
+https://kasmweb.com/docs/latest/guide/persistent_data.html</p>
+<p>persistent data 實作</p>
+<p>settings -&gt; global -&gt; Storage<br />
+<img src="/_resources/eeff9faa03234b64b83afae0a5b049bd.png" /></p>
+<p>group setting for <code>allow_persistent_profile </code> should be enabled</p>
+<p>Persistent Profile Path<br />
+s3://kasm@tos.hahaha.org.tw/user-profile/{username}/{image_id}/</p>
+<h3 id="persistent-data-for-every-workspace-and-size-limit">persistent data for every workspace and size limit</h3>
+<h3 id="docker-run-config-override-json">Docker Run Config Override (JSON)</h3>
+<div><pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"hostname"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"kasm"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"extra_hosts"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"proxy.ha.ha.org.tw"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"192.168.139.101"</span>
+  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"environment"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"KASM_PROFILE_SIZE_LIMIT"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"20000"</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><img src="/_resources/d410aa67fb994612974aa008b091c267.png" /></p>
+<h3 id="custom-network">custom network</h3>
+<p>https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html</p>
+<p>關鍵是：</p>
+<div><pre class="hljs"><code>-<span class="hljs-keyword">A</span> POSTROUTING -s <span class="hljs-number">172.19.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">203.145.220.209</span>/<span class="hljs-number">32</span> ! -o z_custom_a -j SNAT --to-source <span class="hljs-number">192.168.0.89</span></code></pre></div>
+<p>Custom network for agent 實作</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">ip</span> a
+
+<span class="hljs-number">2</span>: ens3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="hljs-number">8942</span> qdisc fq_codel state UP group default qlen <span class="hljs-number">1000</span>                                                                                                                                          
+    link/ether fa:<span class="hljs-number">16</span>:3e:d8:b9:<span class="hljs-number">62</span> brd ff:ff:ff:ff:ff:ff                                                                
+    altname enp0s3                                
+    inet <span class="hljs-number">192.168.0.202</span>/<span class="hljs-number">24</span> metric <span class="hljs-number">100</span> brd <span class="hljs-number">192.168.0.255</span> scope global dynamic ens3
+       valid_lft 39485sec preferred_lft 39485sec
+    inet6 fe80::f816:3eff:fed8:b962/<span class="hljs-number">64</span> scope link 
+       valid_lft forever preferred_lft forever
+
+
+sudo docker network create \
+    --driver bridge \
+    --attachable \
+    --opt <span class="hljs-string">"com.docker.network.bridge.name"</span>=<span class="hljs-string">"z_custom_a"</span> \
+    --opt <span class="hljs-string">"com.docker.network.bridge.enable_ip_masquerade"</span>=<span class="hljs-string">"false"</span> \
+    z_custom_a
+    
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo docker inspect z_custom_a | grep Subnet
+                    <span class="hljs-string">"Subnet"</span>: <span class="hljs-string">"172.20.0.0/16"</span>,
+                
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo iptables -t nat -A POSTROUTING -s  <span class="hljs-number">172.20.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">192.110.139.101</span>  ! -o z_custom_a -j SNAT --to-source  <span class="hljs-number">192.168.0.202</span>
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ 
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo iptables -t nat -A POSTROUTING -s  <span class="hljs-number">172.20.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">10.231.0.0</span>/<span class="hljs-number">16</span>  ! -o z_custom_a -j SNAT --to-source  <span class="hljs-number">192.168.0.202</span>
+ 
+ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-number">1</span>:~$ sudo iptables -t nat -A POSTROUTING -s  <span class="hljs-number">172.20.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">192.168.0.0</span>/<span class="hljs-number">16</span>  ! -o z_custom_a -j SNAT --to-source  <span class="hljs-number">192.168.0.202</span>
+</code></pre></div>
+<p>以及其他功能，我的一些 Production 都有用上，感覺不錯！</p>
+<h3 id="external_proxy-透過-proxy-進行防護">external_proxy 透過 Proxy 進行防護</h3>
+<p>https://kasmweb.com/docs/latest/how_to/external_proxy.html</p>
+<h3 id="saml-認証">saml 認証</h3>
+<p>https://kasmweb.com/docs/latest/guide/saml_authentication.html</p>
+<h3 id="workspace-registry">workspace registry</h3>
+<p>https://github.com/kasmtech/workspaces_registry_template<br />
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file<br />
+https://github.com/Thomas-Tsai/kasm_registry/actions<br />
+https://blog.libthomas.org/kasm_registry/1.0/</p>
+<h3 id="custom-image">custom image</h3>
+<p>build proxy desktop<br />
+https://kasmweb.com/docs/latest/how_to/external_proxy.html<br />
+add custom image to custom workspace<br />
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces</p>
+<p>雖然不是完全的開源軟體，但是也很有誠意的釋出不少開源專案，如果非營利組織，在client 數量限制下用是沒有問題。</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[測試用的 Windows]]></title>
             <guid>b0cbabcfc51b4436acd10450ff7a65c8</guid>
             <pubDate>Wed, 20 Mar 2024 03:31:00 GMT</pubDate>
             <content:encoded><![CDATA[<h1 id="測試用的-windows">測試用的 Windows</h1>
 <p>最近有點人氣的 專案<br />
-<a title="https://github.com/dockur/windows" href="https://github.com/dockur/windows">https://github.com/dockur/windows</a></p>
+https://github.com/dockur/windows</p>
 <h2 id="先用-docker-指令嘗試一下">先用 docker 指令嘗試一下</h2>
 <div><pre class="hljs"><code>docker <span class="hljs-built_in">run</span> -it --rm --name windows -p 8006:8006 <span class="hljs-attribute">--device</span>=/dev/kvm --cap-<span class="hljs-built_in">add</span> NET_ADMIN --stop-timeout 120 dockurr/windows</code></pre></div>
 <p>會看到訊息</p>
@@ -76,8 +259,8 @@
             <pubDate>Fri, 05 Jan 2024 02:35:04 GMT</pubDate>
             <content:encoded><![CDATA[<p>用 iptables 擋特定國家區域連線</p>
 <p>這邊都說明的非常仔細了！照做</p>
-<p><a title="https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/" href="https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/">https://blog.gslin.org/archives/2021/10/16/10377/用-iptables-擋特定國家的封包/</a></p>
-<p><a title="https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/" href="https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/">https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/</a></p>
+<p>https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/</p>
+<p>https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/</p>
 <p>安裝</p>
 <div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> update; sudo apt-<span class="hljs-built_in">get</span> -y<span class="hljs-built_in"> upgrade
 </span>sudo apt-<span class="hljs-built_in">get</span> install curl unzip perl
@@ -141,7 +324,7 @@ iamroot=`whoami | grep root`
 <p>任何資料都不應該被單一雲端應用綁住。不知不覺間常常使用 Google Map 去標記常用的地點，驚訝的發現 Google Map 居然沒有匯出或是轉移的功能。於是做了一下功課，以下紀錄結果。</p>
 <h2 id="匯出">匯出</h2>
 <p>我查過 Google Map Place API 沒有 export 的功能，再查也沒有手動匯出的方式，除了 Google Takeout，從滿多地方可以看到討論有關<a title="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en" href="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en">如何從 Takeout 匯出</a></p>
-<p>基本上就是先到 google takeout 網頁進行操作，網址：<a title="https://takeout.google.com" href="https://takeout.google.com">https://takeout.google.com</a><br />
+<p>基本上就是先到 google takeout 網頁進行操作，網址：https://takeout.google.com<br />
 <img src="/_resources/faa8fc6deff64929b2533f460e367210.png" /></p>
 <p>建議先取消全選 再選取 地圖 (最愛地點)</p>
 <p><img src="/_resources/77801a1e8bc84fa38271e8d9fb9ed31d.png" /></p>
@@ -195,10 +378,10 @@ kml<span class="hljs-selector-class">.save</span>(<span class="hljs-string">"goo
 <h2 id="organic-maps">Organic Maps</h2>
 <p>Organic Maps 就是之前的 maps.me，直接丟到檔案傳給 map app 就可以匯入 bookmark。</p>
 <h2 id="reference">reference</h2>
-<p><a title="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en" href="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en">https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en</a><br />
-<a title="https://simplekml.readthedocs.io" href="https://simplekml.readthedocs.io">https://simplekml.readthedocs.io</a><br />
-<a title="https://organicmaps.app/news/" href="https://organicmaps.app/news/">https://organicmaps.app/news/</a><br />
-<a title="https://Maps.me" href="https://Maps.me">https://Maps.me</a></p>
+<p>https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en<br />
+https://simplekml.readthedocs.io<br />
+https://organicmaps.app/news/<br />
+https://Maps.me</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -248,7 +431,7 @@ systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">rest
            AuthUserFile <span class="hljs-regexp">/xxxx/</span>.htpasswd
            Require valid-user
        &lt;/Location&gt; </code></pre></div>
-<p>如此一來，我的DAV服務就是 <a title="https://xxx.thomas.org/dav/" href="https://xxx.thomas.org/dav/">https://xxx.thomas.org/dav/</a> 就會由 xandikos 進行。</p>
+<p>如此一來，我的DAV服務就是 https://xxx.thomas.org/dav/ 就會由 xandikos 進行。</p>
 <h2 id="csv2vcf">csv2vcf</h2>
 <p>我有固定去爬一些通訊錄檔成 csv 檔案，這時候要用 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">csv2vcf</a>，but vsf 3.0 thunderbird 不適應，所以魔改了一些</p>
 <div><pre class="hljs"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_to_vcard</span>(<span class="hljs-params">input_file, single_output, input_file_format</span>):
@@ -338,11 +521,11 @@ vdirsyncer <span class="hljs-keyword">sync</span></code></pre></div>
 <p>理論上就完成了！</p>
 <p>之後我用 crontab 定期整理 lab 通訊錄，並且自動同步到主機，所有thunderbird 就可以快速更新通訊錄了！</p>
 <h2 id="reference">Reference:</h2>
-<p><a title="https://github.com/jelmer/xandikos" href="https://github.com/jelmer/xandikos">https://github.com/jelmer/xandikos</a><br />
-<a title="https://www.xandikos.org/" href="https://www.xandikos.org/">https://www.xandikos.org/</a><br />
-<a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">https://github.com/mridah/csv2vcf</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/index.html" href="https://vdirsyncer.pimutils.org/en/stable/index.html">https://vdirsyncer.pimutils.org/en/stable/index.html</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a></p>
+<p>https://github.com/jelmer/xandikos<br />
+https://www.xandikos.org/<br />
+https://github.com/mridah/csv2vcf<br />
+https://vdirsyncer.pimutils.org/en/stable/index.html<br />
+https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -410,7 +593,7 @@ acme.sh --set-notify  --notify-hook mail</code></pre></div>
 </ol>
 <p>name.com 網頁設定好之後，應該就不會有認証問題！</p>
 <h2 id="acmezerosslcom-出狀況">acme.zerossl.com 出狀況</h2>
-<p>根據這邊 <a title="https://github.com/acmesh-official/acme.sh/issues/4927" href="https://github.com/acmesh-official/acme.sh/issues/4927">https://github.com/acmesh-official/acme.sh/issues/4927</a> 看到有類似的狀況。</p>
+<p>根據這邊 https://github.com/acmesh-official/acme.sh/issues/4927 看到有類似的狀況。</p>
 <p>處理方式是把憑證主機換掉</p>
 <div><pre class="hljs"><code>acme.<span class="hljs-keyword">sh</span> --<span class="hljs-keyword">set</span>-default-<span class="hljs-keyword">ca</span> --server letsencrypt</code></pre></div>
 <p>但是如果要 renew 就需要修改設定檔  /root/.acme.sh/some-domain.com/some-domain.com.conf</p>
@@ -427,7 +610,7 @@ Le_OrderFinalize, Le_LinkOrder, and Le_LinkCert 這些設定，整行刪掉！</
             <pubDate>Thu, 11 May 2023 08:53:13 GMT</pubDate>
             <content:encoded><![CDATA[<h1 id="於-synology-啟用-lets-encrypt-整合-namecom2faauto-renew">於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew</h1>
 <p>我的 Synology 設定再防火牆內，不對外直接提供服務，即使如此也是需要上 TLS 來提升安全性。基本上 Synology 已經支援 lets encrypt ，but 預設用的方式是 HTTP-01，所以在防火牆的的限制下，無法順利自動完成，也不法自動 renew 。之前解決方式就是另外找一個點，拿到 ca, certs 之後，再手動放進去，然後就過期了...</p>
-<p>ACMESH 有提供解決方式 <a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用</a> DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
+<p>ACMESH 有提供解決方式 https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用 DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
 <p>相關說明可以細看上面連結，我看完之後認為至少有一些需要測試：</p>
 <ol>
 <li>Firewall 不可更改 。應可用acme.sh 利用dns-01方式來排除</li>
@@ -464,7 +647,7 @@ source ~/.bashrc</code></pre></div>
 <p>我的 Synology NAS 不支援只 listen 特定 FQDN 且有換 port 又有 OTP 搞得這邊有點麻煩。依照文件依序設定 SYNO_Username, SYNO_Password, SYNO_Hostname, SYNO_Scheme, SYNO_Port 都要有正確的設定。另外因為OTP，SYNO_DID 我測試不行，會表示無法登入，可能某個環節出錯；只好暫時用比較差勁的方式取代 SYNO_DID，那就是export SYNO_TOTP_SECRET=xxx 並安裝 oathtool</p>
 <div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> install oathtool
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=xxx</code></pre></div>
-<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 <a title="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82" href="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82">https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</a></p>
+<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</p>
 <p>整個script 就像</p>
 <div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
@@ -519,12 +702,12 @@ Task setting: User-defined-script:</p>
 <p>差不多之後就是觀察會不會自動renew了！</p>
 <p>後來也注意到 deploy 方法不少，也許之後換個更好的方式！</p>
 <h2 id="reference">reference</h2>
-<p><a title="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/" href="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/">https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">https://github.com/acmesh-official/acme.sh/wiki/dnsapi</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/issues/2727" href="https://github.com/acmesh-official/acme.sh/issues/2727">https://github.com/acmesh-official/acme.sh/issues/2727</a></p>
+<p>https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/<br />
+https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal<br />
+https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
+https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
+https://github.com/acmesh-official/acme.sh/wiki/dnsapi<br />
+https://github.com/acmesh-official/acme.sh/issues/2727</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -575,10 +758,10 @@ export SSH_AGENT_PID=<span class="hljs-number">1319</span>
 ssh-key -l</code></pre></div>
 <p>如果找不到，可能就是沒有啟動agent 那就 <code>eval "$(ssh-agent -s)"</code>即可啟用動！</p>
 <p>reference：</p>
-<p><a title="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/" href="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/">https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/</a><br />
-<a title="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding</a><br />
-<a title="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation" href="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation">https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation</a><br />
-<a title="https://stackdiary.com/linux-docs/ssh-add/" href="https://stackdiary.com/linux-docs/ssh-add/">https://stackdiary.com/linux-docs/ssh-add/</a></p>
+<p>https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/<br />
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding<br />
+https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation<br />
+https://stackdiary.com/linux-docs/ssh-add/</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -610,8 +793,8 @@ Shared <span class="hljs-keyword">connection</span> <span class="hljs-keyword">t
 <div><pre class="hljs"><code>ssh host -i ~<span class="hljs-regexp">/.ssh/i</span>d_rsa... <span class="hljs-regexp">/bin/i</span>p</code></pre></div>
 <p>allow_trailing_args 則使允許參數</p>
 <p>其他設定細節：<br />
-<a title="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html" href="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html">https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html</a><br />
-<a title="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md" href="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md">https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</a></p>
+https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html<br />
+https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -686,10 +869,10 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTGgGIIZDZ+X+s823nBoAayFxfnv8uVJxcB9MEeOXa
 <p>將公鑰丟到主機上 authorized_keys 然後登入時</p>
 <div><pre class="hljs"><code>ssh SSH-SERVER -I <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libsimple-tpm-pk11.so</code></pre></div>
 <h2 id="reference">reference</h2>
-<p><a title="https://blog.ledger.com/ssh-with-tpm/" href="https://blog.ledger.com/ssh-with-tpm/">https://blog.ledger.com/ssh-with-tpm/</a><br />
-<a title="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md" href="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md">https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md</a><br />
-<a title="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html" href="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html">https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html</a><br />
-<a title="https://wiki.archlinux.org/title/Trusted_Platform_Module" href="https://wiki.archlinux.org/title/Trusted_Platform_Module">https://wiki.archlinux.org/title/Trusted_Platform_Module</a></p>
+<p>https://blog.ledger.com/ssh-with-tpm/<br />
+https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md<br />
+https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html<br />
+https://wiki.archlinux.org/title/Trusted_Platform_Module</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -736,11 +919,11 @@ Host proxyNode
 <div><pre class="hljs"><code>sshfs targetNode:<span class="hljs-regexp">/etc /</span>etc</code></pre></div>
 <p>以上，我開始重新設定所有的 ssh 都儘量改用 jump！</p>
 <p>reference:<br />
-<a title="https://serverfault.com/questions/941934/sshfs-over-a-jumphost" href="https://serverfault.com/questions/941934/sshfs-over-a-jumphost">https://serverfault.com/questions/941934/sshfs-over-a-jumphost</a><br />
-<a title="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/" href="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/">https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/</a><br />
-<a title="https://www.tecmint.com/access-linux-server-using-a-jump-host/" href="https://www.tecmint.com/access-linux-server-using-a-jump-host/">https://www.tecmint.com/access-linux-server-using-a-jump-host/</a><br />
-<a title="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/" href="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/">https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/</a><br />
-<a title="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html" href="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html">https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</a></p>
+https://serverfault.com/questions/941934/sshfs-over-a-jumphost<br />
+https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/<br />
+https://www.tecmint.com/access-linux-server-using-a-jump-host/<br />
+https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/<br />
+https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -795,9 +978,9 @@ Your <span class="hljs-keyword">public</span> key has been saved in
     ControlPath /tmp/ssh-<span class="hljs-built_in">%r</span>@<span class="hljs-built_in">%h</span>:<span class="hljs-built_in">%p</span>
     ControlPersist <span class="hljs-number">600</span></code></pre></div>
 <p>重點要注意 ssh 版本需要在 8.2以上，可以用<code>ssh -v</code> 看看！</p>
-<p><a title="https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts" href="https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts">https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts</a><br />
-<a title="https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html" href="https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html">https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html</a><br />
-<a title="https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/" href="https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/">https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</a></p>
+<p>https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts<br />
+https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html<br />
+https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -807,9 +990,9 @@ Your <span class="hljs-keyword">public</span> key has been saved in
             <content:encoded><![CDATA[<p>encfs 測試</p>
 <p>之前嘗試用 luks 應把一個 raw file 當作 device 去加密保護資料；用的時候不麻煩，但是如果要同步就很麻煩。且 key 的保存也是問題。</p>
 <p>嘗試了一些工具，例如:<br />
-cryfs - <a title="https://www.cryfs.org/howitworks" href="https://www.cryfs.org/howitworks">https://www.cryfs.org/howitworks</a><br />
-VeraCrypt - <a title="https://www.veracrypt.fr/code/VeraCrypt/" href="https://www.veracrypt.fr/code/VeraCrypt/">https://www.veracrypt.fr/code/VeraCrypt/</a><br />
-encfs - <a title="https://github.com/vgough/encfs" href="https://github.com/vgough/encfs">https://github.com/vgough/encfs</a></p>
+cryfs - https://www.cryfs.org/howitworks<br />
+VeraCrypt - https://www.veracrypt.fr/code/VeraCrypt/<br />
+encfs - https://github.com/vgough/encfs</p>
 <p>最後再一定風險下，嘗試用 encfs 覺得還可以，先試試看吧。</p>
 <p>debian or ubuntu 上基本上就是</p>
 <p>安裝與加密掛載</p>
@@ -877,10 +1060,10 @@ Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs
 <p>最後加個 watch 可以loop update</p>
 <div><pre class="hljs"><code>watch -ct -n <span class="hljs-number">3600</span> curl -s http:<span class="hljs-regexp">//</span>wttr.<span class="hljs-keyword">in</span></code></pre></div>
 <p>reference:<br />
-<a title="https://blog.m157q.tw/posts/2017/10/20/wttr-in/" href="https://blog.m157q.tw/posts/2017/10/20/wttr-in/">https://blog.m157q.tw/posts/2017/10/20/wttr-in/</a><br />
-<a title="https://github.com/chubin/wttr.in" href="https://github.com/chubin/wttr.in">https://github.com/chubin/wttr.in</a><br />
-<a title="https://wttr.in/:help" href="https://wttr.in/:help">https://wttr.in/:help</a><br />
-<a title="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/" href="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/">https://ubunlog.com/zh-TW/天氣預報終端天氣/</a></p>
+https://blog.m157q.tw/posts/2017/10/20/wttr-in/<br />
+https://github.com/chubin/wttr.in<br />
+https://wttr.in/:help<br />
+https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -909,11 +1092,11 @@ pipenv run gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
 <img src="/_resources/039ff7b7ceb041cfadd5e5b97ef6b114.png" /></p>
 </li>
 <li>
-<p>到 api 清單啟用 photo api ，先到網址： <a title="https://console.cloud.google.com/apis/library?project=_" href="https://console.cloud.google.com/apis/library?project=_">https://console.cloud.google.com/apis/library?project=_</a> ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
+<p>到 api 清單啟用 photo api ，先到網址： https://console.cloud.google.com/apis/library?project=_ ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
 <img src="/_resources/a80696a40d674a22b2930ae68c92d2d5.png" /><br />
 reference:<br />
-<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a><br />
-<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a></p>
+https://github.com/gilesknap/gphotos-sync<br />
+https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</p>
 </li>
 <li>
 <p>再到  <a title="https://console.cloud.google.com/" href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 產生token。左上角下拉式選單選好project，然後左側的導覽選單找"api和服務" 內的 "憑證"<br />
@@ -929,7 +1112,7 @@ reference:<br />
 <blockquote>
 <blockquote>
 <blockquote>
-<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on <a title="https://support.google.com/cloud/answer/6158849" href="https://support.google.com/cloud/answer/6158849">https://support.google.com/cloud/answer/6158849</a></p>
+<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on https://support.google.com/cloud/answer/6158849</p>
 </blockquote>
 </blockquote>
 </blockquote>
@@ -951,8 +1134,8 @@ pipenv run gphotos-sync ~/gphotos-sync
 <p>看起來都有好好的同步！</p>
 <p><img src="/_resources/4ca38828e9544adcb87524b2dcc2a1fe.png" /></p>
 <p>refererence:<br />
-<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a><br />
-<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a></p>
+https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html<br />
+https://github.com/gilesknap/gphotos-sync</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1026,13 +1209,13 @@ a2enmod proxy_http</code></pre></div>
     <span class="hljs-section">&lt;/VirtualHost&gt;</span>
 </code></pre></div>
 <p>存檔之後restart apache2 <code>systemctl restart apache2.service</code>，直接瀏覽看看：</p>
-<p>curl <a title="http://www.mydomain.org/rss/" href="http://www.mydomain.org/rss/">http://www.mydomain.org/rss/</a></p>
+<p>curl http://www.mydomain.org/rss/</p>
 <p>登入後匯入rss，正常用！好用，分享紀錄起來！</p>
 <p>reference:</p>
 <ul>
-<li><a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a></li>
-<li><a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a></li>
-<li><a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></li>
+<li>https://miniflux.app/</li>
+<li>https://miniflux.app/docs/installation.html#debian</li>
+<li>https://miniflux.app/docs/howto.html#reverse-proxy</li>
 </ul>
 ]]></content:encoded>
         </item>
@@ -1124,7 +1307,7 @@ Summary: 安裝與設定 tzupdate</p>
 <span class="hljs-variable">$ </span>tzupdate -p
 Asia/Taipei</code></pre></div>
 <p>就完成了...</p>
-<p>reference: <a title="https://github.com/cdown/tzupdate" href="https://github.com/cdown/tzupdate">https://github.com/cdown/tzupdate</a></p>
+<p>reference: https://github.com/cdown/tzupdate</p>
 <p>tzupdate is a fully automated utility to set the system time using geolocation.</p>
 <p><a id="user-content-usage" class="jop-noMdConv"></a></p>
 <h2 id="usage">Usage</h2>
@@ -1142,27 +1325,6 @@ Set system timezone to Europe/London.</p>
 <h2 id="testing">Testing</h2>
 <p>$ tox<br />
 Ran 18 tests in 1.109s</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Zotero 同步設定]]></title>
-            <guid>5eb8251fc5cf4502bb17dff1d1e89c0f</guid>
-            <pubDate>Wed, 06 Apr 2022 03:24:09 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: Zotero 同步設定<br />
-Tags: Linux<br />
-Date: 2022/04/06 11:02<br />
-Category: calendar<br />
-Slug: calendar/2022/04/06/11/02<br />
-Author: ThomasTsai<br />
-Summary: 設定 Zotero 的同步功能</p>
-<p>什麼事Zotero <a title="https://zh.wikipedia.org/wiki/Zotero" href="https://zh.wikipedia.org/wiki/Zotero">這邊</a>已經有說明了。就直接用吧！</p>
-<p>我的OS是Ubuntu mint 20，安裝 Zotero 直接用 <a title="https://github.com/retorquere/zotero-deb" href="https://github.com/retorquere/zotero-deb">zotero-deb</a> 比較好管理。</p>
-<div><pre class="hljs"><code>wget -qO- https:<span class="hljs-regexp">//</span>raw.githubusercontent.com<span class="hljs-regexp">/retorquere/</span>zotero-deb<span class="hljs-regexp">/master/i</span>nstall.sh | sudo bash
-sudo apt update
-sudo apt install zotero</code></pre></div>
-<p>安裝好之後，建立帳號(略)，設定同步</p>
-<p><img src="/_resources/5c6e9fd20ebb412eaf4045517b9f210c.png" /></p>
-<p>完工！</p>
 ]]></content:encoded>
         </item>
     </channel>
