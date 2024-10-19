@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>Ubuntu 人臉辨識登入 - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">Ubuntu 人臉辨識登入</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1729333414589"
+                  >2024-10-19 18:23</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1729333845964"
+                  >2024-10-19 18:30</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="ubuntu-人臉辨識登入">Ubuntu 人臉辨識登入</h1>
+<p>Howdy 為 Linux 提供 Windows Hello™ 風格的身份驗證。使用內建紅外線發射器和攝影機與臉部辨識相結合來證明您是誰。</p>
+<p>預設搭配使用 PAM 可以在您需要驗證身份的任何時候自動進行辨識：登入、鎖定螢幕、sudo、su 等，都可以用！</p>
+<h2 id="安裝-howdy">安裝 HOWDY</h2>
+<p>Debian/Ubuntu 常見的方式！</p>
+<div><pre class="hljs"><code>sudo<span class="hljs-built_in"> add-apt-repository </span>ppa:boltgolt/howdy
+sudo apt update
+sudo apt install howdy</code></pre></div>
+<h2 id="設定">設定</h2>
+<p>安裝好之後就會有指令 howdy</p>
+<div><pre class="hljs"><code>Usage:
+
+howdy [-U user] [-y] command [argument]
+
+Command 	Description
+<span class="hljs-built_in">add</span> 	<span class="hljs-built_in">Add</span> a new face model <span class="hljs-keyword">for</span> a<span class="hljs-built_in"> user
+</span>clear 	<span class="hljs-built_in">Remove</span> all face models <span class="hljs-keyword">for</span> a<span class="hljs-built_in"> user
+config </span>	Open the<span class="hljs-built_in"> config </span>file <span class="hljs-keyword">in</span> your<span class="hljs-built_in"> default </span>editor
+<span class="hljs-built_in">disable</span> 	<span class="hljs-built_in">Disable</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">enable</span> howdy
+list 	List all saved face models <span class="hljs-keyword">for</span> a<span class="hljs-built_in"> user
+</span><span class="hljs-built_in">remove</span> 	<span class="hljs-built_in">Remove</span> a specific model <span class="hljs-keyword">for</span> a<span class="hljs-built_in"> user
+</span>snapshot 	Take a snapshot of your camera input
+test 	Test the camera <span class="hljs-keyword">and</span> recognition methods
+version 	<span class="hljs-built_in">Print</span> the current version number</code></pre></div>
+<h2 id="增加-model">增加 model</h2>
+<p>例如</p>
+<div><pre class="hljs"><code>sudo howdy <span class="hljs-built_in">add</span> -U USERNAME</code></pre></div>
+<p>建議多做一些，另外也應該定時多更新，我發現可能太久沒建模，常常登入失敗。</p>
+<p>另外，也可以用 config 調整設定</p>
+<div><pre class="hljs"><code>sudo howdy config</code></pre></div>
+<p>我覺的 dark_threshold 預設 50 有點嚴格，建議調整到75...看個人經驗摟</p>
+<h2 id="reference">Reference</h2>
+<p><a title="https://github.com/boltgolt/howdy" href="https://github.com/boltgolt/howdy">https://github.com/boltgolt/howdy</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>
