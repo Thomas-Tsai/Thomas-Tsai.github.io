@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>Uninstall k8s - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">Uninstall k8s</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1729044825216"
+                  >2024-10-16 10:13</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1729044898423"
+                  >2024-10-16 10:14</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><p>uninstall k8s</p>
+<p>平常都是直接幹掉VM，剛好遇到不能這麼做時候，發現不知道怎麼移除k8s</p>
+<p>如果 Ubuntu 就這樣：</p>
+<div><pre class="hljs"><code>kubeadm reset
+sudo apt-<span class="hljs-built_in">get</span> purge kubeadm kubectl kubelet kubernetes-cni kube*   
+sudo apt-<span class="hljs-built_in">get</span> autoremove  
+sudo rm -rf ~/.kube</code></pre></div>
+<p>參考資料：<br />
+<a title="https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes" href="https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes">https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

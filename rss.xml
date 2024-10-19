@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Sat, 19 Oct 2024 10:41:23 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 19 Oct 2024 10:42:31 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -44,6 +44,21 @@ version 	<span class="hljs-built_in">Print</span> the current version number</co
 <p>我覺的 dark_threshold 預設 50 有點嚴格，建議調整到75...看個人經驗摟</p>
 <h2 id="reference">Reference</h2>
 <p><a title="https://github.com/boltgolt/howdy" href="https://github.com/boltgolt/howdy">https://github.com/boltgolt/howdy</a></p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Uninstall k8s]]></title>
+            <guid>d16ebe7c0fae4c609fc4284ba63356c1</guid>
+            <pubDate>Wed, 16 Oct 2024 02:13:45 GMT</pubDate>
+            <content:encoded><![CDATA[<p>uninstall k8s</p>
+<p>平常都是直接幹掉VM，剛好遇到不能這麼做時候，發現不知道怎麼移除k8s</p>
+<p>如果 Ubuntu 就這樣：</p>
+<div><pre class="hljs"><code>kubeadm reset
+sudo apt-<span class="hljs-built_in">get</span> purge kubeadm kubectl kubelet kubernetes-cni kube*   
+sudo apt-<span class="hljs-built_in">get</span> autoremove  
+sudo rm -rf ~/.kube</code></pre></div>
+<p>參考資料：<br />
+<a title="https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes" href="https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes">https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1307,26 +1322,6 @@ wmctrl -a <span class="hljs-string">"Skype"</span>
 wmctrl -a <span class="hljs-string">"LINE"</span></code></pre></div>
 <p>這樣可以把指定的應用程式排列整齊。</p>
 <p>歐 之前其實有用過 xtile 之類的工具，但是，總是找錯視窗，大小搞亂之類的，有點可惜。</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[aboutme]]></title>
-            <guid>68817990acc944cf81c6d5f77cb2d6fe</guid>
-            <pubDate>Thu, 08 Dec 2022 04:05:53 GMT</pubDate>
-            <content:encoded><![CDATA[<h1 id="biography">Biography</h1>
-<p>Thomas Tsai is a developer and associate researcher in Free Software Lab at National Center for High-Performance Computing, Taiwan. The Free Software Lab is focused on developing free software that can be used in the field of High Performance Computing (HPC). He wrote partclone which is tool to make partition as image with GPL license. With Steven Hsiau, Ceasar Sun, and Jazz Wang, we developed other free software "DRBL" and "Clonezilla". He is main developer of "Tuxboot" and "PyDRBL", the sub project of DRBL. Member of koha taiwan community, help libraries use the open source library system. Thomas will keep develop free software and promote everyone enjoy GNU/Linux.</p>
-<p>In November 2007, he won the public sector software award at the International Free Software Contest, Soissons, France. In 2008, he was recognized for his outstanding contribution in science and technology by the Executive Yuan, Taiwan.</p>
-<p>He focuses on middleware and free software research for high performance computing (HPC) and is a core developer of Partclone, a tool for saving file systems on a partition as an image or cloning the file system to another disk. His recent research has examined streaming data and AI framework integration systems, and he is also in charge of DAS, a data analysis platform in NCHC.</p>
-<p>All my joined projects:</p>
-<ul>
-<li><a title="DRBL" href="http://drbl.org">DRBL</a> – Diskless Remote Boot in Linux</li>
-<li><a title="Clonezilla" href="http://clonezilla.org">Clonezilla</a> – A free software disaster recovery, disk cloning and deployment solution.</li>
-<li><a title="Partclone" href="http://partclone.org">Partclone</a> – Tool to make partition as image with GPL license.</li>
-<li><a title="PyDRBL" href="http://pydrbl.nchc.org.tw">PyDRBL</a> – DRBL GUI</li>
-<li><a title="Tuxboot" href="http://tuxboot.org">Tuxboot</a> – The advanced clonezilla_live usb creator modify from Unetbootin</li>
-<li><a title="KOHA" href="http://koha-tw.org">KOHA</a> – An open source library system.</li>
-<li><a title="Cloudboot" href="http://cloudboot.org">Cloudboot</a> - Cloudboot is a service that allows a PC to boot from cloud resources.</li>
-</ul>
 ]]></content:encoded>
         </item>
     </channel>
