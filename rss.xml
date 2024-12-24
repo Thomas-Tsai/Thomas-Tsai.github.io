@@ -4,9 +4,125 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Sat, 19 Oct 2024 10:42:31 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 24 Dec 2024 07:51:41 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[SSL Medium Strength Cipher Suites Supported (SWEET32)]]></title>
+            <guid>4991ed8a3b314b9ba9b292f1c63b0093</guid>
+            <pubDate>Tue, 24 Dec 2024 07:14:18 GMT</pubDate>
+            <content:encoded><![CDATA[<h2 id="ssl-medium-strength-cipher-suites-supported-sweet32">SSL Medium Strength Cipher Suites Supported (SWEET32)</h2>
+<p>我有一台 Ubuntu 安裝 microk8s 被若掃到，掃到的弱點是 SSL Medium Strength Cipher Suites Supported (SWEET32)。紀錄一下處理方式，其中我比較少用 nmap，所以才現 nmap 可以這樣檢查。另外 microk8s 相關服務，以前也很少改動的經驗，</p>
+<h3 id="驗證弱點">驗證弱點</h3>
+<p>可以根據弱掃報告提供的資料看來是</p>
+<ul>
+<li>16443 	API server</li>
+<li>25000 	cluster-agent</li>
+<li>10257 	kube-controller</li>
+<li>10259 	kube-scheduler</li>
+</ul>
+<p>這些服務有問題。</p>
+<p>可以用 nmap 重新確認：</p>
+<div><pre class="hljs"><code>$ nmap --script ssl-enum-ciphers -p <span class="hljs-number">16443</span> <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>
+Starting Nmap <span class="hljs-number">7.94</span>SVN ( https:<span class="hljs-comment">//nmap.org ) at 2024-12-24 07:13 UTC</span>
+Nmap scan report for localhost (<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>)
+Host is up (<span class="hljs-number">0.00021</span>s latency).
+
+PORT      STATE SERVICE
+<span class="hljs-number">16443</span>/tcp open  unknown
+<span class="hljs-string">| ssl-enum-ciphers: </span>
+<span class="hljs-string">|   TLSv1.2: </span>
+<span class="hljs-string">|     ciphers: </span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_128_GCM_SHA256 (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_256_GCM_SHA384 (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (secp256r1) - C</span>
+<span class="hljs-string">|     compressors: </span>
+<span class="hljs-string">|       NULL</span>
+<span class="hljs-string">|     cipher preference: server</span>
+<span class="hljs-string">|     warnings: </span>
+<span class="hljs-string">|       64-bit block cipher 3DES vulnerable to SWEET32 attack</span>
+<span class="hljs-string">|   TLSv1.3: </span>
+<span class="hljs-string">|     ciphers: </span>
+<span class="hljs-string">|       TLS_AKE_WITH_AES_128_GCM_SHA256 (ecdh_x25519) - A</span>
+<span class="hljs-string">|       TLS_AKE_WITH_AES_256_GCM_SHA384 (ecdh_x25519) - A</span>
+<span class="hljs-string">|       TLS_AKE_WITH_CHACHA20_POLY1305_SHA256 (ecdh_x25519) - A</span>
+<span class="hljs-string">|     cipher preference: server</span>
+<span class="hljs-string">|_  least strength: C</span>
+
+Nmap done: <span class="hljs-number">1</span> IP address (<span class="hljs-number">1</span> host up) scanned in <span class="hljs-number">0.29</span> seconds
+</code></pre></div>
+<p>warning 是 <code>64-bit block cipher 3DES vulnerable to SWEET32 </code>，查詢相關資料之後確認是需要 disable <code>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</code>。</p>
+<h3 id="作法">作法</h3>
+<p>microk8s 的 <a title="https://github.com/canonical/microk8s/issues/1419" href="https://github.com/canonical/microk8s/issues/1419">issue</a> 有相關作法：</p>
+<p>需要修改相關檔案</p>
+<ul>
+<li>/var/snap/microk8s/current/args/kube-apiserver</li>
+<li>/var/snap/microk8s/current/args/kube-scheduler</li>
+<li>/var/snap/microk8s/current/args/kube-controller-manager</li>
+<li>/var/snap/microk8s/current/args/cluster-agent</li>
+</ul>
+<h4 id="varsnapmicrok8scurrentargskube-apiserver">/var/snap/microk8s/current/args/kube-apiserver</h4>
+<h4 id="varsnapmicrok8scurrentargskube-scheduler">/var/snap/microk8s/current/args/kube-scheduler</h4>
+<h4 id="varsnapmicrok8scurrentargskube-controller-manager">/var/snap/microk8s/current/args/kube-controller-manager</h4>
+<p>找到 <code>tls-cipher-suites</code> 那一行，根據需要自己增刪修改，<br />
+我這邊有問題的是 <code>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</code>，所以我只要刪除掉就好。<br />
+所以我目前修改後的設定像這樣：</p>
+<div><pre class="hljs"><code>--tls-cipher-suites=TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDS<span class="hljs-built_in">A_WITH</span>_AES_128_CBC_SHA,TLS_ECDHE_ECDS<span class="hljs-built_in">A_WITH</span>_AES_128_GCM_SHA256,TLS_ECDHE_ECDS<span class="hljs-built_in">A_WITH</span>_AES_256_CBC_SHA,TLS_ECDHE_ECDS<span class="hljs-built_in">A_WITH</span>_AES_256_GCM_SHA384,TLS_ECDHE_ECDS<span class="hljs-built_in">A_WITH</span>_CHACHA20_POLY1305,TLS_ECDHE_ECDS<span class="hljs-built_in">A_WITH</span>_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RS<span class="hljs-built_in">A_WITH</span>_AES_128_CBC_SHA,TLS_ECDHE_RS<span class="hljs-built_in">A_WITH</span>_AES_128_GCM_SHA256,TLS_ECDHE_RS<span class="hljs-built_in">A_WITH</span>_AES_256_CBC_SHA,TLS_ECDHE_RS<span class="hljs-built_in">A_WITH</span>_AES_256_GCM_SHA384,TLS_ECDHE_RS<span class="hljs-built_in">A_WITH</span>_CHACHA20_POLY1305,TLS_ECDHE_RS<span class="hljs-built_in">A_WITH</span>_CHACHA20_POLY1305_SHA256,TLS_RS<span class="hljs-built_in">A_WITH</span>_AES_128_CBC_SHA,TLS_RS<span class="hljs-built_in">A_WITH</span>_AES_128_GCM_SHA256,TLS_RS<span class="hljs-built_in">A_WITH</span>_AES_256_CBC_SHA,TLS_RS<span class="hljs-built_in">A_WITH</span>_AES_256_GCM_SHA384
+</code></pre></div>
+<h4 id="varsnapmicrok8scurrentargscluster-agent">/var/snap/microk8s/current/args/cluster-agent</h4>
+<p>只要加上</p>
+<div><pre class="hljs"><code><span class="hljs-attr">--min-tls-version</span>=tls13</code></pre></div>
+<h3 id="重新驗證">重新驗證</h3>
+<p>通通好之後跑 <code>microk8s stop</code> and  <code>microk8s start</code><br />
+之後用nmap檢查！</p>
+<div><pre class="hljs"><code>$ nmap --script ssl-enum-ciphers -p <span class="hljs-number">16443</span> <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>
+Starting Nmap <span class="hljs-number">7.94</span>SVN ( https:<span class="hljs-comment">//nmap.org ) at 2024-12-24 07:27 UTC</span>
+Nmap scan report for localhost (<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>)
+Host is up (<span class="hljs-number">0.00018</span>s latency).
+
+PORT      STATE SERVICE
+<span class="hljs-number">16443</span>/tcp open  unknown
+<span class="hljs-string">| ssl-enum-ciphers: </span>
+<span class="hljs-string">|   TLSv1.2: </span>
+<span class="hljs-string">|     ciphers: </span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_128_GCM_SHA256 (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_256_GCM_SHA384 (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A</span>
+<span class="hljs-string">|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A</span>
+<span class="hljs-string">|     compressors: </span>
+<span class="hljs-string">|       NULL</span>
+<span class="hljs-string">|     cipher preference: server</span>
+<span class="hljs-string">|   TLSv1.3: </span>
+<span class="hljs-string">|     ciphers: </span>
+<span class="hljs-string">|       TLS_AKE_WITH_AES_128_GCM_SHA256 (ecdh_x25519) - A</span>
+<span class="hljs-string">|       TLS_AKE_WITH_AES_256_GCM_SHA384 (ecdh_x25519) - A</span>
+<span class="hljs-string">|       TLS_AKE_WITH_CHACHA20_POLY1305_SHA256 (ecdh_x25519) - A</span>
+<span class="hljs-string">|     cipher preference: server</span>
+<span class="hljs-string">|_  least strength: A</span>
+
+Nmap done: <span class="hljs-number">1</span> IP address (<span class="hljs-number">1</span> host up) scanned in <span class="hljs-number">0.29</span> seconds
+</code></pre></div>
+<p>已經沒有warning!</p>
+<h3 id="reference">Reference:</h3>
+<p><a title="https://microk8s.io/docs/services-and-ports" href="https://microk8s.io/docs/services-and-ports">https://microk8s.io/docs/services-and-ports</a><br />
+<a title="https://github.com/canonical/microk8s/issues/1419" href="https://github.com/canonical/microk8s/issues/1419">https://github.com/canonical/microk8s/issues/1419</a><br />
+<a title="https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/" href="https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/">https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/</a><br />
+<a title="https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows" href="https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows">https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows</a><br />
+<a title="https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba" href="https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba">https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba</a></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Ubuntu 人臉辨識登入]]></title>
             <guid>5caccf0158c248b288f2b7699bcd5228</guid>
@@ -1269,59 +1385,6 @@ a2enmod proxy_http</code></pre></div>
 <li><a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a></li>
 <li><a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></li>
 </ul>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[寬銀幕之下應用WMCTRL控制視窗]]></title>
-            <guid>e6a6e7ff40c1462681857bf63a8d86d3</guid>
-            <pubDate>Fri, 09 Dec 2022 01:47:40 GMT</pubDate>
-            <content:encoded><![CDATA[<h2 id="寬銀幕之下應用wmctrl控制視窗">寬銀幕之下應用WMCTRL控制視窗</h2>
-<p>最近入手了21:9高解析寬銀幕整體不錯但是，有個痛點，就是太寬。</p>
-<p>視窗放大之後無寬，大部份狀況不習慣阿，自己調整之後，視窗layout最好是：</p>
-<ul>
-<li>常用的左邊，比例約70%</li>
-<li>不常用但需要注意的右邊，比例約30%</li>
-</ul>
-<p>Linux Mint 指令 有快捷鍵，ALT+up/down/left/right ，但是比例一般都是50%。</p>
-<p>搜尋一下之後，看到 WMCTRL 不錯用，可以參考這兩篇用法(<a title="https://www.twblogs.net/a/5e5365e2bd9eee2117c3e824" href="https://www.twblogs.net/a/5e5365e2bd9eee2117c3e824">控制窗口應用範例</a>、<a title="https://ephrain.net/linux-%E4%BD%BF%E7%94%A8-wmctrl-%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%88%97%E5%87%BA%E7%8F%BE%E6%9C%89%E7%9A%84%E8%A6%96%E7%AA%97%E4%B8%A6%E9%97%9C%E9%96%89/" href="https://ephrain.net/linux-%E4%BD%BF%E7%94%A8-wmctrl-%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%88%97%E5%87%BA%E7%8F%BE%E6%9C%89%E7%9A%84%E8%A6%96%E7%AA%97%E4%B8%A6%E9%97%9C%E9%96%89/">[Linux] 使用 wmctrl 指令，列出現有的視窗並關閉</a>)，或是 <a title="https://linux.die.net/man/1/wmctrl" href="https://linux.die.net/man/1/wmctrl">WMCTRL MAN PAGE</a>。</p>
-<p>share 一下我的腳本：</p>
-<p>two-thirds-app.sh:</p>
-<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
-current_active_window=$(xprop -id $(xprop -root 32x <span class="hljs-string">'\t$0'</span> _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME|sed s/.*=\ //g|sed s/\"//g)
-wmctrl -r <span class="hljs-variable">$current_active_window</span>  -e <span class="hljs-string">"0,0,0,2200,1440"</span></code></pre></div>
-<p>one-thirds-app.sh</p>
-<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
-current_active_window=$(xprop -id $(xprop -root 32x <span class="hljs-string">'\t$0'</span> _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME|sed s/.*=\ //g|sed s/\"//g)
-wmctrl -r <span class="hljs-variable">$current_active_window</span>  -e <span class="hljs-string">"0,2200,0,1240,1440"</span>
-</code></pre></div>
-<p>上述可以將 active 視窗，依指令上的數字調整大小。這邊寫死，懶得寫成自動。</p>
-<p>再用 mint 介面增加 custom shortcuts<br />
-<img src="/_resources/4edd857d59a74659836eddffb9093f6d.png" /></p>
-<p>然後，就可以愉快的讓視窗layout符合習慣使用！</p>
-<p>最後，又寫了一個自動調整所以常用視窗的layout如下：</p>
-<div><pre class="hljs"><code>#!/bin/bash
-### <span class="hljs-keyword">help</span> to get current <span class="hljs-keyword">app</span>, location and size
-## wmctrl -<span class="hljs-keyword">Gl</span> |awk '{<span class="hljs-keyword">print</span> <span class="hljs-variable">$8</span>,<span class="hljs-variable">$2</span>,<span class="hljs-variable">$3</span>,<span class="hljs-variable">$4</span>,<span class="hljs-variable">$5</span>,<span class="hljs-variable">$6}</span>'|sed -<span class="hljs-keyword">e</span> <span class="hljs-string">"s/ /,/g"</span>
-## wmctrl -<span class="hljs-keyword">Gl</span> |awk '{printf <span class="hljs-string">"wmctrl -r \"</span>%s\<span class="hljs-string">" -e \"</span>%s,%s,%s,%s,%s\<span class="hljs-string">"\n"</span>,<span class="hljs-variable">$8</span>,<span class="hljs-variable">$2</span>,<span class="hljs-variable">$3</span>,<span class="hljs-variable">$4</span>,<span class="hljs-variable">$5</span>,<span class="hljs-variable">$6</span>;}'
-
-## setting current <span class="hljs-keyword">app</span>, location and size
-wmctrl -r <span class="hljs-string">"LINE"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2465,0,984,1300"</span>
-wmctrl -r <span class="hljs-string">"Skype"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2394,100,1055,1334"</span>
-wmctrl -r <span class="hljs-string">"Messenger"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2297,110,1152,1250"</span>
-wmctrl -r <span class="hljs-string">"Caprine"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2297,110,1152,1250"</span>
-wmctrl -r <span class="hljs-string">"Telegram"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2212,200,1237,1235"</span>
-wmctrl -r <span class="hljs-string">"Mattermost"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2127,250,1322,1181"</span>
-wmctrl -r <span class="hljs-string">"Slack"</span> -<span class="hljs-keyword">e</span> <span class="hljs-string">"0,2021,300,1428,1125"</span>
-
-wmctrl -a <span class="hljs-string">"Mattermost"</span>
-wmctrl -a <span class="hljs-string">"Telegram"</span>
-wmctrl -a <span class="hljs-string">"Slack"</span>
-wmctrl -a <span class="hljs-string">"Messenger"</span>
-wmctrl -a <span class="hljs-string">"Caprine"</span>
-wmctrl -a <span class="hljs-string">"Skype"</span>
-wmctrl -a <span class="hljs-string">"LINE"</span></code></pre></div>
-<p>這樣可以把指定的應用程式排列整齊。</p>
-<p>歐 之前其實有用過 xtile 之類的工具，但是，總是找錯視窗，大小搞亂之類的，有點可惜。</p>
 ]]></content:encoded>
         </item>
     </channel>
