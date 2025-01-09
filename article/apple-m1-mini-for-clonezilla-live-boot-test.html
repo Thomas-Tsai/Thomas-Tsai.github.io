@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>APPLE M1 MINI for Clonezilla Live boot test - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">APPLE M1 MINI for Clonezilla Live boot test</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1736395281975"
+                  >2025-01-09 12:01</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1736395341017"
+                  >2025-01-09 12:02</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="apple-m1-mac-mini-clonezilla-live-boot-測試">APPLE M1 - MAC MINI Clonezilla live Boot 測試</h1>
+<h2 id="目標-m1-mini-u-boot-for-clonezilla">目標 M1 MINI U-Boot for Clonezilla</h2>
+<h2 id="實作方向">實作方向</h2>
+<p><a title="https://asahilinux.org/" href="https://asahilinux.org/">Asahi Linux</a> 支援 Apple Silicon 已經一陣子了，之前(2022?)還不支援 MAC MINI 的安裝，會卡住。最近(2025/01)嘗試已經可以順利安裝 Asahi Linux Fedora 的環境，且可以正常啟動。</p>
+<p>下一步的目標就是 Clonezilla 隨身碟可以開機、備份、還原，路還很遠，但是可以先試試看開機流程。</p>
+<h2 id="大致作法">大致作法</h2>
+<p>根據 <a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">m1-debian</a> 剛好有提到 Live System 的方式，大致步驟就是：</p>
+<ol>
+<li>安裝 Asahi Linux installer, 但是只安裝 UEFI environment only (m1n1 + U-Boot + ESP)</li>
+<li>安裝預先 build 好的 Live Debian with Asahi Linux kernel 隨身碟</li>
+<li>u-Boot 開機、Grub 開機、Debian Live boot</li>
+<li>再測試 Clonezilla UEFI boot</li>
+</ol>
+<h2 id="結論">結論</h2>
+<ul>
+<li>可以接到 Clonezilla Live uEFI boot 畫面</li>
+<li>The USB-A Port on the Mac Mini will not work in u-boot and grub.</li>
+<li>目前 Debian Kernel 還不支援, 所以 Clonezilla uefi 開機選單之後無畫面</li>
+</ul>
+<p><a type="video/mp4" href="/_resources/cc048deea36940cdbe2d725d96c6ab46.mp4">VID_20250107_151024.mp4</a></p>
+<p>有時間的話，後續嘗試 clonezilla live build 加上 asahi 特製版。那這樣就有機會完成 m1 clonezilla live 。只是對使用者而言，要動分割區，安裝asahi UEFI 是個大挑戰！</p>
+<h2 id="實作細節">實作細節</h2>
+<h3 id="asahi-安裝">Asahi 安裝</h3>
+<p>可以的話先看一下官方實作影片！ <a title="https://tg.st/u/live.mp4" href="https://tg.st/u/live.mp4">https://tg.st/u/live.mp4</a></p>
+<p>建議先升級 macOS to version 12.3 or later。我目前的版本是 mac os 15.2</p>
+<p>升級之後執行</p>
+<div><pre class="hljs"><code>curl https:<span class="hljs-regexp">//</span>alx.sh | sh</code></pre></div>
+<p>只安裝 UEFI environment only (m1n1 + U-Boot + ESP)</p>
+<p>安裝細節就自行上網查！</p>
+<h3 id="debian-live-隨身碟">Debian Live 隨身碟</h3>
+<p>以下我都是在Linux主機下操作的。先用 <code>lsblk</code> 找到要安裝的隨身碟，建議找一支沒有資料的用來測試。不要選到自己的 partition ，出事自己負責...xd</p>
+<p>以下是我的範例，我的隨身碟是 /dev/sdc, 依照以下指令進行</p>
+<div><pre class="hljs"><code>DEVICE=<span class="hljs-regexp">/dev/</span>sdc
+parted -a optimal <span class="hljs-variable">$DEVICE</span> mklabel msdos
+parted -a optimal <span class="hljs-variable">$DEVICE</span> mkpart primary fat32 <span class="hljs-number">2048</span>s <span class="hljs-number">100</span>%
+mkfs.vfat <span class="hljs-variable">${DEVICE}</span><span class="hljs-number">1</span>
+mount <span class="hljs-variable">${DEVICE}</span><span class="hljs-number">1</span> /mnt
+curl -sL https:<span class="hljs-regexp">//</span>tg.st<span class="hljs-regexp">/u/</span>asahi-debian-live.tar | tar -C /mnt -xf -
+umount /mnt</code></pre></div>
+<h3 id="uefi-boot-開機">UEFI BOOT 開機</h3>
+<p>以 Start in safe mode 方式開機，在 MAC MINI 上就是一直按著 power 不要放，等到 圖形開機選單出現。這時候選 UEFI Boot 開機。下一階段他會自動 boot。shell 會提示, 任意鍵盤按一下之後可以中斷自動開機，並進入 shell 互動模式。</p>
+<p>開機前接上隨身碟，因為 USB-A 不支援，所以隨身碟、鍵盤啥的，在 UEFI Boot、GRUB 階段都不能用。但是 type-c usb port 是可以用的。所以用 type-c 的 port。我是用 type-C 轉 USB-A 接上 usb hub 再接隨身碟和鍵盤。</p>
+<p><img src="/_resources/890adedfe0784b3d9fbd118b5b9ce859.jpg" /></p>
+<p>當進入 shell 互動模式輸入：</p>
+<div><pre class="hljs"><code>env <span class="hljs-built_in">set</span> boot_efi_bootmgr
+<span class="hljs-built_in">run</span> bootcmd_usb0</code></pre></div>
+<p><img src="/_resources/720d8e45f0194df3afab1f0df82e3073.jpg" /></p>
+<p>接下來進入 grub 但是 live 隨身碟預設的路徑不對，所以要手動輸入。<br />
+如果畫面停在 <code>grub&gt;</code></p>
+<p>可以嘗試，在輸入的同時畫面可能會亂掉，要有耐心，多試幾次！</p>
+<p>先用 <code>ls</code> 找檔案路徑，優先找到 (hdX,msdos1) 的結果來嘗試，我的就會是(hd3,msdos1)</p>
+<div><pre class="hljs"><code><span class="hljs-function"><span class="hljs-title">linux</span> <span class="hljs-params">(hd3,msdos1)</span>/<span class="hljs-title">vmlinuz</span>
+<span class="hljs-title">initrd</span> <span class="hljs-params">(hd3,msdos1)</span>/<span class="hljs-title">initrd</span>.<span class="hljs-title">zstd</span>
+<span class="hljs-title">boot</span></span></code></pre></div>
+<p>注意：</p>
+<ul>
+<li>可以先用 ls 列出路徑與檔案</li>
+<li>可以 <tab class="jop-noMdConv"> 補齊檔名</tab></li>
+<li>(hdX,msdos1) 不要有空格，這不是寫論文也不是程式！</li>
+</ul>
+<p>boot 執行之後，如果順利載入之後就可以看到 Debian 開機畫面。</p>
+<h3 id="clonezilla-live-隨身碟">Clonezilla Live  隨身碟</h3>
+<p>證實可以用 debioan live 就可以進行 clonezilla live test。準備隨身碟的方式基本相同，找一支隨身碟，用上述步驟製作，只是最後是<a title="https://free.nchc.org.tw/clonezilla-live/experimental/arm/" href="https://free.nchc.org.tw/clonezilla-live/experimental/arm/">下載 clonezilla arm64</a> 的 zip 解壓縮到 /mnt</p>
+<p>開機步驟同上。Start in safe mode 方式開機 -&gt; UEFI BOOT -&gt; shell 模式輸入</p>
+<div><pre class="hljs"><code>env <span class="hljs-built_in">set</span> boot_efi_bootmgr
+<span class="hljs-built_in">run</span> bootcmd_usb0</code></pre></div>
+<p>就會自動載入 Clonezilla EFI 開機選單。</p>
+<p>等有空真的換上可以用的 clonezilla live 再看看有沒有機會完成整的備份還原程序。</p>
+<h2 id="reference">Reference</h2>
+<p><a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</a><br />
+<a title="https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#" href="https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#">https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#</a><br />
+<a title="https://wiki.debian.org/InstallingDebianOn/Apple/M1" href="https://wiki.debian.org/InstallingDebianOn/Apple/M1">https://wiki.debian.org/InstallingDebianOn/Apple/M1</a><br />
+<a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

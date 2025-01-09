@@ -24,8 +24,8 @@
                 ></span
               >
               <span
-                >Updated At：<time datetime="1695780184462"
-                  >2023-09-27 10:03</time
+                >Updated At：<time datetime="1733726711001"
+                  >2024-12-09 14:45</time
                 ></span
               >
             </div>
@@ -76,6 +76,7 @@ systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">rest
            Require valid-user
        &lt;/Location&gt; </code></pre></div>
 <p>如此一來，我的DAV服務就是 <a title="https://xxx.thomas.org/dav/" href="https://xxx.thomas.org/dav/">https://xxx.thomas.org/dav/</a> 就會由 xandikos 進行。</p>
+<p>也可以直接指定特並addressbook, 例如<code>https://xxx.thomas.org/dav/user/contacts/addressbook/</code></p>
 <h2 id="csv2vcf">csv2vcf</h2>
 <p>我有固定去爬一些通訊錄檔成 csv 檔案，這時候要用 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">csv2vcf</a>，but vsf 3.0 thunderbird 不適應，所以魔改了一些</p>
 <div><pre class="hljs"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_to_vcard</span>(<span class="hljs-params">input_file, single_output, input_file_format</span>):
@@ -164,12 +165,28 @@ vdirsyncer <span class="hljs-keyword">sync</span></code></pre></div>
 <img src="/_resources/689b00f0f40b43babfb59313ac092724.png" /></p>
 <p>理論上就完成了！</p>
 <p>之後我用 crontab 定期整理 lab 通訊錄，並且自動同步到主機，所有thunderbird 就可以快速更新通訊錄了！</p>
+<h2 id="debug">Debug</h2>
+<p>example:</p>
+<div><pre class="hljs"><code>curl --user <span class="hljs-string">"user:pass"</span> -s -X GET  -s https://www.libthomas.org/dav/user/contacts/addressbook/f52e850d36xxxxxxcd7e432212f311354dfa672316.vcf
+<span class="hljs-section">BEGIN:VCARD</span>
+<span class="hljs-section">VERSION:4.0</span>
+<span class="hljs-section">FN:xxx</span>
+<span class="hljs-section">NICKNAME:xxx</span>
+<span class="hljs-section">TEL;TYPE=work;VALUE=TEXT:03-xx#xxx</span>
+<span class="hljs-section">EMAIL;PREF=1:xx@xxx.org.tw</span>
+<span class="hljs-section">ORG:ccc;yyy-xxx</span>
+<span class="hljs-section">TITLE:xxx</span>
+<span class="hljs-section">ADR;TYPE=work:;;rrr-ddd;;;;</span>
+<span class="hljs-section">NOTE:</span>
+<span class="hljs-section">END:VCARD</span>
+</code></pre></div>
 <h2 id="reference">Reference:</h2>
 <p><a title="https://github.com/jelmer/xandikos" href="https://github.com/jelmer/xandikos">https://github.com/jelmer/xandikos</a><br />
 <a title="https://www.xandikos.org/" href="https://www.xandikos.org/">https://www.xandikos.org/</a><br />
 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">https://github.com/mridah/csv2vcf</a><br />
 <a title="https://vdirsyncer.pimutils.org/en/stable/index.html" href="https://vdirsyncer.pimutils.org/en/stable/index.html">https://vdirsyncer.pimutils.org/en/stable/index.html</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a></p>
+<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a><br />
+<a title="https://www.atmail.com/blog/caldav-carddav/" href="https://www.atmail.com/blog/caldav-carddav/">https://www.atmail.com/blog/caldav-carddav/</a></p>
 </div>
       </article>
     </div>

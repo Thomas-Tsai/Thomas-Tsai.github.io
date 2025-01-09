@@ -4,9 +4,88 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 24 Dec 2024 07:51:41 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 09 Jan 2025 04:04:32 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[APPLE M1 MINI for Clonezilla Live boot test]]></title>
+            <guid>fe549df4984e47efad100d79d862cf5f</guid>
+            <pubDate>Thu, 09 Jan 2025 04:01:21 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="apple-m1-mac-mini-clonezilla-live-boot-測試">APPLE M1 - MAC MINI Clonezilla live Boot 測試</h1>
+<h2 id="目標-m1-mini-u-boot-for-clonezilla">目標 M1 MINI U-Boot for Clonezilla</h2>
+<h2 id="實作方向">實作方向</h2>
+<p><a title="https://asahilinux.org/" href="https://asahilinux.org/">Asahi Linux</a> 支援 Apple Silicon 已經一陣子了，之前(2022?)還不支援 MAC MINI 的安裝，會卡住。最近(2025/01)嘗試已經可以順利安裝 Asahi Linux Fedora 的環境，且可以正常啟動。</p>
+<p>下一步的目標就是 Clonezilla 隨身碟可以開機、備份、還原，路還很遠，但是可以先試試看開機流程。</p>
+<h2 id="大致作法">大致作法</h2>
+<p>根據 <a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">m1-debian</a> 剛好有提到 Live System 的方式，大致步驟就是：</p>
+<ol>
+<li>安裝 Asahi Linux installer, 但是只安裝 UEFI environment only (m1n1 + U-Boot + ESP)</li>
+<li>安裝預先 build 好的 Live Debian with Asahi Linux kernel 隨身碟</li>
+<li>u-Boot 開機、Grub 開機、Debian Live boot</li>
+<li>再測試 Clonezilla UEFI boot</li>
+</ol>
+<h2 id="結論">結論</h2>
+<ul>
+<li>可以接到 Clonezilla Live uEFI boot 畫面</li>
+<li>The USB-A Port on the Mac Mini will not work in u-boot and grub.</li>
+<li>目前 Debian Kernel 還不支援, 所以 Clonezilla uefi 開機選單之後無畫面</li>
+</ul>
+<p><a type="video/mp4" href="/_resources/cc048deea36940cdbe2d725d96c6ab46.mp4">VID_20250107_151024.mp4</a></p>
+<p>有時間的話，後續嘗試 clonezilla live build 加上 asahi 特製版。那這樣就有機會完成 m1 clonezilla live 。只是對使用者而言，要動分割區，安裝asahi UEFI 是個大挑戰！</p>
+<h2 id="實作細節">實作細節</h2>
+<h3 id="asahi-安裝">Asahi 安裝</h3>
+<p>可以的話先看一下官方實作影片！ <a title="https://tg.st/u/live.mp4" href="https://tg.st/u/live.mp4">https://tg.st/u/live.mp4</a></p>
+<p>建議先升級 macOS to version 12.3 or later。我目前的版本是 mac os 15.2</p>
+<p>升級之後執行</p>
+<div><pre class="hljs"><code>curl https:<span class="hljs-regexp">//</span>alx.sh | sh</code></pre></div>
+<p>只安裝 UEFI environment only (m1n1 + U-Boot + ESP)</p>
+<p>安裝細節就自行上網查！</p>
+<h3 id="debian-live-隨身碟">Debian Live 隨身碟</h3>
+<p>以下我都是在Linux主機下操作的。先用 <code>lsblk</code> 找到要安裝的隨身碟，建議找一支沒有資料的用來測試。不要選到自己的 partition ，出事自己負責...xd</p>
+<p>以下是我的範例，我的隨身碟是 /dev/sdc, 依照以下指令進行</p>
+<div><pre class="hljs"><code>DEVICE=<span class="hljs-regexp">/dev/</span>sdc
+parted -a optimal <span class="hljs-variable">$DEVICE</span> mklabel msdos
+parted -a optimal <span class="hljs-variable">$DEVICE</span> mkpart primary fat32 <span class="hljs-number">2048</span>s <span class="hljs-number">100</span>%
+mkfs.vfat <span class="hljs-variable">${DEVICE}</span><span class="hljs-number">1</span>
+mount <span class="hljs-variable">${DEVICE}</span><span class="hljs-number">1</span> /mnt
+curl -sL https:<span class="hljs-regexp">//</span>tg.st<span class="hljs-regexp">/u/</span>asahi-debian-live.tar | tar -C /mnt -xf -
+umount /mnt</code></pre></div>
+<h3 id="uefi-boot-開機">UEFI BOOT 開機</h3>
+<p>以 Start in safe mode 方式開機，在 MAC MINI 上就是一直按著 power 不要放，等到 圖形開機選單出現。這時候選 UEFI Boot 開機。下一階段他會自動 boot。shell 會提示, 任意鍵盤按一下之後可以中斷自動開機，並進入 shell 互動模式。</p>
+<p>開機前接上隨身碟，因為 USB-A 不支援，所以隨身碟、鍵盤啥的，在 UEFI Boot、GRUB 階段都不能用。但是 type-c usb port 是可以用的。所以用 type-c 的 port。我是用 type-C 轉 USB-A 接上 usb hub 再接隨身碟和鍵盤。</p>
+<p><img src="/_resources/890adedfe0784b3d9fbd118b5b9ce859.jpg" /></p>
+<p>當進入 shell 互動模式輸入：</p>
+<div><pre class="hljs"><code>env <span class="hljs-built_in">set</span> boot_efi_bootmgr
+<span class="hljs-built_in">run</span> bootcmd_usb0</code></pre></div>
+<p><img src="/_resources/720d8e45f0194df3afab1f0df82e3073.jpg" /></p>
+<p>接下來進入 grub 但是 live 隨身碟預設的路徑不對，所以要手動輸入。<br />
+如果畫面停在 <code>grub&gt;</code></p>
+<p>可以嘗試，在輸入的同時畫面可能會亂掉，要有耐心，多試幾次！</p>
+<p>先用 <code>ls</code> 找檔案路徑，優先找到 (hdX,msdos1) 的結果來嘗試，我的就會是(hd3,msdos1)</p>
+<div><pre class="hljs"><code><span class="hljs-function"><span class="hljs-title">linux</span> <span class="hljs-params">(hd3,msdos1)</span>/<span class="hljs-title">vmlinuz</span>
+<span class="hljs-title">initrd</span> <span class="hljs-params">(hd3,msdos1)</span>/<span class="hljs-title">initrd</span>.<span class="hljs-title">zstd</span>
+<span class="hljs-title">boot</span></span></code></pre></div>
+<p>注意：</p>
+<ul>
+<li>可以先用 ls 列出路徑與檔案</li>
+<li>可以 <tab class="jop-noMdConv"> 補齊檔名</tab></li>
+<li>(hdX,msdos1) 不要有空格，這不是寫論文也不是程式！</li>
+</ul>
+<p>boot 執行之後，如果順利載入之後就可以看到 Debian 開機畫面。</p>
+<h3 id="clonezilla-live-隨身碟">Clonezilla Live  隨身碟</h3>
+<p>證實可以用 debioan live 就可以進行 clonezilla live test。準備隨身碟的方式基本相同，找一支隨身碟，用上述步驟製作，只是最後是<a title="https://free.nchc.org.tw/clonezilla-live/experimental/arm/" href="https://free.nchc.org.tw/clonezilla-live/experimental/arm/">下載 clonezilla arm64</a> 的 zip 解壓縮到 /mnt</p>
+<p>開機步驟同上。Start in safe mode 方式開機 -&gt; UEFI BOOT -&gt; shell 模式輸入</p>
+<div><pre class="hljs"><code>env <span class="hljs-built_in">set</span> boot_efi_bootmgr
+<span class="hljs-built_in">run</span> bootcmd_usb0</code></pre></div>
+<p>就會自動載入 Clonezilla EFI 開機選單。</p>
+<p>等有空真的換上可以用的 clonezilla live 再看看有沒有機會完成整的備份還原程序。</p>
+<h2 id="reference">Reference</h2>
+<p><a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</a><br />
+<a title="https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#" href="https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#">https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#</a><br />
+<a title="https://wiki.debian.org/InstallingDebianOn/Apple/M1" href="https://wiki.debian.org/InstallingDebianOn/Apple/M1">https://wiki.debian.org/InstallingDebianOn/Apple/M1</a><br />
+<a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt</a></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[SSL Medium Strength Cipher Suites Supported (SWEET32)]]></title>
             <guid>4991ed8a3b314b9ba9b292f1c63b0093</guid>
@@ -600,6 +679,7 @@ systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">rest
            Require valid-user
        &lt;/Location&gt; </code></pre></div>
 <p>如此一來，我的DAV服務就是 <a title="https://xxx.thomas.org/dav/" href="https://xxx.thomas.org/dav/">https://xxx.thomas.org/dav/</a> 就會由 xandikos 進行。</p>
+<p>也可以直接指定特並addressbook, 例如<code>https://xxx.thomas.org/dav/user/contacts/addressbook/</code></p>
 <h2 id="csv2vcf">csv2vcf</h2>
 <p>我有固定去爬一些通訊錄檔成 csv 檔案，這時候要用 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">csv2vcf</a>，but vsf 3.0 thunderbird 不適應，所以魔改了一些</p>
 <div><pre class="hljs"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_to_vcard</span>(<span class="hljs-params">input_file, single_output, input_file_format</span>):
@@ -688,12 +768,28 @@ vdirsyncer <span class="hljs-keyword">sync</span></code></pre></div>
 <img src="/_resources/689b00f0f40b43babfb59313ac092724.png" /></p>
 <p>理論上就完成了！</p>
 <p>之後我用 crontab 定期整理 lab 通訊錄，並且自動同步到主機，所有thunderbird 就可以快速更新通訊錄了！</p>
+<h2 id="debug">Debug</h2>
+<p>example:</p>
+<div><pre class="hljs"><code>curl --user <span class="hljs-string">"user:pass"</span> -s -X GET  -s https://www.libthomas.org/dav/user/contacts/addressbook/f52e850d36xxxxxxcd7e432212f311354dfa672316.vcf
+<span class="hljs-section">BEGIN:VCARD</span>
+<span class="hljs-section">VERSION:4.0</span>
+<span class="hljs-section">FN:xxx</span>
+<span class="hljs-section">NICKNAME:xxx</span>
+<span class="hljs-section">TEL;TYPE=work;VALUE=TEXT:03-xx#xxx</span>
+<span class="hljs-section">EMAIL;PREF=1:xx@xxx.org.tw</span>
+<span class="hljs-section">ORG:ccc;yyy-xxx</span>
+<span class="hljs-section">TITLE:xxx</span>
+<span class="hljs-section">ADR;TYPE=work:;;rrr-ddd;;;;</span>
+<span class="hljs-section">NOTE:</span>
+<span class="hljs-section">END:VCARD</span>
+</code></pre></div>
 <h2 id="reference">Reference:</h2>
 <p><a title="https://github.com/jelmer/xandikos" href="https://github.com/jelmer/xandikos">https://github.com/jelmer/xandikos</a><br />
 <a title="https://www.xandikos.org/" href="https://www.xandikos.org/">https://www.xandikos.org/</a><br />
 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">https://github.com/mridah/csv2vcf</a><br />
 <a title="https://vdirsyncer.pimutils.org/en/stable/index.html" href="https://vdirsyncer.pimutils.org/en/stable/index.html">https://vdirsyncer.pimutils.org/en/stable/index.html</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a></p>
+<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a><br />
+<a title="https://www.atmail.com/blog/caldav-carddav/" href="https://www.atmail.com/blog/caldav-carddav/">https://www.atmail.com/blog/caldav-carddav/</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1304,87 +1400,6 @@ pipenv run gphotos-sync ~/gphotos-sync
 <p>refererence:<br />
 <a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a><br />
 <a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Miniflux]]></title>
-            <guid>732d631202134541a2ed5a574ed77a2e</guid>
-            <pubDate>Mon, 26 Dec 2022 04:29:03 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: Miniflux<br />
-Date: 2022/12/26<br />
-Tags: linux<br />
-Category: calendar<br />
-Author: ThomasTsai<br />
-Summary: TT-RSS 替代版</p>
-<h1 id="mingflux">MINGFLUX</h1>
-<p><code>Miniflux is a minimalist and opinionated feed reader.</code></p>
-<p>TT-RSS 一直是我 rss 閱讀器首選，可以自己架設再自己的伺服器，十分方便，安全。幾年之後，慢慢出現問題，TT-RSS 之前對 PHP 支援動作太慢，我 DEBIAN 一更新就會出問題。隨後，我就懶得去弄了，直到最近連資料重新init也跑步出來。官方也直接轉換到docker，不再支援 host 安裝的說明與維護，實在是無能為力阿。</p>
-<p>只好把 TT-RSS 換掉，，準備用線上版的 rss reader，突然看到 MINIFLUX，也是可以架設再自己的伺服器，看了一下release log 也滿積極的，所幸把rss 匯出成 opml ，再從頭架設 MINIFLUX，rss opml 匯入、閱讀文章也沒有問和問題！</p>
-<p>以下安裝步驟</p>
-<h2 id="database-configuration">Database Configuration</h2>
-<div><pre class="hljs"><code>sudo apt-<span class="hljs-keyword">get</span> install postgresql<span class="hljs-number">-13</span>
-
-# Switch <span class="hljs-keyword">to</span> the postgres <span class="hljs-keyword">user</span>
-$ sudo su - postgres
-
-# <span class="hljs-keyword">Create</span> a <span class="hljs-keyword">database</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">for</span> Miniflux
-$ createuser -P miniflux
-Enter <span class="hljs-keyword">password</span> <span class="hljs-keyword">for</span> <span class="hljs-built_in">new</span> <span class="hljs-keyword">role</span>: ******
-Enter it again: ******
-
-# <span class="hljs-keyword">Create</span> a <span class="hljs-keyword">database</span> <span class="hljs-keyword">for</span> miniflux that belongs <span class="hljs-keyword">to</span> our <span class="hljs-keyword">user</span>
-$ <span class="hljs-keyword">createdb</span> -O miniflux miniflux
-
-# <span class="hljs-keyword">Create</span> the <span class="hljs-keyword">extension</span> hstore <span class="hljs-keyword">as</span> <span class="hljs-keyword">superuser</span>
-$ psql miniflux -c <span class="hljs-string">'create extension hstore'</span>
-<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">EXTENSION</span></code></pre></div>
-<h2 id="installing-miniflux">Installing Miniflux</h2>
-<div><pre class="hljs"><code>echo <span class="hljs-string">"deb [trusted=yes] https://repo.miniflux.app/apt/ /"</span> | sudo tee /etc/apt/sources.list.d/miniflux.list &gt; /dev/<span class="hljs-literal">null</span>
-sudo apt-<span class="hljs-built_in">get</span> update
-sudo apt-<span class="hljs-built_in">get</span> install miniflux
-<span class="hljs-built_in">EXPORT</span>  <span class="hljs-attribute">DATABASE_URL</span>=<span class="hljs-string">"postgres://miniflux:xxxxxxxx@localhost/miniflux?sslmode=disable"</span>
-miniflux -migrate</code></pre></div>
-<h2 id="update-configuration">update configuration</h2>
-<p>因為我主機8080被用掉了，所以凱8081</p>
-<p>BASE_URL 也是因為我需要用apache2 proxy 所以一定要設定</p>
-<p>vi /etc/miniflux.conf</p>
-<div><pre class="hljs"><code><span class="hljs-comment"># See https://miniflux.app/docs/configuration.html</span>
-
-<span class="hljs-attr">RUN_MIGRATIONS</span>=<span class="hljs-number">1</span>
-<span class="hljs-attr">LISTEN_ADDR</span>=<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">8081</span>
-<span class="hljs-attr">BASE_URL</span>=https://www.mydomain.org/rss/
-<span class="hljs-attr">DATABASE_URL</span>=<span class="hljs-string">"postgres://miniflux:xxxxxxxx@localhost/miniflux?sslmode=disable"</span></code></pre></div>
-<p>重新啟動看看</p>
-<div><pre class="hljs"><code>systemctl <span class="hljs-built_in">restart</span> miniflux.service
-systemctl <span class="hljs-built_in">status</span> miniflux.service</code></pre></div>
-<p>ps: 如果有錯，可以設定環境變數後 手動直接跑miniflux 錯誤會丟到stderr 然後開始除錯。</p>
-<h2 id="apache2-reverse-proxy-mode">Apache2 reverse proxy mode</h2>
-<p>先 enable proxy</p>
-<div><pre class="hljs"><code><span class="hljs-attribute">a2enmod</span> proxy
-a2enmod proxy_http</code></pre></div>
-<p>設定 site (我是放 virtual_host內)</p>
-<div><pre class="hljs"><code>       <span class="hljs-attribute">ProxyRequests</span> <span class="hljs-literal">Off</span>
-       <span class="hljs-section">&lt;Proxy *&gt;</span>
-           <span class="hljs-attribute">Order</span> <span class="hljs-literal">allow</span>,<span class="hljs-literal">deny</span>
-           <span class="hljs-attribute">Allow</span> from <span class="hljs-literal">all</span>
-       <span class="hljs-section">&lt;/Proxy&gt;</span>
-       
-       <span class="hljs-section">&lt;Location <span class="hljs-string">"/rss/"</span>&gt;</span>
-           <span class="hljs-attribute">ProxyPreserveHost</span> <span class="hljs-literal">On</span>
-           <span class="hljs-attribute">ProxyPass</span> http://<span class="hljs-number">127.0.0.1:8081</span>/rss/
-           <span class="hljs-attribute">ProxyPassReverse</span> http://<span class="hljs-number">127.0.0.1:8081</span>/rss/
-       <span class="hljs-section">&lt;/Location&gt;</span> 
-    <span class="hljs-section">&lt;/VirtualHost&gt;</span>
-</code></pre></div>
-<p>存檔之後restart apache2 <code>systemctl restart apache2.service</code>，直接瀏覽看看：</p>
-<p>curl <a title="http://www.mydomain.org/rss/" href="http://www.mydomain.org/rss/">http://www.mydomain.org/rss/</a></p>
-<p>登入後匯入rss，正常用！好用，分享紀錄起來！</p>
-<p>reference:</p>
-<ul>
-<li><a title="https://miniflux.app/" href="https://miniflux.app/">https://miniflux.app/</a></li>
-<li><a title="https://miniflux.app/docs/installation.html#debian" href="https://miniflux.app/docs/installation.html#debian">https://miniflux.app/docs/installation.html#debian</a></li>
-<li><a title="https://miniflux.app/docs/howto.html#reverse-proxy" href="https://miniflux.app/docs/howto.html#reverse-proxy">https://miniflux.app/docs/howto.html#reverse-proxy</a></li>
-</ul>
 ]]></content:encoded>
         </item>
     </channel>
