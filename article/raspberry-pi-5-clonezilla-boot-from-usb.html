@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>Raspberry Pi 5 clonezilla boot from usb - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">Raspberry Pi 5 clonezilla boot from usb</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1739431400750"
+                  >2025-02-13 15:23</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1739432175725"
+                  >2025-02-13 15:36</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="raspberry-pi-5-clonezilla-boot-from-usb">Raspberry Pi 5 clonezilla boot from usb</h1>
+<h2 id="clonezilla-usb">clonezilla usb</h2>
+<p>取得 Clonezilla arm64 zip; 解壓縮到 usb /dev/sdc1</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">mount</span>/dev/sdc1 /mnt
+
+<span class="hljs-attribute">wget</span> https://free.nchc.org.tw/clonezilla-live/experimental/arm/<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>/clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip
+<span class="hljs-attribute">unzip</span> clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip /mnt</code></pre></div>
+<p>取得 efi , download  RPi5_UEFI_Release_v0.3.zip  from <a title="https://github.com/worproject/rpi5-uefi/releases" href="https://github.com/worproject/rpi5-uefi/releases">https://github.com/worproject/rpi5-uefi/releases</a></p>
+<p>解壓縮到  usb /dev/sdc1</p>
+<div><pre class="hljs"><code>unzip RPi5_UEFI_Release_v0.<span class="hljs-number">3</span><span class="hljs-selector-class">.zip</span> /mnt/
+
+ls /mnt
+arm64-release<span class="hljs-selector-class">.txt</span>  bcm2712-rpi-<span class="hljs-number">5</span>-<span class="hljs-selector-tag">b</span><span class="hljs-selector-class">.dtb</span>  boot  Clonezilla-Live-Version  config<span class="hljs-selector-class">.txt</span>  EFI  GPL  home  live  RPi5_UEFI_Release_v0.<span class="hljs-number">3</span><span class="hljs-selector-class">.zip</span>  RPI_EFI.fd</code></pre></div>
+<h2 id="raspberry-pi">raspberry pi</h2>
+<h3 id="預設開機">預設開機</h3>
+<p>RPI5 目前預設都是 sd-card 開機</p>
+<h3 id="測試-usb-only">測試 usb only</h3>
+<p>沒有接 sd-card<br />
+接上clonezilla usb 直接可以用 clonezilla live</p>
+<h3 id="有-sd-card-的狀況">有 sd-card 的狀況</h3>
+<p>預設會sd-card 開機，開機登入之後可以修改開機順序</p>
+<p>在 rpi os 內修改 boot order</p>
+<div><pre class="hljs"><code>sudo rpi-eeprom-<span class="hljs-built_in">config</span> <span class="hljs-comment">--edit</span></code></pre></div>
+<p>更改 BOOT_ORDER <code>Try USB first, followed by SD then repeat</code></p>
+<div><pre class="hljs"><code><span class="hljs-attr">BOOT_UART</span>=<span class="hljs-number">1</span>
+<span class="hljs-attr">POWER_OFF_ON_HALT</span>=<span class="hljs-number">0</span>
+<span class="hljs-attr">BOOT_ORDER</span>=<span class="hljs-number">0</span>xf14</code></pre></div>
+<p><img src="/_resources/97d45575ac434906b8d065f7ae9e6b59.png" /></p>
+<p>修改完之後就會優先開 usb ; 如果 usb 開機失敗就會為到 sd-card 開機</p>
+<h2 id="reference">reference</h2>
+<p><a title="https://forums.raspberrypi.com/viewtopic.php?t=366106" href="https://forums.raspberrypi.com/viewtopic.php?t=366106">https://forums.raspberrypi.com/viewtopic.php?t=366106</a><br />
+<a title="https://github.com/worproject/rpi5-uefi/releases" href="https://github.com/worproject/rpi5-uefi/releases">https://github.com/worproject/rpi5-uefi/releases</a><br />
+<a title="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow" href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow">https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow</a></p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

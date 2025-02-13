@@ -4,9 +4,48 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Thu, 09 Jan 2025 04:04:32 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 13 Feb 2025 07:38:17 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[Raspberry Pi 5 clonezilla boot from usb]]></title>
+            <guid>253e68279e6d4f2bb9aa155a87db218c</guid>
+            <pubDate>Thu, 13 Feb 2025 07:23:20 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="raspberry-pi-5-clonezilla-boot-from-usb">Raspberry Pi 5 clonezilla boot from usb</h1>
+<h2 id="clonezilla-usb">clonezilla usb</h2>
+<p>取得 Clonezilla arm64 zip; 解壓縮到 usb /dev/sdc1</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">mount</span>/dev/sdc1 /mnt
+
+<span class="hljs-attribute">wget</span> https://free.nchc.org.tw/clonezilla-live/experimental/arm/<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>/clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip
+<span class="hljs-attribute">unzip</span> clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip /mnt</code></pre></div>
+<p>取得 efi , download  RPi5_UEFI_Release_v0.3.zip  from <a title="https://github.com/worproject/rpi5-uefi/releases" href="https://github.com/worproject/rpi5-uefi/releases">https://github.com/worproject/rpi5-uefi/releases</a></p>
+<p>解壓縮到  usb /dev/sdc1</p>
+<div><pre class="hljs"><code>unzip RPi5_UEFI_Release_v0.<span class="hljs-number">3</span><span class="hljs-selector-class">.zip</span> /mnt/
+
+ls /mnt
+arm64-release<span class="hljs-selector-class">.txt</span>  bcm2712-rpi-<span class="hljs-number">5</span>-<span class="hljs-selector-tag">b</span><span class="hljs-selector-class">.dtb</span>  boot  Clonezilla-Live-Version  config<span class="hljs-selector-class">.txt</span>  EFI  GPL  home  live  RPi5_UEFI_Release_v0.<span class="hljs-number">3</span><span class="hljs-selector-class">.zip</span>  RPI_EFI.fd</code></pre></div>
+<h2 id="raspberry-pi">raspberry pi</h2>
+<h3 id="預設開機">預設開機</h3>
+<p>RPI5 目前預設都是 sd-card 開機</p>
+<h3 id="測試-usb-only">測試 usb only</h3>
+<p>沒有接 sd-card<br />
+接上clonezilla usb 直接可以用 clonezilla live</p>
+<h3 id="有-sd-card-的狀況">有 sd-card 的狀況</h3>
+<p>預設會sd-card 開機，開機登入之後可以修改開機順序</p>
+<p>在 rpi os 內修改 boot order</p>
+<div><pre class="hljs"><code>sudo rpi-eeprom-<span class="hljs-built_in">config</span> <span class="hljs-comment">--edit</span></code></pre></div>
+<p>更改 BOOT_ORDER <code>Try USB first, followed by SD then repeat</code></p>
+<div><pre class="hljs"><code><span class="hljs-attr">BOOT_UART</span>=<span class="hljs-number">1</span>
+<span class="hljs-attr">POWER_OFF_ON_HALT</span>=<span class="hljs-number">0</span>
+<span class="hljs-attr">BOOT_ORDER</span>=<span class="hljs-number">0</span>xf14</code></pre></div>
+<p><img src="/_resources/97d45575ac434906b8d065f7ae9e6b59.png" /></p>
+<p>修改完之後就會優先開 usb ; 如果 usb 開機失敗就會為到 sd-card 開機</p>
+<h2 id="reference">reference</h2>
+<p><a title="https://forums.raspberrypi.com/viewtopic.php?t=366106" href="https://forums.raspberrypi.com/viewtopic.php?t=366106">https://forums.raspberrypi.com/viewtopic.php?t=366106</a><br />
+<a title="https://github.com/worproject/rpi5-uefi/releases" href="https://github.com/worproject/rpi5-uefi/releases">https://github.com/worproject/rpi5-uefi/releases</a><br />
+<a title="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow" href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow">https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow</a></p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[APPLE M1 MINI for Clonezilla Live boot test]]></title>
             <guid>fe549df4984e47efad100d79d862cf5f</guid>
@@ -1328,78 +1367,6 @@ Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs
 <a title="https://github.com/chubin/wttr.in" href="https://github.com/chubin/wttr.in">https://github.com/chubin/wttr.in</a><br />
 <a title="https://wttr.in/:help" href="https://wttr.in/:help">https://wttr.in/:help</a><br />
 <a title="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/" href="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/">https://ubunlog.com/zh-TW/天氣預報終端天氣/</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Google Photo Sync]]></title>
-            <guid>eb2dc2accca641d0a2fd3be3a2de1356</guid>
-            <pubDate>Thu, 19 Jan 2023 02:45:38 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Title: Google Photo Sync<br />
-Date: 2022/12/26<br />
-Tags: linux<br />
-Category: calendar<br />
-Author: ThomasTsai<br />
-Summary: sync photo from google photo service</p>
-<h1 id="google-photo-sync">Google Photo Sync</h1>
-<p>我手機上的照片都統以sync到google photo去了，被綁架！總之，就先這樣，但是我local還想要keep一份，避免被綁架走不了。所以就找到一個 <a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">gphotos-sync</a> 的工具，可以協助我 Linux 上進行自動備份照片。以下步驟來自<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">部落格</a>(我用debian+bash)：</p>
-<div><pre class="hljs"><code>sudo apt install <span class="hljs-keyword">python3</span>-pip
-<span class="hljs-keyword">echo</span> <span class="hljs-string">"export PATH=\"\$PATH:\$HOME/.local/bin\""</span> &gt;&gt; ~/.bashrc
-<span class="hljs-keyword">python3</span> -<span class="hljs-keyword">m</span> pip install pipenv
-<span class="hljs-built_in">mkdir</span> ~/gphotos-<span class="hljs-keyword">sync</span>
-<span class="hljs-keyword">cd</span> ~/gphotos-<span class="hljs-keyword">sync</span>
-pipenv install gphotos-<span class="hljs-keyword">sync</span>
-pipenv run gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
-<p>and then, 最麻煩就是要到 google 那邊拿 api token</p>
-<ol>
-<li>
-<p>到 <a title="https://console.cloud.google.com/cloud-resource-manager" href="https://console.cloud.google.com/cloud-resource-manager">google cloud</a> 建立專案<br />
-<img src="/_resources/039ff7b7ceb041cfadd5e5b97ef6b114.png" /></p>
-</li>
-<li>
-<p>到 api 清單啟用 photo api ，先到網址： <a title="https://console.cloud.google.com/apis/library?project=_" href="https://console.cloud.google.com/apis/library?project=_">https://console.cloud.google.com/apis/library?project=_</a> ， 選擇剛建立的Project，再去搜尋 "Photos Library API "，再進去啟用，結果如下圖<br />
-<img src="/_resources/a80696a40d674a22b2930ae68c92d2d5.png" /><br />
-reference:<br />
-<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a><br />
-<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a></p>
-</li>
-<li>
-<p>再到  <a title="https://console.cloud.google.com/" href="https://console.cloud.google.com/">https://console.cloud.google.com/</a> 產生token。左上角下拉式選單選好project，然後左側的導覽選單找"api和服務" 內的 "憑證"<br />
-<img src="/_resources/617336c7f71141ccbd83ac04cc5c874b.png" /></p>
-</li>
-<li>
-<p>新增憑證，要新增 oauth 2.0<br />
-新增憑證的時候選電腦版應用程式<br />
-<img src="/_resources/322b35a0cce045c6a4c29fd9a087d131.png" /></p>
-</li>
-</ol>
-<p><img src="/_resources/a052fd43c744479dbfe2c760912cf47c.png" /></p>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>You can see the complete procedure for setting up OAuth 2.0 with your new project on <a title="https://support.google.com/cloud/answer/6158849" href="https://support.google.com/cloud/answer/6158849">https://support.google.com/cloud/answer/6158849</a></p>
-</blockquote>
-</blockquote>
-</blockquote>
-<p>然後下載憑證到</p>
-<div><pre class="hljs"><code>~<span class="hljs-regexp">/.config/g</span>photos-sync/</code></pre></div>
-<p>執行同步看看</p>
-<div><pre class="hljs"><code><span class="hljs-keyword">cd</span> gphotos-<span class="hljs-keyword">sync</span>
-pipenv run gphotos-<span class="hljs-keyword">sync</span> ~/gphotos-<span class="hljs-keyword">sync</span></code></pre></div>
-<p>這樣就可以同步了！</p>
-<p>crontab 自動同步<br />
-寫一支腳本  <code>~/bin/gphotos-sync.sh</code></p>
-<div><pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
-<span class="hljs-built_in">export</span> PATH=<span class="hljs-string">"/home/thomas/.local/bin:<span class="hljs-variable">$PATH</span>"</span>
-<span class="hljs-built_in">pushd</span> /home/thomas/gphotos-sync
-pipenv run gphotos-sync ~/gphotos-sync
-<span class="hljs-built_in">popd</span></code></pre></div>
-<p>編輯並加入 <code>$ crontab -e</code></p>
-<div><pre class="hljs"><code><span class="hljs-symbol">17 </span><span class="hljs-number">16</span> * * * /home/thomas/bin/gphotos-sync.sh</code></pre></div>
-<p>看起來都有好好的同步！</p>
-<p><img src="/_resources/4ca38828e9544adcb87524b2dcc2a1fe.png" /></p>
-<p>refererence:<br />
-<a title="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html" href="https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html">https://www.linuxuprising.com/2019/06/how-to-backup-google-photos-to-your.html</a><br />
-<a title="https://github.com/gilesknap/gphotos-sync" href="https://github.com/gilesknap/gphotos-sync">https://github.com/gilesknap/gphotos-sync</a></p>
 ]]></content:encoded>
         </item>
     </channel>
