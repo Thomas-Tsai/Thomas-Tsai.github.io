@@ -4,9 +4,135 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Fri, 14 Feb 2025 01:43:17 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 18 Feb 2025 04:34:18 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[Asahi linux image and clonezilla live]]></title>
+            <guid>8d0b0766ef9b48e099469870fe375978</guid>
+            <pubDate>Tue, 18 Feb 2025 04:23:09 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="clonezilla-live-rebuild">clonezilla live rebuild</h1>
+<p>之前測試<a href="/article/apple-m1-mini-for-clonezilla-live-boot-test">APPLE M1 MINI for Clonezilla Live boot test</a>已經大致確認開機流程，但是clonezilla live進不去，其實主要就是kernel, initramfs 做怪，大概嘗試了2周之後，才找到原因。</p>
+<p>解法就是先準備好 clonezilla-live zip</p>
+<p>安裝 clonezilla<br />
+<code>apt-get install clonezilla</code></p>
+<p>透過 <code>ocs-live-swap-kernel</code> 換 asahi linux kernel 重新打包並置換 linux kernel</p>
+<p>需要包好的 asahilinux kernel 可以從這邊下載 <a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a> ，我下載的是 <code>linux-image-6.5.0-asahi-00780-g62806c2c6f29_6.5.0-00780-g62806c2c6f29-1_arm64.deb</code></p>
+<p>換之前先簡單patch下 <code>ocs-live-swap-kernel</code>：</p>
+<div><pre class="hljs"><code><span class="hljs-meta">$ </span><span class="language-bash">diff /usr/sbin/ocs-live-swap-kernel ./ocs-live-swap-kernel</span> 
+176c176
+&lt;   cp_mod_cmd="rsync -a $rsync_vopt ../../$wd_tmp/usr/lib/modules/ squashfs-root/usr/lib/modules/"
+---
+<span class="hljs-meta">&gt; </span><span class="language-bash">  cp_mod_cmd=<span class="hljs-string">"rsync -a <span class="hljs-variable">$rsync_vopt</span> ../../<span class="hljs-variable">$wd_tmp</span>/lib/modules/ squashfs-root/usr/lib/modules/"</span></span>
+186a187,190
+<span class="hljs-meta">&gt; </span><span class="language-bash">  <span class="hljs-built_in">echo</span> <span class="hljs-string">"Adding Asahi Linux Modules"</span></span>
+<span class="hljs-meta">&gt; </span><span class="language-bash">  <span class="hljs-built_in">echo</span> <span class="hljs-string">"tps6598x"</span> &gt;&gt; squashfs-root/etc/initramfs-tools/modules</span>
+<span class="hljs-meta">&gt; </span><span class="language-bash">  <span class="hljs-built_in">echo</span> <span class="hljs-string">"phy_apple_atc"</span> &gt;&gt; squashfs-root/etc/initramfs-tools/modules</span>
+<span class="hljs-meta">&gt; </span><span class="language-bash">  <span class="hljs-built_in">echo</span> <span class="hljs-string">"typec"</span> &gt;&gt; squashfs-root/etc/initramfs-tools/modules</span></code></pre></div>
+<p>變成這樣：<br />
+<a type="application/octet-stream" href="/_resources/144d6baa13b243cb966839920bb1af77.">ocs-live-swap-kernel</a></p>
+<p>執行</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">sudo</span> ./ocs-live-swap-kernel clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip linux-image-<span class="hljs-number">6</span>.<span class="hljs-number">5</span>.<span class="hljs-number">0</span>-asahi-<span class="hljs-number">00780</span>-g62806c2c6f29_6.<span class="hljs-number">5</span>.<span class="hljs-number">0</span>-<span class="hljs-number">00780</span>-g62806c2c6f29-<span class="hljs-number">1</span>_arm64.deb</code></pre></div>
+<p>把新的 zip <code>clonezilla-live-3.2.0-31-arm64-k6.5.0-asahi-00780-g62806c2c6f29.zip</code> 解壓縮到隨身碟用 type-c port 開機即可</p>
+<p>開機過程：</p>
+<p><a type="video/mp4" href="/_resources/81fd47adf0cd4518b242056b870c912a.mp4">video_2025-02-18_12-25-08.mp4</a></p>
+<h1 id="補充資訊">補充資訊</h1>
+<h2 id="modules">modules</h2>
+<p>測試發現缺少重要的module導致預設 initramfs 沒有辦法驅動usb type-c; 所以需要加以下內容到 squashfs-root/etc/initramfs-tools/modules ; 再進行更新<br />
+例如 MAC m2 2023 需要：</p>
+<div><pre class="hljs"><code><span class="hljs-title">tps6598x</span>
+<span class="hljs-title">phy_apple_atc</span>
+typec</code></pre></div>
+<p>建議?：</p>
+<div><pre class="hljs"><code><span class="hljs-attr">CONFIG_HID_DOCKCHANNEL</span>=m
+<span class="hljs-attr">CONFIG_PHY_APPLE_ATC</span>=m
+<span class="hljs-attr">CONFIG_PHY_APPLE_DPTX</span>=m
+<span class="hljs-attr">CONFIG_HID_APPLE</span>=m
+<span class="hljs-attr">CONFIG_USB_XHCI_HCD</span>=m
+<span class="hljs-attr">CONFIG_USB_DWC3</span>=m
+<span class="hljs-attr">CONFIG_TYPEC_TPS6598X</span>=m</code></pre></div>
+<p>需要載入的modules<br />
+<a title="https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/" href="https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/">https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/</a></p>
+<h2 id="m1debian">m1debian</h2>
+<p>大量參考 m1debian 的成果，建議有需要的話可以看以下內容</p>
+<blockquote>
+<blockquote></blockquote>
+</blockquote>
+<pre><code>- prepare_rust.sh - Prepares a rust installation suitable for kernel compilation
+- m1n1_uboot_kernel.sh - Builds m1n1, u-boot and the kernel including gpu support.
+- mesa.sh - Creates mesa packages
+- bootstrap.sh - Creates Debian root and live filesystem
+- meta.sh - Meta package which makes sure that we always get latest and greatest kernel.
+</code></pre>
+<blockquote>
+<blockquote></blockquote>
+</blockquote>
+<h2 id="asahi-linux-image">Asahi linux image</h2>
+<p><a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a></p>
+<div><pre class="hljs"><code> <span class="hljs-comment"># Debian asahi packages</span>
+
+cat &lt;&lt;<span class="hljs-string">'EOF'</span> | sudo tee <span class="hljs-regexp">/etc/</span>X11<span class="hljs-regexp">/xorg.conf.d/</span><span class="hljs-number">30</span>-modeset.conf
+Section <span class="hljs-string">"OutputClass"</span>
+    Identifier <span class="hljs-string">"appledrm"</span>
+    MatchDriver <span class="hljs-string">"apple"</span>
+    Driver <span class="hljs-string">"modesetting"</span>
+    Option <span class="hljs-string">"PrimaryGPU"</span> <span class="hljs-string">"true"</span>
+EndSection
+EOF
+
+echo <span class="hljs-string">'deb https://thomas.glanzmann.de/asahi testing main'</span> | sudo tee <span class="hljs-regexp">/etc/</span>apt<span class="hljs-regexp">/sources.list.d/g</span>lanzmann.list
+sudo curl -sL -o <span class="hljs-regexp">/etc/</span>apt<span class="hljs-regexp">/trusted.gpg.d/</span>thomas-glanzmann.gpg https:<span class="hljs-regexp">//</span>tg.st<span class="hljs-regexp">/u/</span>thomas-glanzmann.gpg
+
+sudo apt update
+sudo apt install -y m1n1 linux-image-asahi libgl1-mesa-dri
+sudo apt upgrade -y
+</code></pre></div>
+<h2 id="m1n1">m1n1</h2>
+<p>m1n1 is the bootloader developed by the Asahi Linux project to bridge the Apple (XNU) boot ecosystem to the Linux boot ecosystem.</p>
+<blockquote>
+<blockquote>
+<p>Initializes hardware<br />
+Puts up a pretty logo<br />
+Loads embedded (appended) payloads, which can be:<br />
+Device Trees (FDTs), with automatic selection based on the platform<br />
+Initramfs images (compressed CPIO archives)<br />
+Kernel images in Linux ARM64 boot format (optionally compressed)<br />
+Configuration statements<br />
+Chainloads another version of itself from a FAT32 partition (if configured to do so)</p>
+</blockquote>
+<blockquote></blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>Boot chain overview<br />
+Apple stuff → m1n1 stage 1 → m1n1 stage 2 → DT + U-Boot → GRUB → Linux</p>
+</blockquote>
+<blockquote></blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>m1n1 stage 1 is installed by the Asahi Linux installer from recovery mode (in step2.sh), is signed by an internal machine-specific key in the process (as part of Apple’s secure boot policy), and can be considered immutable. Upgrading it should seldom be needed, we’ll make tooling for this when it becomes necessary. It has the PARTUUID of the EFI system partition assigned to this OS hardcoded into it (set at install time), and chainloads m1n1 stage 2 from ESP/m1n1/boot.bin (the ESP must be in internal NVMe storage, no external storage is supported). It also passes through this PARTUUID to the next stage (as a to-be-set /chosen property, see below), so the next stage knows what partition it’s booting from.</p>
+</blockquote>
+</blockquote>
+<p>有一個很重要的地方<br />
+<strong>(the ESP must be in internal NVMe storage, no external storage is supported)</strong></p>
+<p>這就是為什麼需要先透過asahi linux 安裝程序先在 mac 上安裝 uboot 開機的原因！</p>
+<p>編譯與實作參考:<br />
+GitHub: AsahiLinux/m1n1 <a title="https://github.com/AsahiLinux/m1n1" href="https://github.com/AsahiLinux/m1n1">https://github.com/AsahiLinux/m1n1</a></p>
+<h2 id="linux-image-asahi-編譯">linux-image-asahi 編譯</h2>
+<p>需要包好的 asahilinux kernel 可以到這邊下載：<br />
+<a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a></p>
+<p>編譯參考<br />
+<a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh</a></p>
+<h1 id="reference">Reference</h1>
+<ul>
+<li><a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</a></li>
+<li><a title="https://thomas.glanzmann.de/asahi/README.txt" href="https://thomas.glanzmann.de/asahi/README.txt">https://thomas.glanzmann.de/asahi/README.txt</a></li>
+<li><a title="https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/" href="https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/">https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/</a></li>
+<li><a title="https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/" href="https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/">https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/</a></li>
+</ul>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Raspberry Pi 5 clonezilla boot from usb]]></title>
             <guid>253e68279e6d4f2bb9aa155a87db218c</guid>
@@ -1311,65 +1437,6 @@ encfs - <a title="https://github.com/vgough/encfs" href="https://github.com/vgou
 <p>.data 就是實際的檔案 會加密檔名和內容。</p>
 <p>目前寫了一個陽春script 只有需要的時候才解開，10分鐘之後就umount，基本就是mount-&gt;sleep-&gt;umount 這麼簡單！</p>
 <p>後續觀察看看是否會有問題。</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[天氣 - wttr.in]]></title>
-            <guid>2dea8623554c4cd4a8078a21f2bc0fb9</guid>
-            <pubDate>Sun, 29 Jan 2023 11:46:43 GMT</pubDate>
-            <content:encoded><![CDATA[<p>天氣</p>
-<p>自動判斷所在城市 <code>curl wttr.in/</code></p>
-<p>or 加上城市 <code>curl wttr.in/taipei</code></p>
-<p>跑出這樣</p>
-<div><pre class="hljs"><code>Weather report: hsinchu
-
-     \  /       Partly cloudy
-   _ /<span class="hljs-string">""</span>.-.     +<span class="hljs-number">15</span>(<span class="hljs-number">13</span>) °C     
-     \_(   ).   ↙ <span class="hljs-number">31</span> km/h      
-     /(___(__)  <span class="hljs-number">10</span> km          
-                <span class="hljs-number">0.0</span> mm         
-                                                       ┌─────────────┐                                                       
-┌──────────────────────────────┬───────────────────────┤  Sun <span class="hljs-number">29</span> Jan ├───────────────────────┬──────────────────────────────┐
-│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
-├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
-│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
-│      .-.      +<span class="hljs-number">13</span>(<span class="hljs-number">11</span>) °C     │      .-.      <span class="hljs-number">18</span> °C          │      .-.      <span class="hljs-number">16</span> °C          │      .-.      +<span class="hljs-number">13</span>(<span class="hljs-number">11</span>) °C     │
-│   ― (   ) ―   ↙ <span class="hljs-number">26</span>-<span class="hljs-number">30</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↓ 27-31 km/</span>h   │   ― (   ) ―   ↙ <span class="hljs-number">27</span>-<span class="hljs-number">31</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↙ 25-33 km/</span>h   │
-│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
-│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
-└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
-                                                       ┌─────────────┐                                                       
-┌──────────────────────────────┬───────────────────────┤  Mon <span class="hljs-number">30</span> Jan ├───────────────────────┬──────────────────────────────┐
-│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
-├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
-│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
-│      .-.      <span class="hljs-number">16</span> °C          │      .-.      +<span class="hljs-number">22</span>(<span class="hljs-number">24</span>) °C     │      .-.      <span class="hljs-number">19</span> °C          │      .-.      +<span class="hljs-number">15</span>(<span class="hljs-number">14</span>) °C     │
-│   ― (   ) ―   ↙ <span class="hljs-number">24</span>-<span class="hljs-number">28</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↓ 27-31 km/</span>h   │   ― (   ) ―   ↙ <span class="hljs-number">27</span>-<span class="hljs-number">31</span> km<span class="hljs-regexp">/h   │   ― (   ) ―   ↙ 21-29 km/</span>h   │
-│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
-│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
-└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
-                                                       ┌─────────────┐                                                       
-┌──────────────────────────────┬───────────────────────┤  Tue <span class="hljs-number">31</span> Jan ├───────────────────────┬──────────────────────────────┐
-│            Morning           │             Noon      └──────┬──────┘     Evening           │             Night            │
-├──────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────────────────────────┤
-│     \   <span class="hljs-regexp">/     Sunny          │     \   /</span>     Sunny          │     \   <span class="hljs-regexp">/     Clear          │     \   /</span>     Clear          │
-│      .-.      <span class="hljs-number">17</span> °C          │      .-.      <span class="hljs-number">21</span> °C          │      .-.      <span class="hljs-number">18</span> °C          │      .-.      <span class="hljs-number">16</span> °C          │
-│   ― (   ) ―   ↗ <span class="hljs-number">4</span>-<span class="hljs-number">5</span> km<span class="hljs-regexp">/h     │   ― (   ) ―   → 11-13 km/</span>h   │   ― (   ) ―   ↗ <span class="hljs-number">5</span>-<span class="hljs-number">6</span> km<span class="hljs-regexp">/h     │   ― (   ) ―   ↗ 3-4 km/</span>h     │
-│      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │      `-’      <span class="hljs-number">10</span> km          │
-│     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │     <span class="hljs-regexp">/   \     0.0 mm | 0%    │     /</span>   \     <span class="hljs-number">0.0</span> mm | <span class="hljs-number">0</span>%    │
-└──────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────────────────────────┘
-Location: 新竹市, 臺灣 [<span class="hljs-number">24.8066333</span>,<span class="hljs-number">120.9686833</span>]
-
-Follow @igor_chubin <span class="hljs-keyword">for</span> wttr.<span class="hljs-keyword">in</span> updates
-</code></pre></div>
-<p><img src="/_resources/a7bac0fb1bcb484690c949ab386f0045.png" /></p>
-<p>最後加個 watch 可以loop update</p>
-<div><pre class="hljs"><code>watch -ct -n <span class="hljs-number">3600</span> curl -s http:<span class="hljs-regexp">//</span>wttr.<span class="hljs-keyword">in</span></code></pre></div>
-<p>reference:<br />
-<a title="https://blog.m157q.tw/posts/2017/10/20/wttr-in/" href="https://blog.m157q.tw/posts/2017/10/20/wttr-in/">https://blog.m157q.tw/posts/2017/10/20/wttr-in/</a><br />
-<a title="https://github.com/chubin/wttr.in" href="https://github.com/chubin/wttr.in">https://github.com/chubin/wttr.in</a><br />
-<a title="https://wttr.in/:help" href="https://wttr.in/:help">https://wttr.in/:help</a><br />
-<a title="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/" href="https://ubunlog.com/zh-TW/%E5%A4%A9%E6%B0%A3%E9%A0%90%E5%A0%B1%E7%B5%82%E7%AB%AF%E5%A4%A9%E6%B0%A3/">https://ubunlog.com/zh-TW/天氣預報終端天氣/</a></p>
 ]]></content:encoded>
         </item>
     </channel>
