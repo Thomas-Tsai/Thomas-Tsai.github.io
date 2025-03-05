@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Wed, 05 Mar 2025 14:22:37 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 05 Mar 2025 14:35:18 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -112,49 +112,40 @@ Unable <span class="hljs-keyword">to</span> open: /dev/sdc2.
 <h3 id="解密-or-解除保護">解密 or 解除保護</h3>
 <p>因為 <code>On a Mac with Apple silicon, Data Protection defaults to Class C </code> 會讓 Clonezilla 以 dd 進行 APFS 備份，所以尋找解法，讓 linux tools or partclone 可以進行備份。</p>
 <p>經過大量查詢可能的問題之後，發現主要是 security policy 差異造成的，預設為 <code>Full Security</code> ，只有signed 過的程式可以讀取；反之，就只有修改為 <code>Reduced Security</code>。</p>
-<div><pre class="hljs"><code>    <span class="hljs-keyword">Full</span> <span class="hljs-keyword">Security</span>: Ensures that <span class="hljs-keyword">only</span> your <span class="hljs-keyword">current</span> OS, <span class="hljs-keyword">or</span> signed operating <span class="hljs-keyword">system</span> software currently <span class="hljs-keyword">trusted</span> <span class="hljs-keyword">by</span> Apple, can run. This mode requires a network <span class="hljs-keyword">connection</span> at software installation <span class="hljs-type">time</span>.
-
-    Reduced <span class="hljs-keyword">Security</span>: Allows <span class="hljs-keyword">any</span> <span class="hljs-keyword">version</span> <span class="hljs-keyword">of</span> signed operating <span class="hljs-keyword">system</span> software ever <span class="hljs-keyword">trusted</span> <span class="hljs-keyword">by</span> Apple <span class="hljs-keyword">to</span> run.</code></pre></div>
+<blockquote>
+<p>Full Security: Ensures that only your current OS, or signed operating system software currently trusted by Apple, can run. This mode requires a network connection at software installation time.<br />
+Reduced Security: Allows any version of signed operating system software ever trusted by Apple to run.</p>
+</blockquote>
 <p><img src="/_resources/74088898e97d48908e95a8a53a6a5aef.png" /></p>
 <p>節錄過程如下：</p>
-<div><pre class="hljs"><code>If you’re <span class="hljs-keyword">the</span> administrator <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> Mac, you can change <span class="hljs-keyword">the</span> level <span class="hljs-keyword">of</span> security used <span class="hljs-keyword">on</span> <span class="hljs-title">your</span> <span class="hljs-title">startup</span> <span class="hljs-title">disk</span>.
+<blockquote>
+<p>If you’re the administrator of the Mac, you can change the level of security used on your startup disk.</p>
+<p>On the Mac with Apple silicon, choose Apple menu &gt; Shut Down.</p>
+<p>Press and hold the power button until “Loading startup options” appears.</p>
+<p>Click Options, then click Continue.</p>
+<p>Select a startup disk, then click Next.</p>
+<p>Select an administrator account, then click Next.</p>
+<p>Enter the password for the administrator account, then click Continue.</p>
+<p>In the Recovery app, choose Utilities &gt; Startup Security Utility.</p>
+<p>Select the system you want to use to set the security policy.</p>
+<p>If the disk is encrypted with FileVault, click Unlock, enter the password, then click Unlock.</p>
+<p>Click Security Policy.</p>
+<p>Select one of the following security options:</p>
+<pre><code>   Full Security: Ensures that only your current OS, or signed operating system software currently trusted by Apple, can run. This mode requires a network connection at software installation time.
 
-    On <span class="hljs-keyword">the</span> Mac <span class="hljs-keyword">with</span> Apple silicon, choose Apple menu &gt; Shut Down.
+   Reduced Security: Allows any version of signed operating system software ever trusted by Apple to run.
+</code></pre>
+<p>If you selected Reduced Security, select any of the following options, if needed:<br />
+Startup Security Utility window showing the Reduced Security options.</p>
+<pre><code>   Allow user management of kernel extensions from identified developers: Allows installation of software that uses legacy kernel extensions.
 
-    Press <span class="hljs-keyword">and</span> hold <span class="hljs-keyword">the</span> power button <span class="hljs-keyword">until</span> “Loading startup options” appears.
-
-    Click Options, <span class="hljs-keyword">then</span> click Continue.
-
-    Select <span class="hljs-keyword">a</span> startup disk, <span class="hljs-keyword">then</span> click Next.
-
-    Select <span class="hljs-keyword">an</span> administrator account, <span class="hljs-keyword">then</span> click Next.
-
-    Enter <span class="hljs-keyword">the</span> password <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> administrator account, <span class="hljs-keyword">then</span> click Continue.
-
-    In <span class="hljs-keyword">the</span> Recovery app, choose Utilities &gt; Startup Security Utility.
-
-    Select <span class="hljs-keyword">the</span> <span class="hljs-keyword">system</span> you want <span class="hljs-built_in">to</span> use <span class="hljs-built_in">to</span> <span class="hljs-built_in">set</span> <span class="hljs-keyword">the</span> security policy.
-
-    If <span class="hljs-keyword">the</span> disk is encrypted <span class="hljs-keyword">with</span> FileVault, click Unlock, enter <span class="hljs-keyword">the</span> password, <span class="hljs-keyword">then</span> click Unlock.
-
-    Click Security Policy.
-
-    Select <span class="hljs-literal">one</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> following security options:
-
-        Full Security: Ensures that only your current OS, <span class="hljs-keyword">or</span> signed operating <span class="hljs-keyword">system</span> software currently trusted <span class="hljs-keyword">by</span> Apple, can run. This mode requires <span class="hljs-keyword">a</span> network connection <span class="hljs-keyword">at</span> software installation <span class="hljs-built_in">time</span>.
-
-        Reduced Security: Allows <span class="hljs-keyword">any</span> <span class="hljs-built_in">version</span> <span class="hljs-keyword">of</span> signed operating <span class="hljs-keyword">system</span> software ever trusted <span class="hljs-keyword">by</span> Apple <span class="hljs-built_in">to</span> run.
-
-    If you selected Reduced Security, select <span class="hljs-keyword">any</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> following options, <span class="hljs-keyword">if</span> needed:
-    Startup Security Utility window showing <span class="hljs-keyword">the</span> Reduced Security options.
-
-        Allow user management <span class="hljs-keyword">of</span> kernel extensions <span class="hljs-built_in">from</span> identified developers: Allows installation <span class="hljs-keyword">of</span> software that uses legacy kernel extensions.
-
-        Allow remote management <span class="hljs-keyword">of</span> kernel extensions <span class="hljs-keyword">and</span> automatic software updates: Authorizes remote management <span class="hljs-keyword">of</span> legacy kernel extensions <span class="hljs-keyword">and</span> software updates <span class="hljs-keyword">using</span> <span class="hljs-keyword">a</span> mobile device management (MDM) solution.</code></pre></div>
+   Allow remote management of kernel extensions and automatic software updates: Authorizes remote management of legacy kernel extensions and software updates using a mobile device management (MDM) solution.
+</code></pre>
+</blockquote>
 <p>完成上述操作之後，再用 m1-debian or Clonezilla Live 去讀取 APFS 就都是解密狀態，且可以備份與還原！</p>
 <p>以上前題是預設狀態，也就是使用者沒有手動進行 APFS 加密，如果有，還是需要先進行解密，再設定為 <code>Reduce Security</code> 才可以備份。</p>
-<p>Reference:<br />
-https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac<br />
+<h2 id="reference">Reference</h2>
+<p>https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac<br />
 https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0</p>
 ]]></content:encoded>
         </item>
