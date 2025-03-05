@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>Apple silicon APFS 備份問題 - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">Apple silicon APFS 備份問題</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1741183373473"
+                  >2025-03-05 22:02</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1741184477708"
+                  >2025-03-05 22:21</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h2 id="apple-apfs-無法讀取">Apple  APFS 無法讀取</h2>
+<p>用 Clonezilla Live 開機之後，以 Partclone.apfs 進行備份，部份APFS磁區會出現失敗。</p>
+<p>先觀察 gpt 資料如下</p>
+<h3 id="gdisk">gdisk</h3>
+<div><pre class="hljs"><code><span class="hljs-attribute">Found</span> valid GPT with protective MBR; using GPT.
+<span class="hljs-attribute">Disk</span> /dev/nvme0n1: <span class="hljs-number">61279344</span> sectors, <span class="hljs-number">233</span>.<span class="hljs-number">8</span> GiB
+<span class="hljs-attribute">Model</span>: APPLE SSD AP0256Z                       
+<span class="hljs-attribute">Sector</span> size (logical/physical): <span class="hljs-number">4096</span>/<span class="hljs-number">4096</span> bytes
+<span class="hljs-attribute">Disk</span> identifier (GUID): B2AF6879-DEC6-<span class="hljs-number">422</span>B-AE54-B21C581B37EB
+<span class="hljs-attribute">Partition</span> table holds up to <span class="hljs-number">128</span> entries
+<span class="hljs-attribute">Main</span> partition table begins at sector <span class="hljs-number">2</span> and ends at sector <span class="hljs-number">5</span>
+<span class="hljs-attribute">First</span> usable sector is <span class="hljs-number">6</span>, last usable sector is <span class="hljs-number">61279338</span>
+<span class="hljs-attribute">Partitions</span> will be aligned <span class="hljs-literal">on</span> <span class="hljs-number">2</span>-sector boundaries
+<span class="hljs-attribute">Total</span> free space is <span class="hljs-number">30543728</span> sectors (<span class="hljs-number">116</span>.<span class="hljs-number">5</span> GiB)
+
+<span class="hljs-attribute">Number</span>  Start (sector)    End (sector)  Size       Code  Name
+   <span class="hljs-attribute">1</span>               <span class="hljs-number">6</span>          <span class="hljs-number">128005</span>   <span class="hljs-number">500</span>.<span class="hljs-number">0</span> MiB   AF0B  iBootSystemContainer
+   <span class="hljs-attribute">2</span>          <span class="hljs-number">128006</span>        <span class="hljs-number">24542213</span>   <span class="hljs-number">93</span>.<span class="hljs-number">1</span> GiB    AF0A  Container
+   <span class="hljs-attribute">3</span>        <span class="hljs-number">24542214</span>        <span class="hljs-number">25152517</span>   <span class="hljs-number">2</span>.<span class="hljs-number">3</span> GiB     AF0A  
+   <span class="hljs-attribute">4</span>        <span class="hljs-number">25152518</span>        <span class="hljs-number">25277701</span>   <span class="hljs-number">489</span>.<span class="hljs-number">0</span> MiB   EF00  
+   <span class="hljs-attribute">5</span>        <span class="hljs-number">25277702</span>        <span class="hljs-number">29424901</span>   <span class="hljs-number">15</span>.<span class="hljs-number">8</span> GiB    <span class="hljs-number">8300</span>  
+   <span class="hljs-attribute">6</span>        <span class="hljs-number">59968630</span>        <span class="hljs-number">61279338</span>   <span class="hljs-number">5</span>.<span class="hljs-number">0</span> GiB     AF0C  RecoveryOSContainer
+</code></pre></div>
+<p>一般狀況就是 gpt code <code>AF0A</code>會有問題。</p>
+<h3 id="blkid">blkid</h3>
+<p>以 <code>blkid</code> 看磁區資訊，則沒有什麼異常</p>
+<div><pre class="hljs"><code>root@debian:/home/thomas# blkid
+/dev/nvme0n1p5: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"b2987700-28dd-450a-b0e9-5f2e8a121cbb"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"ext4"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e77b2894-4740-45b1-951c-f61d4b8f97d2"</span>
+/dev/nvme0n1p3: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"0f126770-2c2b-4b91-b298-fd08d20a9988"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e3a97025-7b7f-4d26-8ecf-416316ce27c6"</span>
+/dev/nvme0n1p1: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"27a5e297-e02e-4c76-aca0-ba66b8f95bea"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"iBootSystemContainer"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"904b9d04-bdea-4471-a4ec-7bd17b74b469"</span>
+/dev/nvme0n1p6: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"64a78f4b-c221-4b3f-b480-8afb00b9562d"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"RecoveryOSContainer"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"1b4755bf-8391-4c0e-9e84-c11fe3775627"</span>
+/dev/nvme0n1p4: <span class="hljs-attribute">LABEL_FATBOOT</span>=<span class="hljs-string">"EFI - DEBIA"</span> <span class="hljs-attribute">LABEL</span>=<span class="hljs-string">"EFI - DEBIA"</span> <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"BFFB-100B"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"vfat"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"38514106-b274-4e79-94d1-45696d24307f"</span>
+/dev/nvme0n1p2: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"7e9b172c-ef57-465e-b10c-c65888e706fa"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"Container"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e8152f74-d982-4cab-af9c-d4044b932f83"</span>
+</code></pre></div>
+<h3 id="fsapfsinfo">fsapfsinfo</h3>
+<p>安裝 ibfsapfs-utils 之後可以用程式 fsapfsinfo 檢視 APFS 摘要資訊。</p>
+<p>可以看到 nvme0n1p1 可以正常讀取資訊</p>
+<div><pre class="hljs"><code>/usr/bin/fsapfsinfo /dev/nvme0n1p1
+fsapfsinfo 20201107
+
+Apple File System (APFS) information:                                                                                                                                                       
+Container information:                                                
+<span class="hljs-code">        Identifier                      : 27a5e297-e02e-4c76-aca0-ba66b8f95bea </span>
+<span class="hljs-code">        Number of volumes               : 4 </span>
+Volume: 1 information: 
+<span class="hljs-code">        Identifier                      : cee8dbdc-009a-4270-9783-f8fbc70981b5</span>
+<span class="hljs-code">        Name                            : iSCPreboot </span>
+<span class="hljs-code">        Compatible features             : 0x00000002 </span>
+<span class="hljs-code">                (NX_FEATURE_LCFD) </span>
+<span class="hljs-code"> </span>
+<span class="hljs-code">        Incompatible features           : 0x00000001 </span>
+<span class="hljs-code">                (NX_INCOMPAT_VERSION1) </span>
+
+<span class="hljs-code">        Read-only compatible features   : 0x00000000</span>
+<span class="hljs-code">....
+....
+....</span></code></pre></div>
+<h4 id="受保護的-apfs">受保護的 APFS:</h4>
+<p>此外以 fsapfsinfo 檢視受保護的 APFS<br />
+可以看到 nvme0n1p2 無法正常讀取資訊</p>
+<div><pre class="hljs"><code>root@debian:/home/thomas# /usr/bin/fsapfsinfo /dev/nvme0n1p2
+fsapfsinfo <span class="hljs-number">20201107</span>                                                                           
+
+Unable <span class="hljs-keyword">to</span> open: /dev/nvme0n1p2.
+<span class="hljs-symbol">libcaes_context_initialize:</span> unable <span class="hljs-keyword">to</span> <span class="hljs-keyword">set</span> padding <span class="hljs-keyword">in</span> context <span class="hljs-keyword">with</span> <span class="hljs-keyword">error</span>: <span class="hljs-keyword">error</span>:<span class="hljs-number">00000000</span>:<span class="hljs-keyword">lib</span>(<span class="hljs-number">0</span>)::reason(<span class="hljs-number">0</span>).
+<span class="hljs-symbol">libcaes_tweaked_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize main context.
+<span class="hljs-symbol">libfsapfs_encryption_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize decryption context.
+<span class="hljs-symbol">libfsapfs_container_key_bag_read_file_io_handle:</span> unable <span class="hljs-keyword">to</span> initialize encryption context.
+<span class="hljs-symbol">libfsapfs_internal_container_open_read:</span> unable <span class="hljs-keyword">to</span> read container <span class="hljs-keyword">key</span> bag at offset: <span class="hljs-number">16803950592</span> (<span class="hljs-number">0</span>x3e997f000).
+<span class="hljs-symbol">libfsapfs_container_open_file_io_handle:</span> unable <span class="hljs-keyword">to</span> read <span class="hljs-keyword">from</span> file IO handle.
+<span class="hljs-symbol">info_handle_open_input:</span> unable <span class="hljs-keyword">to</span> open input container.
+</code></pre></div>
+<p>可以看到關鍵錯誤訊息<code>libfsapfs_container_key_bag_read_file_io_handle: unable to initialize encryption context.</code></p>
+<p>所以目前確認預設安裝是有啟動保護措施，相關的APFS有</p>
+<p>/dev/nvme0n1p1: 一般 - iBootSystemContainer	<br />
+/dev/nvme0n1p2: 保護 - Container / MAC-OS<br />
+/dev/nvme0n1p3: 保護 - NA / for m1-debian only<br />
+/dev/nvme0n1p6: 一般 - RecoveryOSContainer</p>
+<h3 id="原因">原因！</h3>
+<p>證實有啟動保護措施<br />
+Mac with Apple silicon, Data Protection defaults to Class C (see Data Protection classes)</p>
+<p><code>On a Mac with Apple silicon, Data Protection defaults to Class C (see Data Protection classes) but utilises a volume key rather than a per-extent or per-file key — effectively recreating the security model of FileVault for user data. Users must still opt in to FileVault to receive the full protection of entangling the encryption key hierarchy with their password. Developers can also opt in to a higher protection class that uses a per-file or per-extent key.</code></p>
+<p>文章出處：<br />
+https://support.apple.com/en-in/guide/security/secb010e978a/1/web/1<br />
+https://support.apple.com/en-in/guide/security/secf6276da8a/1/web/1</p>
+<h3 id="手動-usb-storage-加密進行測試">手動 usb storage 加密進行測試</h3>
+<p>手動於 MAC OS 將外接隨身碟進行 APFS 格式加密，再用  fsapfsinfo 檢視 APFS 看看錯誤訊息為何？！結果就是一樣<code>libfsapfs_encryption_context_initialize: unable to initialize decryption context. </code></p>
+<div><pre class="hljs"><code>thomas@debian-lab:~/tmp/mnt/tmp/macminim2$ sudo /usr/bin/fsapfsinfo /dev/sdc2
+fsapfsinfo <span class="hljs-number">20201107</span>
+
+Unable <span class="hljs-keyword">to</span> open: /dev/sdc2.
+<span class="hljs-symbol">libcaes_context_initialize:</span> unable <span class="hljs-keyword">to</span> <span class="hljs-keyword">set</span> padding <span class="hljs-keyword">in</span> context <span class="hljs-keyword">with</span> <span class="hljs-keyword">error</span>: <span class="hljs-keyword">error</span>:<span class="hljs-number">00000000</span>:<span class="hljs-keyword">lib</span>(<span class="hljs-number">0</span>)::reason(<span class="hljs-number">0</span>).
+<span class="hljs-symbol">libcaes_tweaked_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize main context.
+<span class="hljs-symbol">libfsapfs_encryption_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize decryption context.
+<span class="hljs-symbol">libfsapfs_container_key_bag_read_file_io_handle:</span> unable <span class="hljs-keyword">to</span> initialize encryption context.
+<span class="hljs-symbol">libfsapfs_internal_container_open_read:</span> unable <span class="hljs-keyword">to</span> read container <span class="hljs-keyword">key</span> bag at offset: <span class="hljs-number">16777302016</span> (<span class="hljs-number">0</span>x3e8015000).
+<span class="hljs-symbol">libfsapfs_container_open_file_io_handle:</span> unable <span class="hljs-keyword">to</span> read <span class="hljs-keyword">from</span> file IO handle.
+<span class="hljs-symbol">info_handle_open_input:</span> unable <span class="hljs-keyword">to</span> open input container.</code></pre></div>
+<h3 id="解密-or-解除保護">解密 or 解除保護</h3>
+<p>因為 <code>On a Mac with Apple silicon, Data Protection defaults to Class C </code> 會讓 Clonezilla 以 dd 進行 APFS 備份，所以尋找解法，讓 linux tools or partclone 可以進行備份。</p>
+<p>經過大量查詢可能的問題之後，發現主要是 security policy 差異造成的，預設為 <code>Full Security</code> ，只有signed 過的程式可以讀取；反之，就只有修改為 <code>Reduced Security</code>。</p>
+<div><pre class="hljs"><code>    <span class="hljs-keyword">Full</span> <span class="hljs-keyword">Security</span>: Ensures that <span class="hljs-keyword">only</span> your <span class="hljs-keyword">current</span> OS, <span class="hljs-keyword">or</span> signed operating <span class="hljs-keyword">system</span> software currently <span class="hljs-keyword">trusted</span> <span class="hljs-keyword">by</span> Apple, can run. This mode requires a network <span class="hljs-keyword">connection</span> at software installation <span class="hljs-type">time</span>.
+
+    Reduced <span class="hljs-keyword">Security</span>: Allows <span class="hljs-keyword">any</span> <span class="hljs-keyword">version</span> <span class="hljs-keyword">of</span> signed operating <span class="hljs-keyword">system</span> software ever <span class="hljs-keyword">trusted</span> <span class="hljs-keyword">by</span> Apple <span class="hljs-keyword">to</span> run.</code></pre></div>
+<p><img src="/_resources/74088898e97d48908e95a8a53a6a5aef.png" /></p>
+<p>節錄過程如下：</p>
+<div><pre class="hljs"><code>If you’re <span class="hljs-keyword">the</span> administrator <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> Mac, you can change <span class="hljs-keyword">the</span> level <span class="hljs-keyword">of</span> security used <span class="hljs-keyword">on</span> <span class="hljs-title">your</span> <span class="hljs-title">startup</span> <span class="hljs-title">disk</span>.
+
+    On <span class="hljs-keyword">the</span> Mac <span class="hljs-keyword">with</span> Apple silicon, choose Apple menu &gt; Shut Down.
+
+    Press <span class="hljs-keyword">and</span> hold <span class="hljs-keyword">the</span> power button <span class="hljs-keyword">until</span> “Loading startup options” appears.
+
+    Click Options, <span class="hljs-keyword">then</span> click Continue.
+
+    Select <span class="hljs-keyword">a</span> startup disk, <span class="hljs-keyword">then</span> click Next.
+
+    Select <span class="hljs-keyword">an</span> administrator account, <span class="hljs-keyword">then</span> click Next.
+
+    Enter <span class="hljs-keyword">the</span> password <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> administrator account, <span class="hljs-keyword">then</span> click Continue.
+
+    In <span class="hljs-keyword">the</span> Recovery app, choose Utilities &gt; Startup Security Utility.
+
+    Select <span class="hljs-keyword">the</span> <span class="hljs-keyword">system</span> you want <span class="hljs-built_in">to</span> use <span class="hljs-built_in">to</span> <span class="hljs-built_in">set</span> <span class="hljs-keyword">the</span> security policy.
+
+    If <span class="hljs-keyword">the</span> disk is encrypted <span class="hljs-keyword">with</span> FileVault, click Unlock, enter <span class="hljs-keyword">the</span> password, <span class="hljs-keyword">then</span> click Unlock.
+
+    Click Security Policy.
+
+    Select <span class="hljs-literal">one</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> following security options:
+
+        Full Security: Ensures that only your current OS, <span class="hljs-keyword">or</span> signed operating <span class="hljs-keyword">system</span> software currently trusted <span class="hljs-keyword">by</span> Apple, can run. This mode requires <span class="hljs-keyword">a</span> network connection <span class="hljs-keyword">at</span> software installation <span class="hljs-built_in">time</span>.
+
+        Reduced Security: Allows <span class="hljs-keyword">any</span> <span class="hljs-built_in">version</span> <span class="hljs-keyword">of</span> signed operating <span class="hljs-keyword">system</span> software ever trusted <span class="hljs-keyword">by</span> Apple <span class="hljs-built_in">to</span> run.
+
+    If you selected Reduced Security, select <span class="hljs-keyword">any</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> following options, <span class="hljs-keyword">if</span> needed:
+    Startup Security Utility window showing <span class="hljs-keyword">the</span> Reduced Security options.
+
+        Allow user management <span class="hljs-keyword">of</span> kernel extensions <span class="hljs-built_in">from</span> identified developers: Allows installation <span class="hljs-keyword">of</span> software that uses legacy kernel extensions.
+
+        Allow remote management <span class="hljs-keyword">of</span> kernel extensions <span class="hljs-keyword">and</span> automatic software updates: Authorizes remote management <span class="hljs-keyword">of</span> legacy kernel extensions <span class="hljs-keyword">and</span> software updates <span class="hljs-keyword">using</span> <span class="hljs-keyword">a</span> mobile device management (MDM) solution.</code></pre></div>
+<p>完成上述操作之後，再用 m1-debian or Clonezilla Live 去讀取 APFS 就都是解密狀態，且可以備份與還原！</p>
+<p>以上前題是預設狀態，也就是使用者沒有手動進行 APFS 加密，如果有，還是需要先進行解密，再設定為 <code>Reduce Security</code> 才可以備份。</p>
+<p>Reference:<br />
+https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac<br />
+https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

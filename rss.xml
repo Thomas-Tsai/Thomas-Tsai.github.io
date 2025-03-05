@@ -4,9 +4,160 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Tue, 18 Feb 2025 04:34:18 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 05 Mar 2025 14:22:37 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[Apple silicon APFS 備份問題]]></title>
+            <guid>a58a2e9f10a74eb19938f9745d60ef17</guid>
+            <pubDate>Wed, 05 Mar 2025 14:02:53 GMT</pubDate>
+            <content:encoded><![CDATA[<h2 id="apple-apfs-無法讀取">Apple  APFS 無法讀取</h2>
+<p>用 Clonezilla Live 開機之後，以 Partclone.apfs 進行備份，部份APFS磁區會出現失敗。</p>
+<p>先觀察 gpt 資料如下</p>
+<h3 id="gdisk">gdisk</h3>
+<div><pre class="hljs"><code><span class="hljs-attribute">Found</span> valid GPT with protective MBR; using GPT.
+<span class="hljs-attribute">Disk</span> /dev/nvme0n1: <span class="hljs-number">61279344</span> sectors, <span class="hljs-number">233</span>.<span class="hljs-number">8</span> GiB
+<span class="hljs-attribute">Model</span>: APPLE SSD AP0256Z                       
+<span class="hljs-attribute">Sector</span> size (logical/physical): <span class="hljs-number">4096</span>/<span class="hljs-number">4096</span> bytes
+<span class="hljs-attribute">Disk</span> identifier (GUID): B2AF6879-DEC6-<span class="hljs-number">422</span>B-AE54-B21C581B37EB
+<span class="hljs-attribute">Partition</span> table holds up to <span class="hljs-number">128</span> entries
+<span class="hljs-attribute">Main</span> partition table begins at sector <span class="hljs-number">2</span> and ends at sector <span class="hljs-number">5</span>
+<span class="hljs-attribute">First</span> usable sector is <span class="hljs-number">6</span>, last usable sector is <span class="hljs-number">61279338</span>
+<span class="hljs-attribute">Partitions</span> will be aligned <span class="hljs-literal">on</span> <span class="hljs-number">2</span>-sector boundaries
+<span class="hljs-attribute">Total</span> free space is <span class="hljs-number">30543728</span> sectors (<span class="hljs-number">116</span>.<span class="hljs-number">5</span> GiB)
+
+<span class="hljs-attribute">Number</span>  Start (sector)    End (sector)  Size       Code  Name
+   <span class="hljs-attribute">1</span>               <span class="hljs-number">6</span>          <span class="hljs-number">128005</span>   <span class="hljs-number">500</span>.<span class="hljs-number">0</span> MiB   AF0B  iBootSystemContainer
+   <span class="hljs-attribute">2</span>          <span class="hljs-number">128006</span>        <span class="hljs-number">24542213</span>   <span class="hljs-number">93</span>.<span class="hljs-number">1</span> GiB    AF0A  Container
+   <span class="hljs-attribute">3</span>        <span class="hljs-number">24542214</span>        <span class="hljs-number">25152517</span>   <span class="hljs-number">2</span>.<span class="hljs-number">3</span> GiB     AF0A  
+   <span class="hljs-attribute">4</span>        <span class="hljs-number">25152518</span>        <span class="hljs-number">25277701</span>   <span class="hljs-number">489</span>.<span class="hljs-number">0</span> MiB   EF00  
+   <span class="hljs-attribute">5</span>        <span class="hljs-number">25277702</span>        <span class="hljs-number">29424901</span>   <span class="hljs-number">15</span>.<span class="hljs-number">8</span> GiB    <span class="hljs-number">8300</span>  
+   <span class="hljs-attribute">6</span>        <span class="hljs-number">59968630</span>        <span class="hljs-number">61279338</span>   <span class="hljs-number">5</span>.<span class="hljs-number">0</span> GiB     AF0C  RecoveryOSContainer
+</code></pre></div>
+<p>一般狀況就是 gpt code <code>AF0A</code>會有問題。</p>
+<h3 id="blkid">blkid</h3>
+<p>以 <code>blkid</code> 看磁區資訊，則沒有什麼異常</p>
+<div><pre class="hljs"><code>root@debian:/home/thomas# blkid
+/dev/nvme0n1p5: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"b2987700-28dd-450a-b0e9-5f2e8a121cbb"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"ext4"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e77b2894-4740-45b1-951c-f61d4b8f97d2"</span>
+/dev/nvme0n1p3: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"0f126770-2c2b-4b91-b298-fd08d20a9988"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e3a97025-7b7f-4d26-8ecf-416316ce27c6"</span>
+/dev/nvme0n1p1: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"27a5e297-e02e-4c76-aca0-ba66b8f95bea"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"iBootSystemContainer"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"904b9d04-bdea-4471-a4ec-7bd17b74b469"</span>
+/dev/nvme0n1p6: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"64a78f4b-c221-4b3f-b480-8afb00b9562d"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"RecoveryOSContainer"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"1b4755bf-8391-4c0e-9e84-c11fe3775627"</span>
+/dev/nvme0n1p4: <span class="hljs-attribute">LABEL_FATBOOT</span>=<span class="hljs-string">"EFI - DEBIA"</span> <span class="hljs-attribute">LABEL</span>=<span class="hljs-string">"EFI - DEBIA"</span> <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"BFFB-100B"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"vfat"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"38514106-b274-4e79-94d1-45696d24307f"</span>
+/dev/nvme0n1p2: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"7e9b172c-ef57-465e-b10c-c65888e706fa"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"Container"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e8152f74-d982-4cab-af9c-d4044b932f83"</span>
+</code></pre></div>
+<h3 id="fsapfsinfo">fsapfsinfo</h3>
+<p>安裝 ibfsapfs-utils 之後可以用程式 fsapfsinfo 檢視 APFS 摘要資訊。</p>
+<p>可以看到 nvme0n1p1 可以正常讀取資訊</p>
+<div><pre class="hljs"><code>/usr/bin/fsapfsinfo /dev/nvme0n1p1
+fsapfsinfo 20201107
+
+Apple File System (APFS) information:                                                                                                                                                       
+Container information:                                                
+<span class="hljs-code">        Identifier                      : 27a5e297-e02e-4c76-aca0-ba66b8f95bea </span>
+<span class="hljs-code">        Number of volumes               : 4 </span>
+Volume: 1 information: 
+<span class="hljs-code">        Identifier                      : cee8dbdc-009a-4270-9783-f8fbc70981b5</span>
+<span class="hljs-code">        Name                            : iSCPreboot </span>
+<span class="hljs-code">        Compatible features             : 0x00000002 </span>
+<span class="hljs-code">                (NX_FEATURE_LCFD) </span>
+<span class="hljs-code"> </span>
+<span class="hljs-code">        Incompatible features           : 0x00000001 </span>
+<span class="hljs-code">                (NX_INCOMPAT_VERSION1) </span>
+
+<span class="hljs-code">        Read-only compatible features   : 0x00000000</span>
+<span class="hljs-code">....
+....
+....</span></code></pre></div>
+<h4 id="受保護的-apfs">受保護的 APFS:</h4>
+<p>此外以 fsapfsinfo 檢視受保護的 APFS<br />
+可以看到 nvme0n1p2 無法正常讀取資訊</p>
+<div><pre class="hljs"><code>root@debian:/home/thomas# /usr/bin/fsapfsinfo /dev/nvme0n1p2
+fsapfsinfo <span class="hljs-number">20201107</span>                                                                           
+
+Unable <span class="hljs-keyword">to</span> open: /dev/nvme0n1p2.
+<span class="hljs-symbol">libcaes_context_initialize:</span> unable <span class="hljs-keyword">to</span> <span class="hljs-keyword">set</span> padding <span class="hljs-keyword">in</span> context <span class="hljs-keyword">with</span> <span class="hljs-keyword">error</span>: <span class="hljs-keyword">error</span>:<span class="hljs-number">00000000</span>:<span class="hljs-keyword">lib</span>(<span class="hljs-number">0</span>)::reason(<span class="hljs-number">0</span>).
+<span class="hljs-symbol">libcaes_tweaked_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize main context.
+<span class="hljs-symbol">libfsapfs_encryption_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize decryption context.
+<span class="hljs-symbol">libfsapfs_container_key_bag_read_file_io_handle:</span> unable <span class="hljs-keyword">to</span> initialize encryption context.
+<span class="hljs-symbol">libfsapfs_internal_container_open_read:</span> unable <span class="hljs-keyword">to</span> read container <span class="hljs-keyword">key</span> bag at offset: <span class="hljs-number">16803950592</span> (<span class="hljs-number">0</span>x3e997f000).
+<span class="hljs-symbol">libfsapfs_container_open_file_io_handle:</span> unable <span class="hljs-keyword">to</span> read <span class="hljs-keyword">from</span> file IO handle.
+<span class="hljs-symbol">info_handle_open_input:</span> unable <span class="hljs-keyword">to</span> open input container.
+</code></pre></div>
+<p>可以看到關鍵錯誤訊息<code>libfsapfs_container_key_bag_read_file_io_handle: unable to initialize encryption context.</code></p>
+<p>所以目前確認預設安裝是有啟動保護措施，相關的APFS有</p>
+<p>/dev/nvme0n1p1: 一般 - iBootSystemContainer	<br />
+/dev/nvme0n1p2: 保護 - Container / MAC-OS<br />
+/dev/nvme0n1p3: 保護 - NA / for m1-debian only<br />
+/dev/nvme0n1p6: 一般 - RecoveryOSContainer</p>
+<h3 id="原因">原因！</h3>
+<p>證實有啟動保護措施<br />
+Mac with Apple silicon, Data Protection defaults to Class C (see Data Protection classes)</p>
+<p><code>On a Mac with Apple silicon, Data Protection defaults to Class C (see Data Protection classes) but utilises a volume key rather than a per-extent or per-file key — effectively recreating the security model of FileVault for user data. Users must still opt in to FileVault to receive the full protection of entangling the encryption key hierarchy with their password. Developers can also opt in to a higher protection class that uses a per-file or per-extent key.</code></p>
+<p>文章出處：<br />
+https://support.apple.com/en-in/guide/security/secb010e978a/1/web/1<br />
+https://support.apple.com/en-in/guide/security/secf6276da8a/1/web/1</p>
+<h3 id="手動-usb-storage-加密進行測試">手動 usb storage 加密進行測試</h3>
+<p>手動於 MAC OS 將外接隨身碟進行 APFS 格式加密，再用  fsapfsinfo 檢視 APFS 看看錯誤訊息為何？！結果就是一樣<code>libfsapfs_encryption_context_initialize: unable to initialize decryption context. </code></p>
+<div><pre class="hljs"><code>thomas@debian-lab:~/tmp/mnt/tmp/macminim2$ sudo /usr/bin/fsapfsinfo /dev/sdc2
+fsapfsinfo <span class="hljs-number">20201107</span>
+
+Unable <span class="hljs-keyword">to</span> open: /dev/sdc2.
+<span class="hljs-symbol">libcaes_context_initialize:</span> unable <span class="hljs-keyword">to</span> <span class="hljs-keyword">set</span> padding <span class="hljs-keyword">in</span> context <span class="hljs-keyword">with</span> <span class="hljs-keyword">error</span>: <span class="hljs-keyword">error</span>:<span class="hljs-number">00000000</span>:<span class="hljs-keyword">lib</span>(<span class="hljs-number">0</span>)::reason(<span class="hljs-number">0</span>).
+<span class="hljs-symbol">libcaes_tweaked_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize main context.
+<span class="hljs-symbol">libfsapfs_encryption_context_initialize:</span> unable <span class="hljs-keyword">to</span> initialize decryption context.
+<span class="hljs-symbol">libfsapfs_container_key_bag_read_file_io_handle:</span> unable <span class="hljs-keyword">to</span> initialize encryption context.
+<span class="hljs-symbol">libfsapfs_internal_container_open_read:</span> unable <span class="hljs-keyword">to</span> read container <span class="hljs-keyword">key</span> bag at offset: <span class="hljs-number">16777302016</span> (<span class="hljs-number">0</span>x3e8015000).
+<span class="hljs-symbol">libfsapfs_container_open_file_io_handle:</span> unable <span class="hljs-keyword">to</span> read <span class="hljs-keyword">from</span> file IO handle.
+<span class="hljs-symbol">info_handle_open_input:</span> unable <span class="hljs-keyword">to</span> open input container.</code></pre></div>
+<h3 id="解密-or-解除保護">解密 or 解除保護</h3>
+<p>因為 <code>On a Mac with Apple silicon, Data Protection defaults to Class C </code> 會讓 Clonezilla 以 dd 進行 APFS 備份，所以尋找解法，讓 linux tools or partclone 可以進行備份。</p>
+<p>經過大量查詢可能的問題之後，發現主要是 security policy 差異造成的，預設為 <code>Full Security</code> ，只有signed 過的程式可以讀取；反之，就只有修改為 <code>Reduced Security</code>。</p>
+<div><pre class="hljs"><code>    <span class="hljs-keyword">Full</span> <span class="hljs-keyword">Security</span>: Ensures that <span class="hljs-keyword">only</span> your <span class="hljs-keyword">current</span> OS, <span class="hljs-keyword">or</span> signed operating <span class="hljs-keyword">system</span> software currently <span class="hljs-keyword">trusted</span> <span class="hljs-keyword">by</span> Apple, can run. This mode requires a network <span class="hljs-keyword">connection</span> at software installation <span class="hljs-type">time</span>.
+
+    Reduced <span class="hljs-keyword">Security</span>: Allows <span class="hljs-keyword">any</span> <span class="hljs-keyword">version</span> <span class="hljs-keyword">of</span> signed operating <span class="hljs-keyword">system</span> software ever <span class="hljs-keyword">trusted</span> <span class="hljs-keyword">by</span> Apple <span class="hljs-keyword">to</span> run.</code></pre></div>
+<p><img src="/_resources/74088898e97d48908e95a8a53a6a5aef.png" /></p>
+<p>節錄過程如下：</p>
+<div><pre class="hljs"><code>If you’re <span class="hljs-keyword">the</span> administrator <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> Mac, you can change <span class="hljs-keyword">the</span> level <span class="hljs-keyword">of</span> security used <span class="hljs-keyword">on</span> <span class="hljs-title">your</span> <span class="hljs-title">startup</span> <span class="hljs-title">disk</span>.
+
+    On <span class="hljs-keyword">the</span> Mac <span class="hljs-keyword">with</span> Apple silicon, choose Apple menu &gt; Shut Down.
+
+    Press <span class="hljs-keyword">and</span> hold <span class="hljs-keyword">the</span> power button <span class="hljs-keyword">until</span> “Loading startup options” appears.
+
+    Click Options, <span class="hljs-keyword">then</span> click Continue.
+
+    Select <span class="hljs-keyword">a</span> startup disk, <span class="hljs-keyword">then</span> click Next.
+
+    Select <span class="hljs-keyword">an</span> administrator account, <span class="hljs-keyword">then</span> click Next.
+
+    Enter <span class="hljs-keyword">the</span> password <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> administrator account, <span class="hljs-keyword">then</span> click Continue.
+
+    In <span class="hljs-keyword">the</span> Recovery app, choose Utilities &gt; Startup Security Utility.
+
+    Select <span class="hljs-keyword">the</span> <span class="hljs-keyword">system</span> you want <span class="hljs-built_in">to</span> use <span class="hljs-built_in">to</span> <span class="hljs-built_in">set</span> <span class="hljs-keyword">the</span> security policy.
+
+    If <span class="hljs-keyword">the</span> disk is encrypted <span class="hljs-keyword">with</span> FileVault, click Unlock, enter <span class="hljs-keyword">the</span> password, <span class="hljs-keyword">then</span> click Unlock.
+
+    Click Security Policy.
+
+    Select <span class="hljs-literal">one</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> following security options:
+
+        Full Security: Ensures that only your current OS, <span class="hljs-keyword">or</span> signed operating <span class="hljs-keyword">system</span> software currently trusted <span class="hljs-keyword">by</span> Apple, can run. This mode requires <span class="hljs-keyword">a</span> network connection <span class="hljs-keyword">at</span> software installation <span class="hljs-built_in">time</span>.
+
+        Reduced Security: Allows <span class="hljs-keyword">any</span> <span class="hljs-built_in">version</span> <span class="hljs-keyword">of</span> signed operating <span class="hljs-keyword">system</span> software ever trusted <span class="hljs-keyword">by</span> Apple <span class="hljs-built_in">to</span> run.
+
+    If you selected Reduced Security, select <span class="hljs-keyword">any</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> following options, <span class="hljs-keyword">if</span> needed:
+    Startup Security Utility window showing <span class="hljs-keyword">the</span> Reduced Security options.
+
+        Allow user management <span class="hljs-keyword">of</span> kernel extensions <span class="hljs-built_in">from</span> identified developers: Allows installation <span class="hljs-keyword">of</span> software that uses legacy kernel extensions.
+
+        Allow remote management <span class="hljs-keyword">of</span> kernel extensions <span class="hljs-keyword">and</span> automatic software updates: Authorizes remote management <span class="hljs-keyword">of</span> legacy kernel extensions <span class="hljs-keyword">and</span> software updates <span class="hljs-keyword">using</span> <span class="hljs-keyword">a</span> mobile device management (MDM) solution.</code></pre></div>
+<p>完成上述操作之後，再用 m1-debian or Clonezilla Live 去讀取 APFS 就都是解密狀態，且可以備份與還原！</p>
+<p>以上前題是預設狀態，也就是使用者沒有手動進行 APFS 加密，如果有，還是需要先進行解密，再設定為 <code>Reduce Security</code> 才可以備份。</p>
+<p>Reference:<br />
+https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac<br />
+https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Asahi linux image and clonezilla live]]></title>
             <guid>8d0b0766ef9b48e099469870fe375978</guid>
@@ -17,7 +168,7 @@
 <p>安裝 clonezilla<br />
 <code>apt-get install clonezilla</code></p>
 <p>透過 <code>ocs-live-swap-kernel</code> 換 asahi linux kernel 重新打包並置換 linux kernel</p>
-<p>需要包好的 asahilinux kernel 可以從這邊下載 <a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a> ，我下載的是 <code>linux-image-6.5.0-asahi-00780-g62806c2c6f29_6.5.0-00780-g62806c2c6f29-1_arm64.deb</code></p>
+<p>需要包好的 asahilinux kernel 可以從這邊下載 https://thomas.glanzmann.de/asahi ，我下載的是 <code>linux-image-6.5.0-asahi-00780-g62806c2c6f29_6.5.0-00780-g62806c2c6f29-1_arm64.deb</code></p>
 <p>換之前先簡單patch下 <code>ocs-live-swap-kernel</code>：</p>
 <div><pre class="hljs"><code><span class="hljs-meta">$ </span><span class="language-bash">diff /usr/sbin/ocs-live-swap-kernel ./ocs-live-swap-kernel</span> 
 176c176
@@ -52,7 +203,7 @@ typec</code></pre></div>
 <span class="hljs-attr">CONFIG_USB_DWC3</span>=m
 <span class="hljs-attr">CONFIG_TYPEC_TPS6598X</span>=m</code></pre></div>
 <p>需要載入的modules<br />
-<a title="https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/" href="https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/">https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/</a></p>
+https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/</p>
 <h2 id="m1debian">m1debian</h2>
 <p>大量參考 m1debian 的成果，建議有需要的話可以看以下內容</p>
 <blockquote>
@@ -68,7 +219,7 @@ typec</code></pre></div>
 <blockquote></blockquote>
 </blockquote>
 <h2 id="asahi-linux-image">Asahi linux image</h2>
-<p><a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a></p>
+<p>https://thomas.glanzmann.de/asahi</p>
 <div><pre class="hljs"><code> <span class="hljs-comment"># Debian asahi packages</span>
 
 cat &lt;&lt;<span class="hljs-string">'EOF'</span> | sudo tee <span class="hljs-regexp">/etc/</span>X11<span class="hljs-regexp">/xorg.conf.d/</span><span class="hljs-number">30</span>-modeset.conf
@@ -118,18 +269,18 @@ Apple stuff → m1n1 stage 1 → m1n1 stage 2 → DT + U-Boot → GRUB → Linux
 <strong>(the ESP must be in internal NVMe storage, no external storage is supported)</strong></p>
 <p>這就是為什麼需要先透過asahi linux 安裝程序先在 mac 上安裝 uboot 開機的原因！</p>
 <p>編譯與實作參考:<br />
-GitHub: AsahiLinux/m1n1 <a title="https://github.com/AsahiLinux/m1n1" href="https://github.com/AsahiLinux/m1n1">https://github.com/AsahiLinux/m1n1</a></p>
+GitHub: AsahiLinux/m1n1 https://github.com/AsahiLinux/m1n1</p>
 <h2 id="linux-image-asahi-編譯">linux-image-asahi 編譯</h2>
 <p>需要包好的 asahilinux kernel 可以到這邊下載：<br />
-<a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a></p>
+https://thomas.glanzmann.de/asahi</p>
 <p>編譯參考<br />
-<a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh</a></p>
+https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh</p>
 <h1 id="reference">Reference</h1>
 <ul>
-<li><a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</a></li>
-<li><a title="https://thomas.glanzmann.de/asahi/README.txt" href="https://thomas.glanzmann.de/asahi/README.txt">https://thomas.glanzmann.de/asahi/README.txt</a></li>
-<li><a title="https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/" href="https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/">https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/</a></li>
-<li><a title="https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/" href="https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/">https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/</a></li>
+<li>https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</li>
+<li>https://thomas.glanzmann.de/asahi/README.txt</li>
+<li>https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/</li>
+<li>https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/</li>
 </ul>
 ]]></content:encoded>
         </item>
@@ -144,7 +295,7 @@ GitHub: AsahiLinux/m1n1 <a title="https://github.com/AsahiLinux/m1n1" href="http
 
 <span class="hljs-attribute">wget</span> https://free.nchc.org.tw/clonezilla-live/experimental/arm/<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>/clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip
 <span class="hljs-attribute">unzip</span> clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">0</span>-<span class="hljs-number">31</span>-arm64.zip /mnt</code></pre></div>
-<p>取得 efi , download  RPi5_UEFI_Release_v0.3.zip  from <a title="https://github.com/worproject/rpi5-uefi/releases" href="https://github.com/worproject/rpi5-uefi/releases">https://github.com/worproject/rpi5-uefi/releases</a></p>
+<p>取得 efi , download  RPi5_UEFI_Release_v0.3.zip  from https://github.com/worproject/rpi5-uefi/releases</p>
 <p>解壓縮到  usb /dev/sdc1</p>
 <div><pre class="hljs"><code>unzip RPi5_UEFI_Release_v0.<span class="hljs-number">3</span><span class="hljs-selector-class">.zip</span> /mnt/
 
@@ -170,9 +321,9 @@ arm64-release<span class="hljs-selector-class">.txt</span>  bcm2712-rpi-<span cl
 <p>測試：</p>
 <p><a type="video/webm" href="/_resources/f71893844a1d4df397054af41dd3274a.webm">2025-02-13-153033.webm</a></p>
 <h2 id="reference">reference</h2>
-<p><a title="https://forums.raspberrypi.com/viewtopic.php?t=366106" href="https://forums.raspberrypi.com/viewtopic.php?t=366106">https://forums.raspberrypi.com/viewtopic.php?t=366106</a><br />
-<a title="https://github.com/worproject/rpi5-uefi/releases" href="https://github.com/worproject/rpi5-uefi/releases">https://github.com/worproject/rpi5-uefi/releases</a><br />
-<a title="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow" href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow">https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow</a></p>
+<p>https://forums.raspberrypi.com/viewtopic.php?t=366106<br />
+https://github.com/worproject/rpi5-uefi/releases<br />
+https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#eeprom-boot-flow</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -202,7 +353,7 @@ arm64-release<span class="hljs-selector-class">.txt</span>  bcm2712-rpi-<span cl
 <p>有時間的話，後續嘗試 clonezilla live build 加上 asahi 特製版。那這樣就有機會完成 m1 clonezilla live 。只是對使用者而言，要動分割區，安裝asahi UEFI 是個大挑戰！</p>
 <h2 id="實作細節">實作細節</h2>
 <h3 id="asahi-安裝">Asahi 安裝</h3>
-<p>可以的話先看一下官方實作影片！ <a title="https://tg.st/u/live.mp4" href="https://tg.st/u/live.mp4">https://tg.st/u/live.mp4</a></p>
+<p>可以的話先看一下官方實作影片！ https://tg.st/u/live.mp4</p>
 <p>建議先升級 macOS to version 12.3 or later。我目前的版本是 mac os 15.2</p>
 <p>升級之後執行</p>
 <div><pre class="hljs"><code>curl https:<span class="hljs-regexp">//</span>alx.sh | sh</code></pre></div>
@@ -248,10 +399,10 @@ umount /mnt</code></pre></div>
 <p>就會自動載入 Clonezilla EFI 開機選單。</p>
 <p>等有空真的換上可以用的 clonezilla live 再看看有沒有機會完成整的備份還原程序。</p>
 <h2 id="reference">Reference</h2>
-<p><a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</a><br />
-<a title="https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#" href="https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#">https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#</a><br />
-<a title="https://wiki.debian.org/InstallingDebianOn/Apple/M1" href="https://wiki.debian.org/InstallingDebianOn/Apple/M1">https://wiki.debian.org/InstallingDebianOn/Apple/M1</a><br />
-<a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt</a></p>
+<p>https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/<br />
+https://g3la.de/hedgedoc/buDIXGBuRzKMwUnYOpStuw#<br />
+https://wiki.debian.org/InstallingDebianOn/Apple/M1<br />
+https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob_plain/refs/heads/master:/files/quickstart.txt</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -363,11 +514,11 @@ Nmap done: <span class="hljs-number">1</span> IP address (<span class="hljs-numb
 </code></pre></div>
 <p>已經沒有warning!</p>
 <h3 id="reference">Reference:</h3>
-<p><a title="https://microk8s.io/docs/services-and-ports" href="https://microk8s.io/docs/services-and-ports">https://microk8s.io/docs/services-and-ports</a><br />
-<a title="https://github.com/canonical/microk8s/issues/1419" href="https://github.com/canonical/microk8s/issues/1419">https://github.com/canonical/microk8s/issues/1419</a><br />
-<a title="https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/" href="https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/">https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/</a><br />
-<a title="https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows" href="https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows">https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows</a><br />
-<a title="https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba" href="https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba">https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba</a></p>
+<p>https://microk8s.io/docs/services-and-ports<br />
+https://github.com/canonical/microk8s/issues/1419<br />
+https://www.reddit.com/r/sysadmin/comments/1f1p7ip/ssl_medium_strength_cipher_suites_supported/<br />
+https://help.defense.com/en/articles/6302810-ssl-medium-strength-cipher-suite-supported-sweet32-windows<br />
+https://shantanudeyanik.medium.com/configure-kubernetes-with-strong-cipher-suites-0053ca0accba</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -406,7 +557,7 @@ version 	<span class="hljs-built_in">Print</span> the current version number</co
 <div><pre class="hljs"><code>sudo howdy config</code></pre></div>
 <p>我覺的 dark_threshold 預設 50 有點嚴格，建議調整到75...看個人經驗摟</p>
 <h2 id="reference">Reference</h2>
-<p><a title="https://github.com/boltgolt/howdy" href="https://github.com/boltgolt/howdy">https://github.com/boltgolt/howdy</a></p>
+<p>https://github.com/boltgolt/howdy</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -421,7 +572,7 @@ sudo apt-<span class="hljs-built_in">get</span> purge kubeadm kubectl kubelet ku
 sudo apt-<span class="hljs-built_in">get</span> autoremove  
 sudo rm -rf ~/.kube</code></pre></div>
 <p>參考資料：<br />
-<a title="https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes" href="https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes">https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes</a></p>
+https://stackoverflow.com/questions/44698283/how-to-completely-uninstall-kubernetes</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -479,7 +630,7 @@ sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span
 <h3 id="dlp-data-loss-prevention-措施">DLP (Data Loss Prevention) 措施</h3>
 <p>KASM 有提供 Data Loss Prevention 的防護，例如</p>
 <h3 id="watermark-浮水印">watermark 浮水印</h3>
-<p><a title="https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html" href="https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html">https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html</a></p>
+<p>https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html</p>
 <p>watermark 實作</p>
 <p>group-&gt;all user-&gt;file mapping</p>
 <div><pre class="hljs"><code><span class="hljs-symbol">network:</span> 
@@ -499,12 +650,12 @@ sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span
 <span class="hljs-symbol">      timezone_name:</span> Asia/Taipei</code></pre></div>
 <p><img src="/_resources/b1c957971f734b48958082f35d16333f.png" /></p>
 <h3 id="file-download-upload-clipboard-資料傳輸限制">file download upload clipboard ... 資料傳輸限制</h3>
-<p><a title="https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings" href="https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings">https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings</a></p>
+<p>https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings</p>
 <h3 id="session-recording-桌面錄影">session recording 桌面錄影</h3>
-<p><a title="https://kasmweb.com/docs/latest/guide/session_recording.html" href="https://kasmweb.com/docs/latest/guide/session_recording.html">https://kasmweb.com/docs/latest/guide/session_recording.html</a></p>
+<p>https://kasmweb.com/docs/latest/guide/session_recording.html</p>
 <p>Session recording is configured but not licensed. Will not enable. // 需要付費！</p>
 <p>費用可以參考這邊<br />
-<a title="https://www.kasmweb.com/server-checkout" href="https://www.kasmweb.com/server-checkout">https://www.kasmweb.com/server-checkout</a></p>
+https://www.kasmweb.com/server-checkout</p>
 <h3 id="session-recording-實作">session recording 實作</h3>
 <p>settings -&gt; global -&gt; Session Recording</p>
 <p>access key &amp; secret key<br />
@@ -513,8 +664,8 @@ s3://kasm@tos.nchahahahc.org.tw/session-record/{user_id}/{image_friendly_name}-{
 <p>enable active code// 需要錢！</p>
 <p>架構上，如果需要提供更安全的環境，一般會做</p>
 <h3 id="multi-server-多主機架構">multi server 多主機架構</h3>
-<p><a title="https://kasmweb.com/docs/latest/install/multi_server_install.html" href="https://kasmweb.com/docs/latest/install/multi_server_install.html">https://kasmweb.com/docs/latest/install/multi_server_install.html</a><br />
-<a title="https://kasmweb.com/docs/latest/guide/compute/pools.html" href="https://kasmweb.com/docs/latest/guide/compute/pools.html">https://kasmweb.com/docs/latest/guide/compute/pools.html</a></p>
+<p>https://kasmweb.com/docs/latest/install/multi_server_install.html<br />
+https://kasmweb.com/docs/latest/guide/compute/pools.html</p>
 <p>基本上需要的是 docker agent<br />
 找一台linux ubuntu2204 不需要publicl ip / private ip也可以<br />
 安裝agent</p>
@@ -533,10 +684,10 @@ AGENT_HOSTNAME : 192.168.1.130</p>
 <p>之後workspace就會分散到pool</p>
 <h3 id="ime">IME</h3>
 <p>啟用輸入法切換，啟動之後輸入法切換才會正常<br />
-<a title="https://kasmweb.com/docs/latest/how_to/ime.html" href="https://kasmweb.com/docs/latest/how_to/ime.html">https://kasmweb.com/docs/latest/how_to/ime.html</a></p>
+https://kasmweb.com/docs/latest/how_to/ime.html</p>
 <h3 id="keep-data">keep data</h3>
 <p>啟用家目錄儲存<br />
-<a title="https://kasmweb.com/docs/latest/guide/persistent_data.html" href="https://kasmweb.com/docs/latest/guide/persistent_data.html">https://kasmweb.com/docs/latest/guide/persistent_data.html</a></p>
+https://kasmweb.com/docs/latest/guide/persistent_data.html</p>
 <p>persistent data 實作</p>
 <p>settings -&gt; global -&gt; Storage<br />
 <img src="/_resources/eeff9faa03234b64b83afae0a5b049bd.png" /></p>
@@ -556,7 +707,7 @@ s3://kasm@tos.hahaha.org.tw/user-profile/{username}/{image_id}/</p>
 <span class="hljs-punctuation">}</span></code></pre></div>
 <p><img src="/_resources/d410aa67fb994612974aa008b091c267.png" /></p>
 <h3 id="custom-network">custom network</h3>
-<p><a title="https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html" href="https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html">https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html</a></p>
+<p>https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html</p>
 <p>關鍵是：</p>
 <div><pre class="hljs"><code>-<span class="hljs-keyword">A</span> POSTROUTING -s <span class="hljs-number">172.19.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">203.145.220.209</span>/<span class="hljs-number">32</span> ! -o z_custom_a -j SNAT --to-source <span class="hljs-number">192.168.0.89</span></code></pre></div>
 <p>Custom network for agent 實作</p>
@@ -589,19 +740,19 @@ ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-numbe
 </code></pre></div>
 <p>以及其他功能，我的一些 Production 都有用上，感覺不錯！</p>
 <h3 id="external_proxy-透過-proxy-進行防護">external_proxy 透過 Proxy 進行防護</h3>
-<p><a title="https://kasmweb.com/docs/latest/how_to/external_proxy.html" href="https://kasmweb.com/docs/latest/how_to/external_proxy.html">https://kasmweb.com/docs/latest/how_to/external_proxy.html</a></p>
+<p>https://kasmweb.com/docs/latest/how_to/external_proxy.html</p>
 <h3 id="saml-認証">saml 認証</h3>
-<p><a title="https://kasmweb.com/docs/latest/guide/saml_authentication.html" href="https://kasmweb.com/docs/latest/guide/saml_authentication.html">https://kasmweb.com/docs/latest/guide/saml_authentication.html</a></p>
+<p>https://kasmweb.com/docs/latest/guide/saml_authentication.html</p>
 <h3 id="workspace-registry">workspace registry</h3>
-<p><a title="https://github.com/kasmtech/workspaces_registry_template" href="https://github.com/kasmtech/workspaces_registry_template">https://github.com/kasmtech/workspaces_registry_template</a><br />
-<a title="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file" href="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file">https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file</a><br />
-<a title="https://github.com/Thomas-Tsai/kasm_registry/actions" href="https://github.com/Thomas-Tsai/kasm_registry/actions">https://github.com/Thomas-Tsai/kasm_registry/actions</a><br />
-<a title="https://blog.libthomas.org/kasm_registry/1.0/" href="https://blog.libthomas.org/kasm_registry/1.0/">https://blog.libthomas.org/kasm_registry/1.0/</a></p>
+<p>https://github.com/kasmtech/workspaces_registry_template<br />
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file<br />
+https://github.com/Thomas-Tsai/kasm_registry/actions<br />
+https://blog.libthomas.org/kasm_registry/1.0/</p>
 <h3 id="custom-image">custom image</h3>
 <p>build proxy desktop<br />
-<a title="https://kasmweb.com/docs/latest/how_to/external_proxy.html" href="https://kasmweb.com/docs/latest/how_to/external_proxy.html">https://kasmweb.com/docs/latest/how_to/external_proxy.html</a><br />
+https://kasmweb.com/docs/latest/how_to/external_proxy.html<br />
 add custom image to custom workspace<br />
-<a title="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces" href="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces">https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces</a></p>
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces</p>
 <p>雖然不是完全的開源軟體，但是也很有誠意的釋出不少開源專案，如果非營利組織，在client 數量限制下用是沒有問題。</p>
 ]]></content:encoded>
         </item>
@@ -611,7 +762,7 @@ add custom image to custom workspace<br />
             <pubDate>Wed, 20 Mar 2024 03:31:00 GMT</pubDate>
             <content:encoded><![CDATA[<h1 id="測試用的-windows">測試用的 Windows</h1>
 <p>最近有點人氣的 專案<br />
-<a title="https://github.com/dockur/windows" href="https://github.com/dockur/windows">https://github.com/dockur/windows</a></p>
+https://github.com/dockur/windows</p>
 <h2 id="先用-docker-指令嘗試一下">先用 docker 指令嘗試一下</h2>
 <div><pre class="hljs"><code>docker <span class="hljs-built_in">run</span> -it --rm --name windows -p 8006:8006 <span class="hljs-attribute">--device</span>=/dev/kvm --cap-<span class="hljs-built_in">add</span> NET_ADMIN --stop-timeout 120 dockurr/windows</code></pre></div>
 <p>會看到訊息</p>
@@ -674,8 +825,8 @@ add custom image to custom workspace<br />
             <pubDate>Fri, 05 Jan 2024 02:35:04 GMT</pubDate>
             <content:encoded><![CDATA[<p>用 iptables 擋特定國家區域連線</p>
 <p>這邊都說明的非常仔細了！照做</p>
-<p><a title="https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/" href="https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/">https://blog.gslin.org/archives/2021/10/16/10377/用-iptables-擋特定國家的封包/</a></p>
-<p><a title="https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/" href="https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/">https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/</a></p>
+<p>https://blog.gslin.org/archives/2021/10/16/10377/%E7%94%A8-iptables-%E6%93%8B%E7%89%B9%E5%AE%9A%E5%9C%8B%E5%AE%B6%E7%9A%84%E5%B0%81%E5%8C%85/</p>
+<p>https://ultramookie.com/2020/10/geoip-blocking-ubuntu-20.04/</p>
 <p>安裝</p>
 <div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> update; sudo apt-<span class="hljs-built_in">get</span> -y<span class="hljs-built_in"> upgrade
 </span>sudo apt-<span class="hljs-built_in">get</span> install curl unzip perl
@@ -739,7 +890,7 @@ iamroot=`whoami | grep root`
 <p>任何資料都不應該被單一雲端應用綁住。不知不覺間常常使用 Google Map 去標記常用的地點，驚訝的發現 Google Map 居然沒有匯出或是轉移的功能。於是做了一下功課，以下紀錄結果。</p>
 <h2 id="匯出">匯出</h2>
 <p>我查過 Google Map Place API 沒有 export 的功能，再查也沒有手動匯出的方式，除了 Google Takeout，從滿多地方可以看到討論有關<a title="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en" href="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en">如何從 Takeout 匯出</a></p>
-<p>基本上就是先到 google takeout 網頁進行操作，網址：<a title="https://takeout.google.com" href="https://takeout.google.com">https://takeout.google.com</a><br />
+<p>基本上就是先到 google takeout 網頁進行操作，網址：https://takeout.google.com<br />
 <img src="/_resources/faa8fc6deff64929b2533f460e367210.png" /></p>
 <p>建議先取消全選 再選取 地圖 (最愛地點)</p>
 <p><img src="/_resources/77801a1e8bc84fa38271e8d9fb9ed31d.png" /></p>
@@ -793,10 +944,10 @@ kml<span class="hljs-selector-class">.save</span>(<span class="hljs-string">"goo
 <h2 id="organic-maps">Organic Maps</h2>
 <p>Organic Maps 就是之前的 maps.me，直接丟到檔案傳給 map app 就可以匯入 bookmark。</p>
 <h2 id="reference">reference</h2>
-<p><a title="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en" href="https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en">https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en</a><br />
-<a title="https://simplekml.readthedocs.io" href="https://simplekml.readthedocs.io">https://simplekml.readthedocs.io</a><br />
-<a title="https://organicmaps.app/news/" href="https://organicmaps.app/news/">https://organicmaps.app/news/</a><br />
-<a title="https://Maps.me" href="https://Maps.me">https://Maps.me</a></p>
+<p>https://support.google.com/maps/thread/69338785/how-can-i-get-export-to-export-all-saved-places?hl=en<br />
+https://simplekml.readthedocs.io<br />
+https://organicmaps.app/news/<br />
+https://Maps.me</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -846,7 +997,7 @@ systemctl --<span class="hljs-keyword">user</span> <span class="hljs-title">rest
            AuthUserFile <span class="hljs-regexp">/xxxx/</span>.htpasswd
            Require valid-user
        &lt;/Location&gt; </code></pre></div>
-<p>如此一來，我的DAV服務就是 <a title="https://xxx.thomas.org/dav/" href="https://xxx.thomas.org/dav/">https://xxx.thomas.org/dav/</a> 就會由 xandikos 進行。</p>
+<p>如此一來，我的DAV服務就是 https://xxx.thomas.org/dav/ 就會由 xandikos 進行。</p>
 <p>也可以直接指定特並addressbook, 例如<code>https://xxx.thomas.org/dav/user/contacts/addressbook/</code></p>
 <h2 id="csv2vcf">csv2vcf</h2>
 <p>我有固定去爬一些通訊錄檔成 csv 檔案，這時候要用 <a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">csv2vcf</a>，but vsf 3.0 thunderbird 不適應，所以魔改了一些</p>
@@ -952,12 +1103,12 @@ vdirsyncer <span class="hljs-keyword">sync</span></code></pre></div>
 <span class="hljs-section">END:VCARD</span>
 </code></pre></div>
 <h2 id="reference">Reference:</h2>
-<p><a title="https://github.com/jelmer/xandikos" href="https://github.com/jelmer/xandikos">https://github.com/jelmer/xandikos</a><br />
-<a title="https://www.xandikos.org/" href="https://www.xandikos.org/">https://www.xandikos.org/</a><br />
-<a title="https://github.com/mridah/csv2vcf" href="https://github.com/mridah/csv2vcf">https://github.com/mridah/csv2vcf</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/index.html" href="https://vdirsyncer.pimutils.org/en/stable/index.html">https://vdirsyncer.pimutils.org/en/stable/index.html</a><br />
-<a title="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html" href="https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html">https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html</a><br />
-<a title="https://www.atmail.com/blog/caldav-carddav/" href="https://www.atmail.com/blog/caldav-carddav/">https://www.atmail.com/blog/caldav-carddav/</a></p>
+<p>https://github.com/jelmer/xandikos<br />
+https://www.xandikos.org/<br />
+https://github.com/mridah/csv2vcf<br />
+https://vdirsyncer.pimutils.org/en/stable/index.html<br />
+https://vdirsyncer.pimutils.org/en/stable/tutorials/xandikos.html<br />
+https://www.atmail.com/blog/caldav-carddav/</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1025,7 +1176,7 @@ acme.sh --set-notify  --notify-hook mail</code></pre></div>
 </ol>
 <p>name.com 網頁設定好之後，應該就不會有認証問題！</p>
 <h2 id="acmezerosslcom-出狀況">acme.zerossl.com 出狀況</h2>
-<p>根據這邊 <a title="https://github.com/acmesh-official/acme.sh/issues/4927" href="https://github.com/acmesh-official/acme.sh/issues/4927">https://github.com/acmesh-official/acme.sh/issues/4927</a> 看到有類似的狀況。</p>
+<p>根據這邊 https://github.com/acmesh-official/acme.sh/issues/4927 看到有類似的狀況。</p>
 <p>處理方式是把憑證主機換掉</p>
 <div><pre class="hljs"><code>acme.<span class="hljs-keyword">sh</span> --<span class="hljs-keyword">set</span>-default-<span class="hljs-keyword">ca</span> --server letsencrypt</code></pre></div>
 <p>但是如果要 renew 就需要修改設定檔  /root/.acme.sh/some-domain.com/some-domain.com.conf</p>
@@ -1042,7 +1193,7 @@ Le_OrderFinalize, Le_LinkOrder, and Le_LinkCert 這些設定，整行刪掉！</
             <pubDate>Thu, 11 May 2023 08:53:13 GMT</pubDate>
             <content:encoded><![CDATA[<h1 id="於-synology-啟用-lets-encrypt-整合-namecom2faauto-renew">於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew</h1>
 <p>我的 Synology 設定再防火牆內，不對外直接提供服務，即使如此也是需要上 TLS 來提升安全性。基本上 Synology 已經支援 lets encrypt ，but 預設用的方式是 HTTP-01，所以在防火牆的的限制下，無法順利自動完成，也不法自動 renew 。之前解決方式就是另外找一個點，拿到 ca, certs 之後，再手動放進去，然後就過期了...</p>
-<p>ACMESH 有提供解決方式 <a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用</a> DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
+<p>ACMESH 有提供解決方式 https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用 DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
 <p>相關說明可以細看上面連結，我看完之後認為至少有一些需要測試：</p>
 <ol>
 <li>Firewall 不可更改 。應可用acme.sh 利用dns-01方式來排除</li>
@@ -1079,7 +1230,7 @@ source ~/.bashrc</code></pre></div>
 <p>我的 Synology NAS 不支援只 listen 特定 FQDN 且有換 port 又有 OTP 搞得這邊有點麻煩。依照文件依序設定 SYNO_Username, SYNO_Password, SYNO_Hostname, SYNO_Scheme, SYNO_Port 都要有正確的設定。另外因為OTP，SYNO_DID 我測試不行，會表示無法登入，可能某個環節出錯；只好暫時用比較差勁的方式取代 SYNO_DID，那就是export SYNO_TOTP_SECRET=xxx 並安裝 oathtool</p>
 <div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> install oathtool
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=xxx</code></pre></div>
-<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 <a title="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82" href="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82">https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</a></p>
+<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</p>
 <p>整個script 就像</p>
 <div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
@@ -1134,12 +1285,12 @@ Task setting: User-defined-script:</p>
 <p>差不多之後就是觀察會不會自動renew了！</p>
 <p>後來也注意到 deploy 方法不少，也許之後換個更好的方式！</p>
 <h2 id="reference">reference</h2>
-<p><a title="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/" href="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/">https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">https://github.com/acmesh-official/acme.sh/wiki/dnsapi</a><br />
-<a title="https://github.com/acmesh-official/acme.sh/issues/2727" href="https://github.com/acmesh-official/acme.sh/issues/2727">https://github.com/acmesh-official/acme.sh/issues/2727</a></p>
+<p>https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/<br />
+https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal<br />
+https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
+https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
+https://github.com/acmesh-official/acme.sh/wiki/dnsapi<br />
+https://github.com/acmesh-official/acme.sh/issues/2727</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1190,10 +1341,10 @@ export SSH_AGENT_PID=<span class="hljs-number">1319</span>
 ssh-key -l</code></pre></div>
 <p>如果找不到，可能就是沒有啟動agent 那就 <code>eval "$(ssh-agent -s)"</code>即可啟用動！</p>
 <p>reference：</p>
-<p><a title="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/" href="https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/">https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/</a><br />
-<a title="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding</a><br />
-<a title="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation" href="https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation">https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation</a><br />
-<a title="https://stackdiary.com/linux-docs/ssh-add/" href="https://stackdiary.com/linux-docs/ssh-add/">https://stackdiary.com/linux-docs/ssh-add/</a></p>
+<p>https://www.howtogeek.com/devops/what-is-ssh-agent-forwarding-and-how-do-you-use-it/<br />
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding<br />
+https://stackoverflow.com/questions/44250002/how-to-solve-sign-and-send-pubkey-signing-failed-agent-refused-operation<br />
+https://stackdiary.com/linux-docs/ssh-add/</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1225,8 +1376,8 @@ Shared <span class="hljs-keyword">connection</span> <span class="hljs-keyword">t
 <div><pre class="hljs"><code>ssh host -i ~<span class="hljs-regexp">/.ssh/i</span>d_rsa... <span class="hljs-regexp">/bin/i</span>p</code></pre></div>
 <p>allow_trailing_args 則使允許參數</p>
 <p>其他設定細節：<br />
-<a title="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html" href="https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html">https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html</a><br />
-<a title="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md" href="https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md">https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</a></p>
+https://manpages.ubuntu.com/manpages/impish/man1/authprogs.1.html<br />
+https://github.com/daethnir/authprogs/blob/main/doc/authprogs.md</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1301,10 +1452,10 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTGgGIIZDZ+X+s823nBoAayFxfnv8uVJxcB9MEeOXa
 <p>將公鑰丟到主機上 authorized_keys 然後登入時</p>
 <div><pre class="hljs"><code>ssh SSH-SERVER -I <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/x86_64-linux-gnu/</span>libsimple-tpm-pk11.so</code></pre></div>
 <h2 id="reference">reference</h2>
-<p><a title="https://blog.ledger.com/ssh-with-tpm/" href="https://blog.ledger.com/ssh-with-tpm/">https://blog.ledger.com/ssh-with-tpm/</a><br />
-<a title="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md" href="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md">https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md</a><br />
-<a title="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html" href="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html">https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html</a><br />
-<a title="https://wiki.archlinux.org/title/Trusted_Platform_Module" href="https://wiki.archlinux.org/title/Trusted_Platform_Module">https://wiki.archlinux.org/title/Trusted_Platform_Module</a></p>
+<p>https://blog.ledger.com/ssh-with-tpm/<br />
+https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md<br />
+https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html<br />
+https://wiki.archlinux.org/title/Trusted_Platform_Module</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1351,11 +1502,11 @@ Host proxyNode
 <div><pre class="hljs"><code>sshfs targetNode:<span class="hljs-regexp">/etc /</span>etc</code></pre></div>
 <p>以上，我開始重新設定所有的 ssh 都儘量改用 jump！</p>
 <p>reference:<br />
-<a title="https://serverfault.com/questions/941934/sshfs-over-a-jumphost" href="https://serverfault.com/questions/941934/sshfs-over-a-jumphost">https://serverfault.com/questions/941934/sshfs-over-a-jumphost</a><br />
-<a title="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/" href="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/">https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/</a><br />
-<a title="https://www.tecmint.com/access-linux-server-using-a-jump-host/" href="https://www.tecmint.com/access-linux-server-using-a-jump-host/">https://www.tecmint.com/access-linux-server-using-a-jump-host/</a><br />
-<a title="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/" href="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/">https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/</a><br />
-<a title="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html" href="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html">https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</a></p>
+https://serverfault.com/questions/941934/sshfs-over-a-jumphost<br />
+https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/<br />
+https://www.tecmint.com/access-linux-server-using-a-jump-host/<br />
+https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/<br />
+https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1410,33 +1561,9 @@ Your <span class="hljs-keyword">public</span> key has been saved in
     ControlPath /tmp/ssh-<span class="hljs-built_in">%r</span>@<span class="hljs-built_in">%h</span>:<span class="hljs-built_in">%p</span>
     ControlPersist <span class="hljs-number">600</span></code></pre></div>
 <p>重點要注意 ssh 版本需要在 8.2以上，可以用<code>ssh -v</code> 看看！</p>
-<p><a title="https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts" href="https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts">https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts</a><br />
-<a title="https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html" href="https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html">https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html</a><br />
-<a title="https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/" href="https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/">https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[encfs 測試]]></title>
-            <guid>46e070de2e0341ed8cfaa2832bf34f60</guid>
-            <pubDate>Tue, 02 May 2023 13:48:46 GMT</pubDate>
-            <content:encoded><![CDATA[<p>encfs 測試</p>
-<p>之前嘗試用 luks 應把一個 raw file 當作 device 去加密保護資料；用的時候不麻煩，但是如果要同步就很麻煩。且 key 的保存也是問題。</p>
-<p>嘗試了一些工具，例如:<br />
-cryfs - <a title="https://www.cryfs.org/howitworks" href="https://www.cryfs.org/howitworks">https://www.cryfs.org/howitworks</a><br />
-VeraCrypt - <a title="https://www.veracrypt.fr/code/VeraCrypt/" href="https://www.veracrypt.fr/code/VeraCrypt/">https://www.veracrypt.fr/code/VeraCrypt/</a><br />
-encfs - <a title="https://github.com/vgough/encfs" href="https://github.com/vgough/encfs">https://github.com/vgough/encfs</a></p>
-<p>最後再一定風險下，嘗試用 encfs 覺得還可以，先試試看吧。</p>
-<p>debian or ubuntu 上基本上就是</p>
-<p>安裝與加密掛載</p>
-<div><pre class="hljs"><code><span class="hljs-title">apt</span>-get install encfs
-<span class="hljs-title">mkdir</span> .<span class="hljs-class"><span class="hljs-keyword">data</span></span>
-<span class="hljs-title">mkdir</span> <span class="hljs-class"><span class="hljs-keyword">data</span></span>
-<span class="hljs-title">encfs</span> `pwd`/.<span class="hljs-class"><span class="hljs-keyword">data</span> `pwd`/<span class="hljs-keyword">data</span></span></code></pre></div>
-<p>解密就</p>
-<div><pre class="hljs"><code>fusermount -u `pwd`/data</code></pre></div>
-<p>.data 就是實際的檔案 會加密檔名和內容。</p>
-<p>目前寫了一個陽春script 只有需要的時候才解開，10分鐘之後就umount，基本就是mount-&gt;sleep-&gt;umount 這麼簡單！</p>
-<p>後續觀察看看是否會有問題。</p>
+<p>https://ubuntu.com/blog/enhanced-ssh-and-fido-authentication-in-ubuntu-20-04-lts<br />
+https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html<br />
+https://docs.rc.fas.harvard.edu/kb/using-ssh-controlmaster-for-single-sign-on/</p>
 ]]></content:encoded>
         </item>
     </channel>

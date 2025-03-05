@@ -38,7 +38,7 @@
 <p>安裝 clonezilla<br />
 <code>apt-get install clonezilla</code></p>
 <p>透過 <code>ocs-live-swap-kernel</code> 換 asahi linux kernel 重新打包並置換 linux kernel</p>
-<p>需要包好的 asahilinux kernel 可以從這邊下載 <a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a> ，我下載的是 <code>linux-image-6.5.0-asahi-00780-g62806c2c6f29_6.5.0-00780-g62806c2c6f29-1_arm64.deb</code></p>
+<p>需要包好的 asahilinux kernel 可以從這邊下載 https://thomas.glanzmann.de/asahi ，我下載的是 <code>linux-image-6.5.0-asahi-00780-g62806c2c6f29_6.5.0-00780-g62806c2c6f29-1_arm64.deb</code></p>
 <p>換之前先簡單patch下 <code>ocs-live-swap-kernel</code>：</p>
 <div><pre class="hljs"><code><span class="hljs-meta">$ </span><span class="language-bash">diff /usr/sbin/ocs-live-swap-kernel ./ocs-live-swap-kernel</span> 
 176c176
@@ -73,7 +73,7 @@ typec</code></pre></div>
 <span class="hljs-attr">CONFIG_USB_DWC3</span>=m
 <span class="hljs-attr">CONFIG_TYPEC_TPS6598X</span>=m</code></pre></div>
 <p>需要載入的modules<br />
-<a title="https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/" href="https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/">https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/</a></p>
+https://leo3418.github.io/asahi-wiki-build/kernel-config-notes-for-distros/</p>
 <h2 id="m1debian">m1debian</h2>
 <p>大量參考 m1debian 的成果，建議有需要的話可以看以下內容</p>
 <blockquote>
@@ -89,7 +89,7 @@ typec</code></pre></div>
 <blockquote></blockquote>
 </blockquote>
 <h2 id="asahi-linux-image">Asahi linux image</h2>
-<p><a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a></p>
+<p>https://thomas.glanzmann.de/asahi</p>
 <div><pre class="hljs"><code> <span class="hljs-comment"># Debian asahi packages</span>
 
 cat &lt;&lt;<span class="hljs-string">'EOF'</span> | sudo tee <span class="hljs-regexp">/etc/</span>X11<span class="hljs-regexp">/xorg.conf.d/</span><span class="hljs-number">30</span>-modeset.conf
@@ -139,18 +139,18 @@ Apple stuff → m1n1 stage 1 → m1n1 stage 2 → DT + U-Boot → GRUB → Linux
 <strong>(the ESP must be in internal NVMe storage, no external storage is supported)</strong></p>
 <p>這就是為什麼需要先透過asahi linux 安裝程序先在 mac 上安裝 uboot 開機的原因！</p>
 <p>編譯與實作參考:<br />
-GitHub: AsahiLinux/m1n1 <a title="https://github.com/AsahiLinux/m1n1" href="https://github.com/AsahiLinux/m1n1">https://github.com/AsahiLinux/m1n1</a></p>
+GitHub: AsahiLinux/m1n1 https://github.com/AsahiLinux/m1n1</p>
 <h2 id="linux-image-asahi-編譯">linux-image-asahi 編譯</h2>
 <p>需要包好的 asahilinux kernel 可以到這邊下載：<br />
-<a title="https://thomas.glanzmann.de/asahi" href="https://thomas.glanzmann.de/asahi">https://thomas.glanzmann.de/asahi</a></p>
+https://thomas.glanzmann.de/asahi</p>
 <p>編譯參考<br />
-<a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh</a></p>
+https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/blob/HEAD:/m1n1_uboot_kernel.sh</p>
 <h1 id="reference">Reference</h1>
 <ul>
-<li><a title="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/" href="https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/">https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</a></li>
-<li><a title="https://thomas.glanzmann.de/asahi/README.txt" href="https://thomas.glanzmann.de/asahi/README.txt">https://thomas.glanzmann.de/asahi/README.txt</a></li>
-<li><a title="https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/" href="https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/">https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/</a></li>
-<li><a title="https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/" href="https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/">https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/</a></li>
+<li>https://git.zerfleddert.de/cgi-bin/gitweb.cgi/m1-debian/</li>
+<li>https://thomas.glanzmann.de/asahi/README.txt</li>
+<li>https://leo3418.github.io/asahi-wiki-build/m1n1user-guide/</li>
+<li>https://leo3418.github.io/asahi-wiki-build/distroboot-process-guide/</li>
 </ul>
 </div>
       </article>

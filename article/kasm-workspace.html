@@ -83,7 +83,7 @@ sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span
 <h3 id="dlp-data-loss-prevention-措施">DLP (Data Loss Prevention) 措施</h3>
 <p>KASM 有提供 Data Loss Prevention 的防護，例如</p>
 <h3 id="watermark-浮水印">watermark 浮水印</h3>
-<p><a title="https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html" href="https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html">https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html</a></p>
+<p>https://kasmweb.com/docs/latest/how_to/kasmvnc_dlp_policies.html</p>
 <p>watermark 實作</p>
 <p>group-&gt;all user-&gt;file mapping</p>
 <div><pre class="hljs"><code><span class="hljs-symbol">network:</span> 
@@ -103,12 +103,12 @@ sudo bash kasm_release/install<span class="hljs-selector-class">.sh</span> <span
 <span class="hljs-symbol">      timezone_name:</span> Asia/Taipei</code></pre></div>
 <p><img src="/_resources/b1c957971f734b48958082f35d16333f.png" /></p>
 <h3 id="file-download-upload-clipboard-資料傳輸限制">file download upload clipboard ... 資料傳輸限制</h3>
-<p><a title="https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings" href="https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings">https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings</a></p>
+<p>https://kasmweb.com/docs/latest/security/data_loss_prevention.html#group-settings</p>
 <h3 id="session-recording-桌面錄影">session recording 桌面錄影</h3>
-<p><a title="https://kasmweb.com/docs/latest/guide/session_recording.html" href="https://kasmweb.com/docs/latest/guide/session_recording.html">https://kasmweb.com/docs/latest/guide/session_recording.html</a></p>
+<p>https://kasmweb.com/docs/latest/guide/session_recording.html</p>
 <p>Session recording is configured but not licensed. Will not enable. // 需要付費！</p>
 <p>費用可以參考這邊<br />
-<a title="https://www.kasmweb.com/server-checkout" href="https://www.kasmweb.com/server-checkout">https://www.kasmweb.com/server-checkout</a></p>
+https://www.kasmweb.com/server-checkout</p>
 <h3 id="session-recording-實作">session recording 實作</h3>
 <p>settings -&gt; global -&gt; Session Recording</p>
 <p>access key &amp; secret key<br />
@@ -117,8 +117,8 @@ s3://kasm@tos.nchahahahc.org.tw/session-record/{user_id}/{image_friendly_name}-{
 <p>enable active code// 需要錢！</p>
 <p>架構上，如果需要提供更安全的環境，一般會做</p>
 <h3 id="multi-server-多主機架構">multi server 多主機架構</h3>
-<p><a title="https://kasmweb.com/docs/latest/install/multi_server_install.html" href="https://kasmweb.com/docs/latest/install/multi_server_install.html">https://kasmweb.com/docs/latest/install/multi_server_install.html</a><br />
-<a title="https://kasmweb.com/docs/latest/guide/compute/pools.html" href="https://kasmweb.com/docs/latest/guide/compute/pools.html">https://kasmweb.com/docs/latest/guide/compute/pools.html</a></p>
+<p>https://kasmweb.com/docs/latest/install/multi_server_install.html<br />
+https://kasmweb.com/docs/latest/guide/compute/pools.html</p>
 <p>基本上需要的是 docker agent<br />
 找一台linux ubuntu2204 不需要publicl ip / private ip也可以<br />
 安裝agent</p>
@@ -137,10 +137,10 @@ AGENT_HOSTNAME : 192.168.1.130</p>
 <p>之後workspace就會分散到pool</p>
 <h3 id="ime">IME</h3>
 <p>啟用輸入法切換，啟動之後輸入法切換才會正常<br />
-<a title="https://kasmweb.com/docs/latest/how_to/ime.html" href="https://kasmweb.com/docs/latest/how_to/ime.html">https://kasmweb.com/docs/latest/how_to/ime.html</a></p>
+https://kasmweb.com/docs/latest/how_to/ime.html</p>
 <h3 id="keep-data">keep data</h3>
 <p>啟用家目錄儲存<br />
-<a title="https://kasmweb.com/docs/latest/guide/persistent_data.html" href="https://kasmweb.com/docs/latest/guide/persistent_data.html">https://kasmweb.com/docs/latest/guide/persistent_data.html</a></p>
+https://kasmweb.com/docs/latest/guide/persistent_data.html</p>
 <p>persistent data 實作</p>
 <p>settings -&gt; global -&gt; Storage<br />
 <img src="/_resources/eeff9faa03234b64b83afae0a5b049bd.png" /></p>
@@ -160,7 +160,7 @@ s3://kasm@tos.hahaha.org.tw/user-profile/{username}/{image_id}/</p>
 <span class="hljs-punctuation">}</span></code></pre></div>
 <p><img src="/_resources/d410aa67fb994612974aa008b091c267.png" /></p>
 <h3 id="custom-network">custom network</h3>
-<p><a title="https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html" href="https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html">https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html</a></p>
+<p>https://kasmweb.com/docs/latest/how_to/bridged_network_source_nat.html</p>
 <p>關鍵是：</p>
 <div><pre class="hljs"><code>-<span class="hljs-keyword">A</span> POSTROUTING -s <span class="hljs-number">172.19.0.0</span>/<span class="hljs-number">16</span> -d <span class="hljs-number">203.145.220.209</span>/<span class="hljs-number">32</span> ! -o z_custom_a -j SNAT --to-source <span class="hljs-number">192.168.0.89</span></code></pre></div>
 <p>Custom network for agent 實作</p>
@@ -193,19 +193,19 @@ ubuntu<span class="hljs-variable">@instance</span>-agent-<span class="hljs-numbe
 </code></pre></div>
 <p>以及其他功能，我的一些 Production 都有用上，感覺不錯！</p>
 <h3 id="external_proxy-透過-proxy-進行防護">external_proxy 透過 Proxy 進行防護</h3>
-<p><a title="https://kasmweb.com/docs/latest/how_to/external_proxy.html" href="https://kasmweb.com/docs/latest/how_to/external_proxy.html">https://kasmweb.com/docs/latest/how_to/external_proxy.html</a></p>
+<p>https://kasmweb.com/docs/latest/how_to/external_proxy.html</p>
 <h3 id="saml-認証">saml 認証</h3>
-<p><a title="https://kasmweb.com/docs/latest/guide/saml_authentication.html" href="https://kasmweb.com/docs/latest/guide/saml_authentication.html">https://kasmweb.com/docs/latest/guide/saml_authentication.html</a></p>
+<p>https://kasmweb.com/docs/latest/guide/saml_authentication.html</p>
 <h3 id="workspace-registry">workspace registry</h3>
-<p><a title="https://github.com/kasmtech/workspaces_registry_template" href="https://github.com/kasmtech/workspaces_registry_template">https://github.com/kasmtech/workspaces_registry_template</a><br />
-<a title="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file" href="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file">https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file</a><br />
-<a title="https://github.com/Thomas-Tsai/kasm_registry/actions" href="https://github.com/Thomas-Tsai/kasm_registry/actions">https://github.com/Thomas-Tsai/kasm_registry/actions</a><br />
-<a title="https://blog.libthomas.org/kasm_registry/1.0/" href="https://blog.libthomas.org/kasm_registry/1.0/">https://blog.libthomas.org/kasm_registry/1.0/</a></p>
+<p>https://github.com/kasmtech/workspaces_registry_template<br />
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file<br />
+https://github.com/Thomas-Tsai/kasm_registry/actions<br />
+https://blog.libthomas.org/kasm_registry/1.0/</p>
 <h3 id="custom-image">custom image</h3>
 <p>build proxy desktop<br />
-<a title="https://kasmweb.com/docs/latest/how_to/external_proxy.html" href="https://kasmweb.com/docs/latest/how_to/external_proxy.html">https://kasmweb.com/docs/latest/how_to/external_proxy.html</a><br />
+https://kasmweb.com/docs/latest/how_to/external_proxy.html<br />
 add custom image to custom workspace<br />
-<a title="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces" href="https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces">https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces</a></p>
+https://github.com/kasmtech/workspaces_registry_template?tab=readme-ov-file#5-creating-workspaces</p>
 <p>雖然不是完全的開源軟體，但是也很有誠意的釋出不少開源專案，如果非營利組織，在client 數量限制下用是沒有問題。</p>
 </div>
       </article>
