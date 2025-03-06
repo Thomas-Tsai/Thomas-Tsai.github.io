@@ -115,8 +115,8 @@ Unable <span class="hljs-keyword">to</span> open: /dev/nvme0n1p2.
 Mac with Apple silicon, Data Protection defaults to Class C (see Data Protection classes)</p>
 <p><code>On a Mac with Apple silicon, Data Protection defaults to Class C (see Data Protection classes) but utilises a volume key rather than a per-extent or per-file key — effectively recreating the security model of FileVault for user data. Users must still opt in to FileVault to receive the full protection of entangling the encryption key hierarchy with their password. Developers can also opt in to a higher protection class that uses a per-file or per-extent key.</code></p>
 <p>文章出處：<br />
-https://support.apple.com/en-in/guide/security/secb010e978a/1/web/1<br />
-https://support.apple.com/en-in/guide/security/secf6276da8a/1/web/1</p>
+<a title="https://support.apple.com/en-in/guide/security/secb010e978a/1/web/1" href="https://support.apple.com/en-in/guide/security/secb010e978a/1/web/1">https://support.apple.com/en-in/guide/security/secb010e978a/1/web/1</a><br />
+<a title="https://support.apple.com/en-in/guide/security/secf6276da8a/1/web/1" href="https://support.apple.com/en-in/guide/security/secf6276da8a/1/web/1">https://support.apple.com/en-in/guide/security/secf6276da8a/1/web/1</a></p>
 <h3 id="手動-usb-storage-加密進行測試">手動 usb storage 加密進行測試</h3>
 <p>手動於 MAC OS 將外接隨身碟進行 APFS 格式加密，再用  fsapfsinfo 檢視 APFS 看看錯誤訊息為何？！結果就是一樣<code>libfsapfs_encryption_context_initialize: unable to initialize decryption context. </code></p>
 <div><pre class="hljs"><code>thomas@debian-lab:~/tmp/mnt/tmp/macminim2$ sudo /usr/bin/fsapfsinfo /dev/sdc2
@@ -166,8 +166,8 @@ Startup Security Utility window showing the Reduced Security options.</p>
 <p>完成上述操作之後，再用 m1-debian or Clonezilla Live 去讀取 APFS 就都是解密狀態，且可以備份與還原！</p>
 <p>以上前題是預設狀態，也就是使用者沒有手動進行 APFS 加密，如果有，還是需要先進行解密，再設定為 <code>Reduce Security</code> 才可以備份。</p>
 <h2 id="reference">Reference</h2>
-<p>https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac<br />
-https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0</p>
+<p><a title="https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac" href="https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac">https://support.apple.com/en-vn/guide/mac-help/mchl768f7291/mac</a><br />
+<a title="https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0" href="https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0">https://support.apple.com/en-vn/guide/mac-help/mchl0f9af76f/15.0/mac/15.0</a></p>
 </div>
       </article>
     </div>

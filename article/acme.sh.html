@@ -93,7 +93,7 @@ acme.sh --set-notify  --notify-hook mail</code></pre></div>
 </ol>
 <p>name.com 網頁設定好之後，應該就不會有認証問題！</p>
 <h2 id="acmezerosslcom-出狀況">acme.zerossl.com 出狀況</h2>
-<p>根據這邊 https://github.com/acmesh-official/acme.sh/issues/4927 看到有類似的狀況。</p>
+<p>根據這邊 <a title="https://github.com/acmesh-official/acme.sh/issues/4927" href="https://github.com/acmesh-official/acme.sh/issues/4927">https://github.com/acmesh-official/acme.sh/issues/4927</a> 看到有類似的狀況。</p>
 <p>處理方式是把憑證主機換掉</p>
 <div><pre class="hljs"><code>acme.<span class="hljs-keyword">sh</span> --<span class="hljs-keyword">set</span>-default-<span class="hljs-keyword">ca</span> --server letsencrypt</code></pre></div>
 <p>但是如果要 renew 就需要修改設定檔  /root/.acme.sh/some-domain.com/some-domain.com.conf</p>

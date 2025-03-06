@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link rel="stylesheet" href="/_assets/main.css" />
+
+    <title>Apple M2 Clonezilla 備份還原成功 - THOMAS NOTES</title>
+  <link rel="stylesheet" href="/_markdown_plugin_assets/highlight.js/atom-one-light.css" /></head>
+  <body>
+    <div class="main">
+      <nav class="navigation">
+        <a href="/">THOMAS NOTES</a>
+      </nav>
+      <article>
+        <header>
+          <h1 class="article-title">Apple M2 Clonezilla 備份還原成功</h1>
+          <div class="article-info">
+            <div>
+              <span
+                >Created At：<time datetime="1741230555269"
+                  >2025-03-06 11:09</time
+                ></span
+              >
+              <span
+                >Updated At：<time datetime="1741231959703"
+                  >2025-03-06 11:32</time
+                ></span
+              >
+            </div>
+            
+          </div>
+        </header>
+        <div class="article-content markdown-body"><h1 id="apple-m2-clonezilla-備份還原成功">Apple M2 Clonezilla 備份還原成功</h1>
+<p>經過了2個月的努力，陸續解決所有的雷，<a href="/article/apple-m1-mini-for-clonezilla-live-boot-test">APPLE M1 MINI for Clonezilla Live boot test</a> -&gt; <a href="/article/asahi-linux-image-and-clonezilla-live">Asahi linux image and clonezilla live</a> -&gt; <a href="/article/apple-silicon-apfs">Apple silicon APFS 備份問題</a> 之後，首次備份+還原成功。</p>
+<h1 id="作法概述">作法概述</h1>
+<h2 id="抓-clonezilla-live-arm">抓 clonezilla live arm</h2>
+<p>找一台Linux進行操做</p>
+<p>到這邊去找新版 ARM zip<br />
+<a title="https://free.nchc.org.tw/clonezilla-live/experimental/arm/" href="https://free.nchc.org.tw/clonezilla-live/experimental/arm/">https://free.nchc.org.tw/clonezilla-live/experimental/arm/</a></p>
+<p>以我為例，我使用 <a title="https://free.nchc.org.tw/clonezilla-live/experimental/arm/3.2.1-9/clonezilla-live-3.2.1-9-arm64.zip" href="https://free.nchc.org.tw/clonezilla-live/experimental/arm/3.2.1-9/clonezilla-live-3.2.1-9-arm64.zip">https://free.nchc.org.tw/clonezilla-live/experimental/arm/3.2.1-9/clonezilla-live-3.2.1-9-arm64.zip</a> 這個。</p>
+<p>抓下來之後要換 Asahi Linux 可以參考 <a href="/article/asahi-linux-image-and-clonezilla-live">Asahi linux image and clonezilla live</a>，clonezilla 升級到 5.8.20 已經不用 patch，所以可以直接</p>
+<div><pre class="hljs"><code><span class="hljs-attribute">apt</span>-get install clonezilla // 需要確認版本 <span class="hljs-number">5</span>.<span class="hljs-number">8</span>.<span class="hljs-number">20</span> 以上
+<span class="hljs-attribute">ocs</span>-live-swap-kernel clonezilla-live-<span class="hljs-number">3</span>.<span class="hljs-number">2</span>.<span class="hljs-number">1</span>-<span class="hljs-number">9</span>-arm64.zip linux-image-<span class="hljs-number">6</span>.<span class="hljs-number">5</span>.<span class="hljs-number">0</span>-asahi-<span class="hljs-number">00780</span>-g62806c2c6f29_6.<span class="hljs-number">5</span>.<span class="hljs-number">0</span>-<span class="hljs-number">00780</span>-g62806c2c6f29-<span class="hljs-number">1</span>_arm64.deb</code></pre></div>
+<h2 id="裝-uefi-boot-on-apple-mini-m2">裝 uefi boot on apple mini m2</h2>
+<p>在 MAC MINI 上執行</p>
+<div><pre class="hljs"><code>curl https:<span class="hljs-regexp">//</span>alx.sh | sh</code></pre></div>
+<p>只安裝 UEFI environment only (m1n1 + U-Boot + ESP)</p>
+<p>參考 <a href="/article/apple-m1-mini-for-clonezilla-live-boot-test">APPLE M1 MINI for Clonezilla Live boot test</a></p>
+<h2 id="解除保護">解除保護</h2>
+<p>重開機並設定 Reduce Security</p>
+<p><img src="/_resources/268769e867be4582aeb6ac71f8f4ced7.png" /></p>
+<p>參考 <a href="/article/apple-silicon-apfs">Apple silicon APFS 備份問題</a></p>
+<h2 id="clonezilla-live-開機">Clonezilla Live 開機</h2>
+<p>重開機由維護模式選 uboot 開機</p>
+<p>當進入 shell 互動模式輸入：// 也可以自動</p>
+<div><pre class="hljs"><code>env <span class="hljs-built_in">set</span> boot_efi_bootmgr
+<span class="hljs-built_in">run</span> bootcmd_usb0</code></pre></div>
+<p>就可以順利進入 Clonezilla Live 選單</p>
+<p>參考 <a href="/article/apple-m1-mini-for-clonezilla-live-boot-test">APPLE M1 MINI for Clonezilla Live boot test</a></p>
+<h2 id="備份">備份</h2>
+<p>透過 Clonezilla Live 備份 Disks</p>
+<p>有辨識到三顆硬碟，主要是第一顆，其他的沒有備份。<br />
+<img src="/_resources/33f497a8664e4bf8899dff99df0f0714.png" /></p>
+<p>自動偵測到 partitions ; 就會備份這些<br />
+<img src="/_resources/e9e346491ff34b1fadf6febb18ff572a.png" /></p>
+<p><img src="/_resources/0d38b669237c4688ac4c3368412a4ca7.png" /></p>
+<p><img src="/_resources/334d4953b6f54bcabaa591124a8601dc.png" /></p>
+<p><img src="/_resources/88ef647fe51240e18987dd8a9b653d50.png" /></p>
+<p><img src="/_resources/f054c42083274961a69be4191ce82bf0.png" /></p>
+<p><img src="/_resources/1fbf9e9a49f348c08ab12ce79f7fb6b0.png" /></p>
+<p><img src="/_resources/2364ac28f65e4639a8b1a38cf5bc04de.png" /></p>
+<p><img src="/_resources/d4a6d0bc84ef4e688c473825736cf9b1.png" /></p>
+<h2 id="摧毀">摧毀</h2>
+<p>這邊我就沒有截圖<br />
+大致上我是</p>
+<div><pre class="hljs"><code>dd <span class="hljs-attribute">if</span>=/dev/zero <span class="hljs-attribute">of</span>=/dev/nvme0n1 <span class="hljs-attribute">bs</span>=1M <span class="hljs-attribute">count</span>=20480</code></pre></div>
+<p>再以 blkid 確認資料都不見了！這時候先萬保佑不要當機重開，會變磚塊。</p>
+<h2 id="還原">還原</h2>
+<p>馬上用 clonezilla live 選單選還原 disk ，跑完之後可以正常開進 MAC-OS。</p>
+<h2 id="注意事項">注意事項</h2>
+<p>我們以玩樂的心情進行開發。如果你有要嘗試，我們很歡迎但是</p>
+<p>！！！建議先自己有備份！！！這是研究性質！！！</p>
+<p>如果萬一變磚塊，你可以用 <a title="https://support.apple.com/zh-tw/108900" href="https://support.apple.com/zh-tw/108900">Apple configurator 以 DFU</a> 重新刷回去，但是資料就都沒了。</p>
+</div>
+      </article>
+    </div>
+  </body>
+</html>

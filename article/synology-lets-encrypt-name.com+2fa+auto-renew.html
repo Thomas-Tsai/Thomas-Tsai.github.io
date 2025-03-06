@@ -34,7 +34,7 @@
         </header>
         <div class="article-content markdown-body"><h1 id="於-synology-啟用-lets-encrypt-整合-namecom2faauto-renew">於 Synology 啟用 lets encrypt 整合 name.com+2fa+auto renew</h1>
 <p>我的 Synology 設定再防火牆內，不對外直接提供服務，即使如此也是需要上 TLS 來提升安全性。基本上 Synology 已經支援 lets encrypt ，but 預設用的方式是 HTTP-01，所以在防火牆的的限制下，無法順利自動完成，也不法自動 renew 。之前解決方式就是另外找一個點，拿到 ca, certs 之後，再手動放進去，然後就過期了...</p>
-<p>ACMESH 有提供解決方式 https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用 DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
+<p>ACMESH 有提供解決方式 <a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%81%8B%E7%94%A8">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide，主要是運用</a> DNS-01 的方式，這樣的方式可以再 Synology 跑，也可以再其他 linux 上執行並佈署到 NAS 內。</p>
 <p>相關說明可以細看上面連結，我看完之後認為至少有一些需要測試：</p>
 <ol>
 <li>Firewall 不可更改 。應可用acme.sh 利用dns-01方式來排除</li>
@@ -71,7 +71,7 @@ source ~/.bashrc</code></pre></div>
 <p>我的 Synology NAS 不支援只 listen 特定 FQDN 且有換 port 又有 OTP 搞得這邊有點麻煩。依照文件依序設定 SYNO_Username, SYNO_Password, SYNO_Hostname, SYNO_Scheme, SYNO_Port 都要有正確的設定。另外因為OTP，SYNO_DID 我測試不行，會表示無法登入，可能某個環節出錯；只好暫時用比較差勁的方式取代 SYNO_DID，那就是export SYNO_TOTP_SECRET=xxx 並安裝 oathtool</p>
 <div><pre class="hljs"><code>sudo apt-<span class="hljs-built_in">get</span> install oathtool
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">SYNO_TOTP_SECRET</span>=xxx</code></pre></div>
-<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</p>
+<p>TOTP 就搜尋 export totp 就有，例如備份google Authenticator 然那的檔案就有了。可以參考 <a title="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82" href="https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS%E3%80%82">https://support.google.com/accounts/answer/1066447?hl=en&amp;co=GENIE.Platform%3DiOS。</a></p>
 <p>整個script 就像</p>
 <div><pre class="hljs"><code><span class="hljs-comment">#!/bin/bash</span>
 <span class="hljs-built_in">export</span> <span class="hljs-attribute">CERT_DOMAIN</span>=<span class="hljs-string">"piracy.domain.org"</span>
@@ -126,12 +126,12 @@ Task setting: User-defined-script:</p>
 <p>差不多之後就是觀察會不會自動renew了！</p>
 <p>後來也注意到 deploy 方法不少，也許之後換個更好的方式！</p>
 <h2 id="reference">reference</h2>
-<p>https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/<br />
-https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal<br />
-https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
-https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm<br />
-https://github.com/acmesh-official/acme.sh/wiki/dnsapi<br />
-https://github.com/acmesh-official/acme.sh/issues/2727</p>
+<p><a title="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/" href="https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/">https://lippertmarkus.com/2020/03/14/synology-le-dns-auto-renew/</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal" href="https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal">https://github.com/acmesh-official/acme.sh/wiki/Synology-NAS-Guide#configuring-certificate-renewal</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm" href="https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm">https://github.com/acmesh-official/acme.sh/wiki/deployhooks#20-deploy-the-cert-into-synology-dsm</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">https://github.com/acmesh-official/acme.sh/wiki/dnsapi</a><br />
+<a title="https://github.com/acmesh-official/acme.sh/issues/2727" href="https://github.com/acmesh-official/acme.sh/issues/2727">https://github.com/acmesh-official/acme.sh/issues/2727</a></p>
 </div>
       </article>
     </div>
