@@ -4,7 +4,7 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Thu, 06 Mar 2025 03:37:29 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 21 Mar 2025 06:06:47 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
         <item>
@@ -103,7 +103,7 @@
 /dev/nvme0n1p2: <span class="hljs-attribute">UUID</span>=<span class="hljs-string">"7e9b172c-ef57-465e-b10c-c65888e706fa"</span> <span class="hljs-attribute">BLOCK_SIZE</span>=<span class="hljs-string">"4096"</span> <span class="hljs-attribute">TYPE</span>=<span class="hljs-string">"apfs"</span> <span class="hljs-attribute">PARTLABEL</span>=<span class="hljs-string">"Container"</span> <span class="hljs-attribute">PARTUUID</span>=<span class="hljs-string">"e8152f74-d982-4cab-af9c-d4044b932f83"</span>
 </code></pre></div>
 <h3 id="fsapfsinfo">fsapfsinfo</h3>
-<p>安裝 ibfsapfs-utils 之後可以用程式 fsapfsinfo 檢視 APFS 摘要資訊。</p>
+<p>安裝 libfsapfs-utils 之後可以用程式 fsapfsinfo 檢視 APFS 摘要資訊。</p>
 <p>可以看到 nvme0n1p1 可以正常讀取資訊</p>
 <div><pre class="hljs"><code>/usr/bin/fsapfsinfo /dev/nvme0n1p1
 fsapfsinfo 20201107
