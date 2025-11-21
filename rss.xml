@@ -4,9 +4,135 @@
         <title></title>
         <link>undefined</link>
         <description>undefined</description>
-        <lastBuildDate>Fri, 21 Mar 2025 06:06:47 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 21 Nov 2025 04:23:22 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>Joplin Pages Publisher</generator>
+        <item>
+            <title><![CDATA[ollama-x-opencode_complete_setup_note_zh-TW]]></title>
+            <guid>68c22c46f7b94cf98a1692db0638de16</guid>
+            <pubDate>Fri, 21 Nov 2025 04:08:07 GMT</pubDate>
+            <content:encoded><![CDATA[<h1 id="ollama-x-opencode-完整設定與使用指南">Ollama-x-Opencode 完整設定與使用指南</h1>
+<p><a title="https://github.com/p-lemonish/ollama-x-opencode" href="https://github.com/p-lemonish/ollama-x-opencode">https://github.com/p-lemonish/ollama-x-opencode</a></p>
+<p>本筆記整合了官方 <code>README.md</code> 的說明以及針對您本地環境的客製化調整，提供一份從零開始的完整設定與使用指南。</p>
+<h2 id="1-先決條件">1. 先決條件</h2>
+<ul>
+<li><strong>Git：</strong> 用於clone儲存庫。</li>
+<li><strong>Docker &amp; Docker Compose：</strong> 用於容器化。</li>
+<li><strong>NVIDIA GPU（選用但建議）：</strong> 用於 GPU 加速的 Ollama。</li>
+<li><strong>NVIDIA Container Toolkit：</strong> Docker 存取 NVIDIA GPU 所需。</li>
+</ul>
+<h2 id="2-環境設定">2. 環境設定</h2>
+<h3 id="21-env-檔案設定">2.1 <code>.env</code> 檔案設定</h3>
+<p>在專案根目錄下建立一個 <code>.env</code> 檔案，用於定義 Ollama 資料的儲存路徑。</p>
+<p><strong><code>.env</code> 檔案範例：</strong></p>
+<div><pre class="hljs"><code><span class="hljs-type">OLLAMA_DATA</span>=./<span class="hljs-class"><span class="hljs-keyword">data</span></span></code></pre></div>
+<ul>
+<li><em>說明：</em> <code>OLLAMA_DATA</code> 定義了 Ollama 儲存模型和資料的本地路徑。<code>docker-compose.yml</code> 將會讀取此變數。</li>
+</ul>
+<h3 id="22-docker-網路">2.2 Docker 網路</h3>
+<p><code>docker-compose.yml</code> 中使用了名為 <code>my-ollama-net</code> 的外部網路。您需要手動建立此網路：</p>
+<div><pre class="hljs"><code>docker network create my-ollama-net</code></pre></div>
+<h3 id="23-安裝-nvidia-container-toolkit若無gpu可略過">2.3 安裝 NVIDIA Container Toolkit（若無GPU可略過）</h3>
+<p>請依照您 Linux 發行版的官方 NVIDIA Container Toolkit 安裝指南進行操作。<br />
+先準備gpg key</p>
+<div><pre class="hljs"><code>curl -fsSL https:<span class="hljs-regexp">//</span>nvidia.github.io<span class="hljs-regexp">/libnvidia-container/g</span>pgkey | sudo gpg --dearmor -o <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/keyrings/</span>nvidia-container-toolkit-keyring.gpg</code></pre></div>
+<ul>
+<li><strong>Ubuntu/Debian 範例（或類似設定）：</strong><br />
+安裝後，請確認 <code>/etc/apt/sources.list.d/nvidia-container-toolkit.list</code> 檔案內容應類似如下，以使用穩定版：<div><pre class="hljs"><code>deb [signed-by=<span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/keyrings/</span>nvidia-container-toolkit-keyring.gpg] https:<span class="hljs-regexp">//</span>nvidia.github.io<span class="hljs-regexp">/libnvidia-container/</span>stable<span class="hljs-regexp">/deb/</span>$(ARCH) /</code></pre></div>
+然後執行：<div><pre class="hljs"><code>sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker</code></pre></div>
+</li>
+<li><strong>驗證安裝：</strong><div><pre class="hljs"><code>docker run --rm --gpus all ubuntu nvidia-smi</code></pre></div>
+成功應會顯示您的 NVIDIA GPU 詳細資訊。</li>
+</ul>
+<h2 id="3-專案啟動與模型設定">3. 專案啟動與模型設定</h2>
+<h3 id="31-git-儲存庫">3.1 git 儲存庫</h3>
+<div><pre class="hljs"><code>git <span class="hljs-built_in">clone</span> https://github.com/p-lemonish/ollama-x-opencode.git
+<span class="hljs-built_in">cd</span> ollama-x-opencode</code></pre></div>
+<p><em>提醒：</em> 請確保上述的 <code>.env</code> 檔案建立在此目錄下。</p>
+<h3 id="32-確認-docker-composeyml">3.2 確認 <code>docker-compose.yml</code></h3>
+<p>您的 <code>docker-compose.yml</code> 經過微調，應包含 GPU 支援並使用 <code>my-ollama-net</code> 網路。</p>
+<div><pre class="hljs"><code><span class="hljs-attr">services:</span>
+  <span class="hljs-attr">ollama:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">ollama/ollama:latest</span>
+    <span class="hljs-attr">container_name:</span> <span class="hljs-string">ollama</span>
+    <span class="hljs-attr">restart:</span> <span class="hljs-string">unless-stopped</span>
+    <span class="hljs-attr">deploy:</span>
+      <span class="hljs-attr">resources:</span>
+        <span class="hljs-attr">reservations:</span>
+          <span class="hljs-attr">devices:</span>
+            <span class="hljs-bullet">-</span> <span class="hljs-attr">driver:</span> <span class="hljs-string">nvidia</span>
+              <span class="hljs-attr">count:</span> <span class="hljs-string">all</span>
+              <span class="hljs-attr">capabilities:</span> [<span class="hljs-string">gpu</span>]
+    <span class="hljs-attr">healthcheck:</span>
+      <span class="hljs-attr">test:</span> [<span class="hljs-string">"CMD"</span>, <span class="hljs-string">"nvidia-smi"</span>]
+      <span class="hljs-attr">interval:</span> <span class="hljs-string">10s</span>
+      <span class="hljs-attr">timeout:</span> <span class="hljs-string">5s</span>
+      <span class="hljs-attr">retries:</span> <span class="hljs-number">3</span>
+      <span class="hljs-attr">start_period:</span> <span class="hljs-string">1m</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">${OLLAMA_DATA}:/root/.ollama</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">"11434:11434"</span>
+    <span class="hljs-attr">networks:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">my-ollama-net</span>
+
+<span class="hljs-attr">networks:</span>
+  <span class="hljs-attr">my-ollama-net:</span>
+    <span class="hljs-attr">external:</span> <span class="hljs-literal">true</span></code></pre></div>
+<h3 id="33-啟動服務">3.3 啟動服務</h3>
+<div><pre class="hljs"><code>docker compose up -d</code></pre></div>
+<h3 id="34-下載模型">3.4 下載模型</h3>
+<p>使用 <code>docker compose exec</code> 進入 ollama 容器來下載模型。</p>
+<div><pre class="hljs"><code>docker compose <span class="hljs-built_in">exec</span> ollama ollama pull qwen3:8b</code></pre></div>
+<h3 id="35-擴充模型-context-window-重要">3.5 擴充模型 Context Window (重要)</h3>
+<p>根據 <code>README.md</code>，Ollama 預設的 context window (4096) 過小，會導致 agentic tools (代理工具) 無法正常運作。您需要手動擴充並儲存成一個新模型。</p>
+<ol>
+<li>
+<p><strong>進入 Ollama 容器互動模式：</strong></p>
+<div><pre class="hljs"><code>docker compose <span class="hljs-built_in">exec</span> ollama ollama run qwen3:8b</code></pre></div>
+</li>
+<li>
+<p><strong>設定並儲存新模型：</strong><br />
+在 <code>&gt;&gt;&gt;</code> 提示符後，輸入以下指令：</p>
+<div><pre class="hljs"><code>/<span class="hljs-keyword">set</span> <span class="hljs-keyword">parameter</span> <span class="hljs-comment">num_ctx 16384</span>
+/save qwen3:<span class="hljs-number">8</span>b<span class="hljs-number">-16</span>k
+/bye</code></pre></div>
+<p>這會將 context window 設為 16384，並建立一個名為 <code>qwen3:8b-16k</code> 的新模型。</p>
+</li>
+</ol>
+<h2 id="4-opencode-設定與使用">4. Opencode 設定與使用</h2>
+<h3 id="41-設定-configjson">4.1 設定 <code>config.json</code></h3>
+<p>為了讓 Opencode 能使用您剛才建立的本地模型，您需要設定其設定檔。設定檔路徑為 <code>~/.config/opencode/config.json</code>。</p>
+<p><strong><code>config.json</code> 範例：</strong></p>
+<div><pre class="hljs"><code><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"$schema"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"https://opencode.ai/config.json"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"provider"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"ollama"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"npm"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"@ai-sdk/openai-compatible"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"options"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"baseURL"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"http://localhost:11434/v1"</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"models"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">"qwen3:8b-16k"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+          <span class="hljs-attr">"tools"</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span>
+        <span class="hljs-punctuation">}</span>
+      <span class="hljs-punctuation">}</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span></code></pre></div>
+<p><em>注意：</em> 這裡的 <code>qwen3:8b-16k</code> 必須與您在步驟 3.5 中儲存的新模型名稱完全相符。</p>
+<h3 id="42-執行-opencode">4.2 執行 Opencode</h3>
+<p>現在您可以執行 Opencode，並透過 <code>--model</code> 參數指定使用剛設定好的 Ollama 模型。</p>
+<div><pre class="hljs"><code>opencode run <span class="hljs-string">"產生一個 todo.md 檔案，內容為 'hello world, from qwen3'"</span> --model ollama/qwen3:8b-16k</code></pre></div>
+<hr />
+<p><em>本筆記是根據官方文件、專案結構以及您的本地端環境配置所彙整的完整指南。</em></p>
+<h1 id="reference">reference</h1>
+<p><a title="https://github.com/p-lemonish/ollama-x-opencode" href="https://github.com/p-lemonish/ollama-x-opencode">https://github.com/p-lemonish/ollama-x-opencode</a><br />
+這篇文章是 gemini-cli 寫的，我微調</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Apple M2 Clonezilla 備份還原成功]]></title>
             <guid>3f64d3ddce104878b810414af650bb6a</guid>
@@ -1504,57 +1630,6 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCTGgGIIZDZ+X+s823nBoAayFxfnv8uVJxcB9MEeOXa
 <a title="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md" href="https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md">https://github.com/tpm2-software/tpm2-pkcs11/blob/1.6.0/docs/SSH.md</a><br />
 <a title="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html" href="https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html">https://blog.habets.se/2013/11/TPM-chip-protecting-SSH-keys---properly.html</a><br />
 <a title="https://wiki.archlinux.org/title/Trusted_Platform_Module" href="https://wiki.archlinux.org/title/Trusted_Platform_Module">https://wiki.archlinux.org/title/Trusted_Platform_Module</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[SSH JUMP]]></title>
-            <guid>467ef73264e543968067852c5cb3a65a</guid>
-            <pubDate>Tue, 02 May 2023 14:19:01 GMT</pubDate>
-            <content:encoded><![CDATA[<p>SSH JUMP</p>
-<p>前輩的介紹之下做了一下ssh jump 的測試，其實這工具真的非常好用且方便。</p>
-<p>測試環境：<br />
-proxyNode // DMZ 外，限定來源IP<br />
-targetNode // DMZ 內，受保護服務</p>
-<p>之前我要從 client ssh 到 targetNode 需要<br />
-ssh 到 proxyNode ; 再從 proxyNode ssh 到 targetNode<br />
-且可能會把 ssh private key 放到 proxyNode! // 危險!</p>
-<p>用了 proxy jump 之後，基本用法就是</p>
-<div><pre class="hljs"><code><span class="hljs-attribute">ssh -J proxyNode targetNode</span></code></pre></div>
-<p>且不需要把 private key 放到 proxyNode // 安全!</p>
-<p>jump 也可以一直跳下去</p>
-<div><pre class="hljs"><code><span class="hljs-attribute">ssh</span> -J jumpuser1<span class="hljs-variable">@jump1</span>,jumpuser2<span class="hljs-variable">@jump2</span>,...,jumpuserN<span class="hljs-variable">@jumpN</span> user<span class="hljs-variable">@host</span></code></pre></div>
-<p>透過ssh jump 可以直接連到 DMZ 但是有時候需要檔案I/O，例如 scp, rsync, sshfs</p>
-<div><pre class="hljs"><code><span class="hljs-comment"># sshfs</span>
-sshfs -o ssh_command=<span class="hljs-string">"ssh -J B_host"</span> C_host:/&lt;path&gt; &lt;mountpoint&gt; 
-
-<span class="hljs-comment"># or rsync</span>
-rsync -azv -e <span class="hljs-string">'ssh -A -J USER@PROXYHOST:PORT'</span> foo<span class="hljs-regexp">/ dest:./</span>foo/
-
-<span class="hljs-comment"># or scp</span>
-scp -J username@B username@C:<span class="hljs-regexp">/some/</span>path <span class="hljs-regexp">/some/</span>path</code></pre></div>
-<p>最後建議用 .ssh/config , 設定如下：</p>
-<div><pre class="hljs"><code>Host targetNode
-    HostName targetNode.example.org
-    IdentityFile ~/.ssh/targetNode.pem
-    <span class="hljs-keyword">User</span> <span class="hljs-title">user1</span>
-    ProxyJump proxyNode
-
-Host proxyNode
-    HostName proxyNode.example.org	
-    IdentityFile ~/.ssh/id_rsa
-    Port <span class="hljs-number">22</span>
-    <span class="hljs-keyword">User</span> <span class="hljs-title">user2</span></code></pre></div>
-<p>因為都用 key 登入，所以直接下 ssh targetNode 會自動 jump 。</p>
-<p>另外 sshfs, scp, rsync 在有設定 config 的情況下使用，可以少很多參數。</p>
-<p>例如</p>
-<div><pre class="hljs"><code>sshfs targetNode:<span class="hljs-regexp">/etc /</span>etc</code></pre></div>
-<p>以上，我開始重新設定所有的 ssh 都儘量改用 jump！</p>
-<p>reference:<br />
-<a title="https://serverfault.com/questions/941934/sshfs-over-a-jumphost" href="https://serverfault.com/questions/941934/sshfs-over-a-jumphost">https://serverfault.com/questions/941934/sshfs-over-a-jumphost</a><br />
-<a title="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/" href="https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/">https://blog.wu-boy.com/2016/10/ssh-agent-forwarding-proxycommand-tutorial/</a><br />
-<a title="https://www.tecmint.com/access-linux-server-using-a-jump-host/" href="https://www.tecmint.com/access-linux-server-using-a-jump-host/">https://www.tecmint.com/access-linux-server-using-a-jump-host/</a><br />
-<a title="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/" href="https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/">https://nyogjtrc.github.io/posts/2020/03/ssh-proxyjump/</a><br />
-<a title="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html" href="https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html">https://mperdikeas.github.io/networking.html.files/scp-a-file-through-jump-host.html</a></p>
 ]]></content:encoded>
         </item>
     </channel>
